@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
-                  Dashboard Báo Cáo Doanh Thu Tâm Đức Smile
+                  Dashboard Báo Cáo Doanh Thu
                 </h1>
                 {userRole === 'admin' && (
                   <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
