@@ -1,5 +1,5 @@
 {
-  "name": "Dashboard Báo Cáo Doanh Thu Tâm Đức Smile",
+  "name": "Dashboard Báo Cáo Doanh Thu",
   "description": "Creates monthly charts for regional revenue and VAT costs, organizing six months of data into separate spreadsheet tabs.",
   "requestFramePermissions": [],
   "majorCapabilities": [

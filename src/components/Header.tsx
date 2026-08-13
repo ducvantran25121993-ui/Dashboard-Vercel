@@ -148,14 +148,14 @@ export const Header: React.FC<HeaderProps> = ({
                       onClick={() => onSelectTab(m.id)}
                       className={`relative flex items-center gap-1.5 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-xl whitespace-nowrap transition-all duration-300 shrink-0 select-none ${
                         isActive
-                          ? 'bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-600 text-white border-t border-emerald-200/50 border-b border-teal-950 shadow-[0_4px_20px_rgba(16,185,129,0.45),inset_0_1px_1px_rgba(255,255,255,0.4)] scale-[1.03] -translate-y-0.5 ring-1 ring-emerald-300/30'
+                          ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 text-white border border-emerald-200/90 ring-2 ring-emerald-300 shadow-[0_0_25px_rgba(52,211,153,0.7),0_4px_20px_rgba(16,185,129,0.5)] scale-[1.04] -translate-y-0.5'
                           : 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40 border border-transparent'
                       }`}
                     >
-                      <TrendingUp className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-emerald-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]' : 'text-emerald-400'}`} />
-                      <span className={isActive ? 'drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] font-extrabold' : ''}>{m.label}</span>
+                      <TrendingUp className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]' : 'text-emerald-400'}`} />
+                      <span className={isActive ? 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] font-black tracking-wide text-white' : ''}>{m.label}</span>
                       {isActive && (
-                        <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-8 sm:w-12 h-[3.5px] rounded-full bg-emerald-300 shadow-[0_0_8px_#34d399]" />
+                        <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-8 sm:w-12 h-[3.5px] rounded-full bg-emerald-200 shadow-[0_0_12px_#6ee7b7]" />
                       )}
                     </button>
                   </React.Fragment>
