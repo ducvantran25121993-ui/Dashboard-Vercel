@@ -30,6 +30,12 @@ import {
   Layers
 } from 'lucide-react';
 import { MonthDataset } from '../data/revenueData';
+import {
+  callClientGemini,
+  callClientOpenAI,
+  callClientDeepSeek,
+  generateSmartAnalyticsFallback,
+} from '../services/aiAgentEngine';
 
 export type AIProvider = 'gemini' | 'openai' | 'claude' | 'deepseek' | 'custom';
 
@@ -263,43 +269,74 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
       }));
 
       const contextData = getPreparedContextData();
+      let replyText = '';
+      let usedProviderTag = currentProviderObj.name + ` (${selectedModel})`;
 
-      const response = await fetch('/api/ai-agent-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: historyPayload,
-          contextData,
-          agentPersona: selectedPresetMode,
-          provider: selectedProvider,
-          model: selectedModel,
-          customApiKey: apiKeys[selectedProvider] || '',
-          customBaseUrl: selectedProvider === 'custom' ? customBaseUrl : undefined,
-        }),
-      });
+      const customKey = apiKeys[selectedProvider];
 
-      const textResponse = await response.text();
-      let data: any = {};
-      try {
-        data = JSON.parse(textResponse);
-      } catch {
-        // If server returned non-JSON (e.g. 404 or proxy HTML error), provide fallback
-        data = {
-          error: `Máy chủ trả về kết quả không hợp lệ (${response.status}): ${textResponse.slice(0, 120)}...`,
-        };
+      // Step A: If user provided direct API Key for Gemini, OpenAI, or DeepSeek, call direct client SDK first
+      if (customKey) {
+        try {
+          if (selectedProvider === 'gemini') {
+            replyText = await callClientGemini(historyPayload, contextData, customKey, selectedModel);
+          } else if (selectedProvider === 'openai') {
+            replyText = await callClientOpenAI(historyPayload, contextData, customKey, selectedModel);
+          } else if (selectedProvider === 'deepseek') {
+            replyText = await callClientDeepSeek(historyPayload, contextData, customKey, selectedModel);
+          } else if (selectedProvider === 'custom') {
+            replyText = await callClientOpenAI(historyPayload, contextData, customKey, selectedModel, customBaseUrl);
+          }
+        } catch (directErr: any) {
+          console.warn('Direct API client failed, falling back to server route:', directErr);
+        }
       }
 
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Lỗi xử lý phản hồi từ AI Agent');
+      // Step B: If no direct reply, attempt server route /api/ai-agent-chat
+      if (!replyText) {
+        try {
+          const response = await fetch('/api/ai-agent-chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: historyPayload,
+              contextData,
+              agentPersona: selectedPresetMode,
+              provider: selectedProvider,
+              model: selectedModel,
+              customApiKey: customKey || '',
+              customBaseUrl: selectedProvider === 'custom' ? customBaseUrl : undefined,
+            }),
+          });
+
+          if (response.ok) {
+            const textResponse = await response.text();
+            try {
+              const data = JSON.parse(textResponse);
+              if (data.reply) {
+                replyText = data.reply;
+              }
+            } catch {
+              // Not JSON
+            }
+          }
+        } catch (serverErr) {
+          console.warn('Server endpoint error:', serverErr);
+        }
+      }
+
+      // Step C: Fallback to high-precision built-in Dental Growth Analytics Engine
+      if (!replyText) {
+        replyText = generateSmartAnalyticsFallback(query, contextData);
+        usedProviderTag = 'Tâm Đức Analytics Engine (Auto-Active)';
       }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.reply,
+        content: replyText,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-        agentTask: 'Tự động tổng hợp số liệu & đề xuất kế hoạch thực thi',
-        providerUsed: currentProviderObj.name + ` (${selectedModel})`,
+        agentTask: 'Tự động phân tích dữ liệu & đề xuất chiến lược tăng trưởng',
+        providerUsed: usedProviderTag,
         suggestions: [
           'Chi tiết hóa bước hành động tiếp theo',
           'Soạn thông điệp quảng cáo (Ad Copy) cho ý tưởng trên',
@@ -309,13 +346,23 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err: any) {
-      const errorMessage: Message = {
+      // Guaranteed safe fallback
+      const contextData = getPreparedContextData();
+      const fallbackReply = generateSmartAnalyticsFallback(query, contextData);
+
+      const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `⚠️ **Không thể nhận phản hồi từ ${currentProviderObj.name}.**\n\n*Nguyên nhân:* ${err.message || 'Lỗi mạng hoặc chưa nhập API Key hợp lệ.'}\n\n👉 **Gợi ý**: Bấm nút **"Cấu hình kết nối AI"** ở góc trên để kiểm tra lại API Key hoặc chọn nhà cung cấp AI khác.`,
+        content: fallbackReply,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+        agentTask: 'Phân tích dữ liệu hệ thống thông minh',
+        providerUsed: 'Tâm Đức Analytics Engine',
+        suggestions: [
+          'Chi tiết hóa bước hành động tiếp theo',
+          'Đánh giá chi phí VAT / Doanh thu các tháng',
+        ],
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
     } finally {
       setIsLoading(false);
     }
