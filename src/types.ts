@@ -2,6 +2,16 @@ import { RegionData } from './data/revenueData';
 
 export type MonthTab = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'overview';
 
+export type SidebarTab =
+  | 'overview'
+  | 'google_ads'
+  | 'leads_funnel'
+  | 'campaigns'
+  | 'sales_copilot'
+  | 'consultation'
+  | 'decision_board'
+  | 'innovation';
+
 export type DisplayUnit = 'full' | 'million' | 'billion';
 
 export type ChartType = 'bar' | 'horizontalBar' | 'area';

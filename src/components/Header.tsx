@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, DollarSign, TrendingUp, Building2, BarChart2, Lock, KeyRound, ShieldCheck, Users } from 'lucide-react';
+import { Calendar, DollarSign, TrendingUp, Building2, BarChart2, Lock, KeyRound, ShieldCheck, Users, Menu } from 'lucide-react';
 import { MonthTab, DisplayUnit } from '../types';
 
 interface HeaderProps {
@@ -10,6 +10,7 @@ interface HeaderProps {
   userRole?: 'admin' | 'staff' | null;
   onLockDashboard?: () => void;
   onChangePassword?: () => void;
+  onToggleSidebar?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   userRole,
   onLockDashboard,
   onChangePassword,
+  onToggleSidebar,
 }) => {
   const months: { id: MonthTab; label: string }[] = [
     { id: 1, label: 'Tháng 1' },
@@ -35,12 +37,21 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-50 shadow-md">
+    <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-md">
       <div className="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Top bar: Title & Controls */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-slate-800">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            {onToggleSidebar && (
+              <button
+                onClick={onToggleSidebar}
+                className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 hover:text-white transition-colors lg:hidden"
+                title="Mở menu tab công việc"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            )}
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
               <BarChart2 className="w-6 h-6 text-white" />
             </div>
             <div>
