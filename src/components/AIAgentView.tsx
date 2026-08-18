@@ -165,7 +165,7 @@ export const AIAgentView: React.FC<AIAgentViewProps> = ({ monthlyDatasets }) => 
     {
       id: 'welcome',
       role: 'assistant',
-      content: `Xin chào! Tôi là **Tâm Đức Smile AI Agent** 🤖 — Trợ lý Trí Tuệ Nhân Tạo Toàn Năng (Universal AI Copilot).
+      content: `Xin chào! Tôi là **Trợ Lý AI** 🤖 — Trợ lý Trí Tuệ Nhân Tạo Toàn Năng (Universal AI Copilot).
 
 Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** của bạn tương tự như ChatGPT / Claude / Gemini:
 * 🌐 **Trả lời mọi chủ đề**: Kiến thức tổng quát, đời sống, khoa học, viết lách, dịch thuật, lập trình, ý tưởng kinh doanh & marketing.
@@ -401,7 +401,7 @@ Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** c�
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                Tâm Đức Smile AI Agent
+                Trợ Lý AI
               </h2>
               {/* Provider Badge button that opens modal */}
               <button

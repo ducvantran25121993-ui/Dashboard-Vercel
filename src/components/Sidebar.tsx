@@ -107,7 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'ai_agent',
-      label: 'AI Agent Trợ Lý',
+      label: 'Trợ Lý AI',
       icon: Zap,
       badge: currentAiBadge.shortName,
       badgeColor: currentAiBadge.color,

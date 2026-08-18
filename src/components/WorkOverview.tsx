@@ -451,7 +451,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
                 </span>
               </div>
               <h4 className="text-base font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors flex items-center gap-1.5">
-                AI Agent Trợ Lý
+                Trợ Lý AI
                 <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               </h4>
               <p className="text-xs text-slate-400 mt-1 line-clamp-2">
