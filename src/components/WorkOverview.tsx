@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TrendingUp,
   DollarSign,
@@ -22,6 +22,7 @@ import {
 import { MonthDataset } from '../data/revenueData';
 import { DisplayUnit, SidebarTab } from '../types';
 import { isVietKieuRegion, formatVND, formatPercent } from '../utils/formatters';
+import { getActiveAIModelBadge } from '../utils/aiBadgeHelper';
 
 interface WorkOverviewProps {
   monthlyDatasets: MonthDataset[];
@@ -38,6 +39,15 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
   isLive,
   lastUpdated,
 }) => {
+  const [currentAiBadge, setCurrentAiBadge] = useState(() => getActiveAIModelBadge());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setCurrentAiBadge(getActiveAIModelBadge());
+    };
+    window.addEventListener('storage', handleUpdate);
+    return () => window.removeEventListener('storage', handleUpdate);
+  }, []);
   // Aggregate revenue (excluding Việt Kiều) & costs across all loaded months
   const totalRevenue = monthlyDatasets.reduce(
     (sum, m) =>
@@ -436,8 +446,8 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center shadow-lg shadow-cyan-500/10">
                   <Bot className="w-5 h-5 text-cyan-300" />
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 animate-pulse">
-                  Agent Pro
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-all ${currentAiBadge.color}`}>
+                  {currentAiBadge.shortName}
                 </span>
               </div>
               <h4 className="text-base font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors flex items-center gap-1.5">

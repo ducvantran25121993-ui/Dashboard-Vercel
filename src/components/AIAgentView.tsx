@@ -165,16 +165,15 @@ export const AIAgentView: React.FC<AIAgentViewProps> = ({ monthlyDatasets }) => 
     {
       id: 'welcome',
       role: 'assistant',
-      content: `Xin chào! Tôi là **Tâm Đức Smile AI Agent** 🤖 — Trợ lý điều hành & Tăng trưởng Performance Marketing thông minh của phòng khám.
+      content: `Xin chào! Tôi là **Tâm Đức Smile AI Agent** 🤖 — Trợ lý Trí Tuệ Nhân Tạo Toàn Năng (Universal AI Copilot).
 
-Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
-* 📊 **Phân tích hiệu suất doanh thu & chi phí Google Ads** theo từng tháng và khu vực.
-* 🎯 **Tối ưu chiến dịch Ads**: Giảm chi phí CPA, phân bổ ngân sách giờ vàng, nâng cao chất lượng Lead.
-* 🦷 **Chiến lược dịch vụ mũi nhọn**: Phễu khách Răng Sứ, Trồng Răng Implant Toàn Hàm & Khách Kiều Bào.
-* 📞 **Soạn kịch bản Telesales & Xử lý từ chối**: Tăng tỷ lệ khách đến phòng khám (Show-up Rate).
-* 🌐 **Đa mô hình AI**: Bạn có thể bấm nút **"Cấu hình kết nối AI"** góc trên bên phải để chuyển sang **OpenAI (ChatGPT), Anthropic Claude, DeepSeek, OpenRouter hoặc Local AI**.
+Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** của bạn tương tự như ChatGPT / Claude / Gemini:
+* 🌐 **Trả lời mọi chủ đề**: Kiến thức tổng quát, đời sống, khoa học, viết lách, dịch thuật, lập trình, ý tưởng kinh doanh & marketing.
+* 📊 **Phân tích số liệu thực tế**: Doanh thu, chi phí Google Ads (VAT), tỷ lệ chi phí/doanh thu các tháng của phòng khám Tâm Đức Smile.
+* 🦷 **Chuyên sâu nha khoa**: Chiến lược khách Việt Kiều, cấy ghép Implant toàn hàm, bọc răng sứ, xử lý từ chối Telesales.
+* ⚡ **Đa mô hình AI**: Bấm nút **"Kết Nối AI Khác"** để chuyển đổi giữa **Google Gemini, OpenAI ChatGPT (GPT-4o), Anthropic Claude, DeepSeek hoặc OpenRouter**.
 
-*Bạn muốn phân tích số liệu nào hay cần tôi lên kế hoạch gì hôm nay?*`,
+*Hãy đặt bất kỳ câu hỏi nào hoặc gõ chủ đề bạn đang quan tâm nhé!*`,
       timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
       suggestions: [
         '📊 Phân tích hiệu quả chi phí Ads Tháng 9 & đề xuất cắt giảm lãng phí',
@@ -205,6 +204,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
       localStorage.setItem('ai_agent_model', selectedModel);
       localStorage.setItem('ai_agent_custom_keys', JSON.stringify(apiKeys));
       localStorage.setItem('ai_agent_custom_base_url', customBaseUrl);
+      window.dispatchEvent(new Event('storage'));
     } catch {
       // ignore
     }
@@ -630,7 +630,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
-            placeholder={`Hỏi ${currentProviderObj.name} (${selectedModel}) về dữ liệu, chiến dịch Ads hoặc kế hoạch tăng trưởng...`}
+            placeholder={`Hỏi ${currentProviderObj.name} bất kỳ điều gì (kiến thức, viết lách, code, số liệu phòng khám, chiến lược Ads...)`}
             className="flex-1 px-4 py-3 bg-slate-950/80 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
             disabled={isLoading}
           />

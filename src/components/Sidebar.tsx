@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   TrendingUp,
@@ -16,6 +16,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { SidebarTab } from '../types';
+import { getActiveAIModelBadge } from '../utils/aiBadgeHelper';
 
 interface SidebarProps {
   activeTab: SidebarTab;
@@ -33,6 +34,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggle,
   userRole,
 }) => {
+  const [currentAiBadge, setCurrentAiBadge] = useState(() => getActiveAIModelBadge());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setCurrentAiBadge(getActiveAIModelBadge());
+    };
+    window.addEventListener('storage', handleUpdate);
+    return () => window.removeEventListener('storage', handleUpdate);
+  }, []);
+
   const navItems: {
     id: SidebarTab;
     label: string;
@@ -98,8 +109,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'ai_agent',
       label: 'AI Agent Trợ Lý',
       icon: Zap,
-      badge: 'Agent Pro',
-      badgeColor: 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border-cyan-400/40',
+      badge: currentAiBadge.shortName,
+      badgeColor: currentAiBadge.color,
     },
   ];
 
