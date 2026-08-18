@@ -257,7 +257,7 @@ export default function App() {
                     {activeSidebarTab === 'consultation' && 'Hội Thoại Tư Vấn'}
                     {activeSidebarTab === 'decision_board' && 'Decision Board'}
                     {activeSidebarTab === 'innovation' && 'Sáng Tạo & Đổi Mới'}
-                    {activeSidebarTab === 'ai_agent' && 'Tâm Đức Smile AI Agent — Trợ Lý Tăng Trưởng'}
+                    {activeSidebarTab === 'ai_agent' && 'AI — Trợ Lý Tăng Trưởng'}
                   </h1>
                   {userRole === 'admin' && (
                     <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hidden sm:inline-flex items-center gap-1">
