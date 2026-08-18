@@ -107,6 +107,66 @@ Hãy trả về danh sách các sáng kiến với định dạng JSON chuẩn (
   }
 });
 
+// API endpoint for AI Agent Assistant & Copilot with tools and system capabilities
+app.post('/api/ai-agent-chat', async (req, res) => {
+  try {
+    const { messages, contextData, agentPersona } = req.body;
+
+    let gemini: GoogleGenAI;
+    try {
+      gemini = getGeminiClient();
+    } catch (err: any) {
+      return res.status(500).json({
+        error: 'Chưa cấu hình API Key Gemini hoặc API Key không hợp lệ.',
+        details: err.message,
+      });
+    }
+
+    const systemInstruction = `
+Bạn là "Tâm Đức Smile AI Agent" — Trợ Lý Trí Tuệ Nhân Tạo & Điều Hành Tăng Trưởng Cấp Cao (Chief AI Officer & Growth Copilot) thuộc Hệ Thống Nha Khoa Thẩm Mỹ Tâm Đức Smile.
+
+VAI TRÒ & NĂNG LỰC CỦA BẠN:
+1. Phân tích số liệu thực tế: Doanh thu, Chi phí Google Ads (VAT), Tỷ lệ chi phí/Doanh thu (Cost Ratio), Số lượng Lead, Data dịch vụ (Răng Sứ, Implant, Toàn Hàm All-on-4/6, Khách Việt Kiều).
+2. Tư vấn chiến lược Performance Marketing: Đề xuất nhóm từ khóa, phân bổ ngân sách Smart Bidding theo giờ vàng, tối ưu CPA, cải thiện Landing Page.
+3. Hỗ trợ Sales & Tư vấn: Soạn kịch bản Telesales xử lý từ chối giá cao, phân loại lead VIP, phác đồ tư vấn khách Việt Kiều nhanh gọn.
+4. Đưa ra Kế Hoạch Hành Động (Action Plan) rõ ràng: Có số liệu mục tiêu, phân công người phụ trách, thời hạn và KPI đo lường.
+
+DỮ LIỆU THỰC TẾ HỆ THỐNG HIỆN TẠI (CONTEXT):
+${contextData ? JSON.stringify(contextData, null, 2) : 'Dữ liệu đang được đồng bộ trực tiếp từ Google Sheet phòng khám.'}
+
+PHONG CÁCH PHẢN HỒI:
+- Luôn chuyên nghiệp, tự tin, mang tư duy của Giám Đốc Điều Hành/Head of Growth nha khoa.
+- Trả lời bằng tiếng Việt gãy gọn, có cấu trúc markdown rõ ràng, sử dụng bullet points, bảng biểu hoặc checklist hành động khi cần.
+- Nếu được yêu cầu phân tích số liệu, hãy tính toán chính xác và chỉ ra nguyên nhân gốc rễ kèm giải pháp khắc phục.
+- Đưa ra các gợi ý tiếp theo (Follow-up Actions) để người dùng chọn nhanh.
+`;
+
+    // Format conversation history for Gemini
+    const formattedContents = (messages || []).map((msg: { role: string; content: string }) => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }],
+    }));
+
+    const response = await gemini.models.generateContent({
+      model: 'gemini-3.7-flash',
+      contents: formattedContents,
+      config: {
+        systemInstruction,
+        temperature: 0.7,
+      },
+    });
+
+    const reply = response.text || 'Xin lỗi, tôi chưa thể đưa ra phản hồi lúc này.';
+    return res.json({ success: true, reply });
+  } catch (error: any) {
+    console.error('Error in AI Agent Chat:', error);
+    return res.status(500).json({
+      error: 'Không thể xử lý yêu cầu trò chuyện AI lúc này.',
+      details: error.message,
+    });
+  }
+});
+
 // Vite middleware in dev or static serving in prod
 async function start() {
   if (process.env.NODE_ENV !== 'production') {

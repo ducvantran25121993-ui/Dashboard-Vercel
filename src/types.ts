@@ -10,7 +10,8 @@ export type SidebarTab =
   | 'sales_copilot'
   | 'consultation'
   | 'decision_board'
-  | 'innovation';
+  | 'innovation'
+  | 'ai_agent';
 
 export type DisplayUnit = 'full' | 'million' | 'billion';
 

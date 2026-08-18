@@ -5,6 +5,7 @@ import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { WorkOverview } from './components/WorkOverview';
 import { InnovationView } from './components/InnovationView';
+import { AIAgentView } from './components/AIAgentView';
 import { LeadsFunnelView } from './components/LeadsFunnelView';
 import { CampaignsView } from './components/CampaignsView';
 import { SalesCopilotView, ConsultationView, DecisionBoardView } from './components/ExtraViews';
@@ -256,6 +257,7 @@ export default function App() {
                     {activeSidebarTab === 'consultation' && 'Hội Thoại Tư Vấn'}
                     {activeSidebarTab === 'decision_board' && 'Decision Board'}
                     {activeSidebarTab === 'innovation' && 'Sáng Tạo & Đổi Mới'}
+                    {activeSidebarTab === 'ai_agent' && 'Tâm Đức Smile AI Agent — Trợ Lý Tăng Trưởng'}
                   </h1>
                   {userRole === 'admin' && (
                     <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hidden sm:inline-flex items-center gap-1">
@@ -348,6 +350,10 @@ export default function App() {
           {activeSidebarTab === 'decision_board' && <DecisionBoardView />}
 
           {activeSidebarTab === 'innovation' && <InnovationView />}
+
+          {activeSidebarTab === 'ai_agent' && (
+            <AIAgentView monthlyDatasets={monthlyDatasets} />
+          )}
 
           {activeSidebarTab === 'google_ads' && (
             <>

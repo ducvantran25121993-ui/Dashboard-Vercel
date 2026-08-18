@@ -94,6 +94,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: '6 Sáng kiến',
       badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
     },
+    {
+      id: 'ai_agent',
+      label: 'AI Agent Trợ Lý',
+      icon: Zap,
+      badge: 'Agent Pro',
+      badgeColor: 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border-cyan-400/40',
+    },
   ];
 
   return (
@@ -127,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
                 </span>
                 <span className="text-[11px] text-slate-400 truncate">
-                  Marketing & Sales Hub
+                  Dashboard Marketing
                 </span>
               </div>
             )}
@@ -228,7 +235,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Footer info in sidebar */}
         {isOpen && (
           <div className="p-3 border-t border-slate-800/80 text-[11px] text-slate-500 flex items-center justify-between">
-            <span>Phiên bản v2.6</span>
+            <span></span>
             <span className="text-emerald-400 font-semibold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
               Trực tuyến

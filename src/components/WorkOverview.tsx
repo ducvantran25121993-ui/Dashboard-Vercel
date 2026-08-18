@@ -16,6 +16,8 @@ import {
   Calendar,
   Flame,
   Award,
+  Bot,
+  Zap,
 } from 'lucide-react';
 import { MonthDataset } from '../data/revenueData';
 import { DisplayUnit, SidebarTab } from '../types';
@@ -315,7 +317,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2">
           {/* Card 1: Google Ads */}
           <div
             onClick={() => onNavigateToTab('google_ads')}
@@ -419,7 +421,35 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
               </p>
             </div>
             <div className="mt-4 flex items-center text-xs font-semibold text-indigo-400 group-hover:translate-x-1 transition-transform">
-              <span>Mở phòng thử nghiệm sáng kiến</span>
+              <span>Mở phòng thử nghiệm</span>
+              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+            </div>
+          </div>
+
+          {/* Card 5: AI Agent Copilot */}
+          <div
+            onClick={() => onNavigateToTab('ai_agent')}
+            className="group p-4 rounded-xl bg-gradient-to-b from-slate-800/80 to-indigo-950/40 hover:bg-slate-800 border border-indigo-500/30 hover:border-cyan-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center shadow-lg shadow-cyan-500/10">
+                  <Bot className="w-5 h-5 text-cyan-300" />
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 animate-pulse">
+                  Agent Pro
+                </span>
+              </div>
+              <h4 className="text-base font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors flex items-center gap-1.5">
+                AI Agent Trợ Lý
+                <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              </h4>
+              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+                Chat trực tiếp với AI thông minh phân tích số liệu thực tế, tối ưu chi phí Ads & kịch bản Telesales.
+              </p>
+            </div>
+            <div className="mt-4 flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform">
+              <span>Trò chuyện cùng AI Agent</span>
               <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
             </div>
           </div>
