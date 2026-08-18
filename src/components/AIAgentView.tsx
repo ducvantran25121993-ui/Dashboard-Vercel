@@ -292,6 +292,7 @@ Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** c�
       }
 
       // Step B: If no direct reply, attempt server route /api/ai-agent-chat
+      let serverErrorMsg = '';
       if (!replyText) {
         try {
           const response = await fetch('/api/ai-agent-chat', {
@@ -308,26 +309,33 @@ Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** c�
             }),
           });
 
-          if (response.ok) {
-            const textResponse = await response.text();
-            try {
-              const data = JSON.parse(textResponse);
-              if (data.reply) {
-                replyText = data.reply;
-              }
-            } catch {
-              // Not JSON
+          const textResponse = await response.text();
+          try {
+            const data = JSON.parse(textResponse);
+            if (data.reply) {
+              replyText = data.reply;
+              usedProviderTag = currentProviderObj.name + ` (${selectedModel})`;
+            } else if (data.error) {
+              serverErrorMsg = data.error;
             }
+          } catch {
+            serverErrorMsg = `Máy chủ phản hồi mã ${response.status}: ${textResponse.slice(0, 100)}`;
           }
-        } catch (serverErr) {
+        } catch (serverErr: any) {
           console.warn('Server endpoint error:', serverErr);
+          serverErrorMsg = serverErr.message || 'Lỗi mạng khi kết nối máy chủ AI';
         }
       }
 
-      // Step C: Fallback to high-precision built-in Dental Growth Analytics Engine
+      // Step C: If still no reply and there was a specific question, show helpful error guidance instead of fake template
       if (!replyText) {
-        replyText = generateSmartAnalyticsFallback(query, contextData);
-        usedProviderTag = 'Tâm Đức Analytics Engine (Auto-Active)';
+        if (serverErrorMsg) {
+          replyText = `⚠️ **Không thể kết nối đến ${currentProviderObj.name} (${selectedModel}).**\n\n*Chi tiết lỗi:* ${serverErrorMsg}\n\n👉 **Cách khắc phục:**\n1. Bấm nút **"Cấu hình kết nối AI"** ở góc trên bên phải.\n2. Chọn mô hình AI hoặc nhập **API Key** riêng (Google Gemini, OpenAI, Claude hoặc DeepSeek) để AI trả lời trực tiếp.\n3. Hoặc thử chuyển sang mô hình **Gemini 2.5 Flash** / **GPT-4o mini**.`;
+          usedProviderTag = 'Hệ thống AI (Thông báo kết nối)';
+        } else {
+          replyText = generateSmartAnalyticsFallback(query, contextData);
+          usedProviderTag = 'Tâm Đức Analytics Engine';
+        }
       }
 
       const assistantMessage: Message = {

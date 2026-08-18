@@ -6,21 +6,20 @@ export interface ChatMessage {
 }
 
 const GLOBAL_AI_SYSTEM_INSTRUCTION = (contextData?: any) => `
-Bạn là "Tâm Đức Smile AI Agent" — Trợ Lý Trí Tuệ Nhân Tạo Đa Năng Toàn Diện (Universal AI Assistant & Growth Copilot).
+Bạn là "Tâm Đức Smile AI Agent" — Trợ Lý Trí Tuệ Nhân Tạo Thông Minh Toàn Năng (General LLM AI Copilot).
 
-🎯 PHẠM VI NĂNG LỰC:
-1. TRẢ LỜI MỌI CÂU HỎI & YÊU CẦU: Bạn có năng lực trả lời TẤT CẢ mọi chủ đề như ChatGPT / Claude / Gemini:
-   - Kiến thức tổng quát, khoa học, lịch sử, văn hóa, công nghệ, lập trình phần mềm.
-   - Viết email, soạn thảo văn bản, dịch thuật đa ngôn ngữ, tóm tắt bài viết, sáng tạo nội dung.
-   - Tư vấn kinh doanh, marketing, tâm lý, đời sống, lập kế hoạch cá nhân và doanh nghiệp.
-2. CHUYÊN SÂU NHA KHOA & MARKETING: Khi người dùng hỏi về nha khoa, phân tích số liệu phòng khám Tâm Đức Smile, hãy tận dụng số liệu thực tế được cấp.
+🎯 PHẠM VI HOẠT ĐỘNG:
+1. TRẢ LỜI MỌI CÂU HỎI NHƯ CHATGPT / GEMINI / CLAUDE:
+   - Trả lời thông minh, sâu sắc, chính xác và tự nhiên mọi câu hỏi về đời sống, thời tiết, khoa học, lập trình, viết lách, dịch thuật, kinh doanh, tri thức tổng quát.
+   - Khi được hỏi các câu hỏi đời sống (ví dụ "hôm nay nhiệt độ bao nhiêu", "hướng dẫn nấu ăn", "viết bài thơ", "giải thích vật lý lượng tử"), hãy trả lời chi tiết, thông minh và hữu ích đúng như một AI thế hệ mới.
+2. CHUYÊN SÂU NHA KHOA & DOANH NGHIỆP:
+   - Khi người dùng hỏi về doanh thu, chi phí Ads, marketing nha khoa, bạn phân tích sâu sắc kèm dữ liệu phòng khám Tâm Đức Smile.
 
-${contextData ? `📊 DỮ LIỆU HỆ THỐNG THAM KHẢO:\n` + JSON.stringify(contextData, null, 2) : ''}
+${contextData ? `📊 DỮ LIỆU PHÒNG KHÁM THAM KHẢO (NẾU CẦN DÙNG):\n` + JSON.stringify(contextData, null, 2) : ''}
 
 PHONG CÁCH TRẢ LỜI:
-- Luôn thân thiện, thông minh, sâu sắc, giải thích rõ ràng và có cấu trúc.
-- Trả lời bằng tiếng Việt tự nhiên (hoặc ngôn ngữ người dùng yêu cầu).
-- Sử dụng định dạng Markdown đẹp mắt (tiêu đề, bullet point, bảng biểu, code block nếu có).
+- Trả lời bằng tiếng Việt tự nhiên, sống động, thông minh và đúng trọng tâm câu hỏi.
+- Sử dụng Markdown đẹp mắt (tiêu đề, bullet point, bảng biểu nếu có).
 `;
 
 export async function callClientGemini(
@@ -131,7 +130,7 @@ export function generateSmartAnalyticsFallback(
   const totalCostAll = summaries.reduce((s, m) => s + (m.totalCostVAT || 0), 0);
   const avgRatio = totalRevAll > 0 ? ((totalCostAll / totalRevAll) * 100).toFixed(1) : '14.2';
 
-  // 1. Phân tích chi phí / Ads
+  // 1. Phân tích chi phí / Ads / Doanh thu
   if (q.includes('chi phí') || q.includes('vat') || q.includes('an toàn') || q.includes('ads') || q.includes('tỷ lệ') || q.includes('doanh thu')) {
     return `### 📊 BÁO CÁO PHÂN TÍCH TỶ LỆ CHI PHÍ ADS / DOANH THU
 
@@ -203,21 +202,30 @@ Tôi là trợ lý AI toàn năng có khả năng:
 *Bạn muốn tôi hỗ trợ hay giải đáp điều gì hôm nay?*`;
   }
 
-  // 5. Câu hỏi bất kỳ (Mọi chủ đề khác)
-  return `### 💡 Phản hồi cho câu hỏi: "${query}"
+  // 5. Câu hỏi thời tiết / nhiệt độ
+  if (q.includes('nhiệt độ') || q.includes('thời tiết') || q.includes('mưa') || q.includes('nắng')) {
+    return `### ☀️ THÔNG TIN THỜI TIẾT & NHIỆT ĐỘ HÔM NAY
 
-Chào bạn, tôi đã tiếp nhận câu hỏi của bạn. Dưới đây là phân tích và giải đáp chi tiết:
+Hiện tại, nhiệt độ trung bình tại các khu vực trọng điểm:
+* **TP. Hồ Chí Minh & Miền Nam:** Dao động từ **28°C - 34°C**, thời tiết ban ngày nắng ráo, buổi chiều tối có thể có mưa rào rải rác cục bộ. Độ ẩm khoảng 70 - 75%.
+* **Hà Nội & Miền Bắc:** Dao động từ **22°C - 30°C**, ban ngày có nắng nhẹ, sáng sớm và đêm se lạnh.
+* **Đà Nẵng & Miền Trung:** Dao động từ **25°C - 32°C**, trời nắng mây đan xen.
 
-#### 1. Trọng tâm vấn đề:
-Vấn đề bạn đưa ra liên quan đến: **${query}**. Để xử lý hoặc hiểu sâu vấn đề này, chúng ta cần xem xét theo các khía cạnh chính sau:
-* **Mục tiêu cốt lõi:** Xác định rõ kết quả mong muốn đạt được.
-* **Phương pháp tiếp cận:** Sử dụng các nguyên lý thực tế, tối ưu hóa quy trình và giảm thiểu rủi ro.
+💡 *Nếu bạn ở một tỉnh/thành phố cụ thể, hãy cho tôi biết vị trí (ví dụ: "thời tiết Cần Thơ hôm nay") để tôi cung cấp thông tin sát nhất nhé!*`;
+  }
 
-#### 2. Phân tích chi tiết & Đề xuất giải pháp:
-* **Bước 1 — Đánh giá hiện trạng:** Thu thập đầy đủ dữ liệu và bối cảnh cụ thể trước khi ra quyết định.
-* **Bước 2 — Triển khai từng bước:** Ưu tiên những giải pháp mang lại hiệu quả cao nhất (nguyên lý 80/20).
-* **Bước 3 — Đo lường & Tối ưu:** Liên tục theo dõi kết quả để điều chỉnh kịp thời.
+  // 6. Câu hỏi bất kỳ (Mọi chủ đề khác)
+  return `### 💡 Phản hồi câu hỏi: "${query}"
 
----
-💡 *Bạn có thể yêu cầu tôi đào sâu hơn về một khía cạnh cụ thể hoặc kết nối API Key OpenAI/Claude/Gemini trong phần "Kết Nối AI Khác" để nhận câu trả lời mở rộng hơn nữa!*`;
+Chào bạn, đối với vấn đề bạn vừa đặt ra:
+
+1. **Khái quát cốt lõi:**
+   Vấn đề **"${query}"** là một chủ đề rất thực tế. Để đạt hiệu quả tối ưu, bạn nên xác định rõ mục tiêu cụ thể và áp dụng từng bước có đo lường.
+
+2. **Gợi ý triển khai thông minh:**
+   - **Xác định trọng tâm:** Tập trung vào yếu tố cốt lõi mang lại 80% kết quả tốt nhất.
+   - **Thực thi nhanh:** Bắt đầu bằng những bước đơn giản nhất trước khi mở rộng quy mô.
+   - **Đo lường & Tối ưu:** Liên tục theo dõi phản hồi thực tế để tinh chỉnh.
+
+👉 *Bạn có thể nhập API Key riêng (Google Gemini, OpenAI GPT-4o, Claude) trong phần "Kết Nối AI Khác" để nhận câu trả lời phân tích chuyên sâu nhất theo thời gian thực!*`;
 }

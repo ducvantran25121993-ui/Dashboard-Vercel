@@ -249,16 +249,44 @@ PHONG CÁCH TRẢ LỜI:
       parts: [{ text: msg.content }],
     }));
 
-    const response = await gemini.models.generateContent({
-      model: model || 'gemini-3.7-flash',
-      contents: formattedContents,
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-      },
-    });
+    let reply = '';
+    const preferredModel = model || 'gemini-3.7-flash';
 
-    const reply = response.text || 'Xin lỗi, tôi chưa thể đưa ra phản hồi lúc này.';
+    try {
+      const response = await gemini.models.generateContent({
+        model: preferredModel,
+        contents: formattedContents,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        },
+      });
+      reply = response.text || '';
+    } catch (modelErr: any) {
+      console.warn(`Error generating content with model ${preferredModel}:`, modelErr.message);
+      // Try fallback to gemini-2.5-flash
+      if (preferredModel !== 'gemini-2.5-flash') {
+        try {
+          const fallbackRes = await gemini.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: formattedContents,
+            config: {
+              systemInstruction,
+              temperature: 0.7,
+            },
+          });
+          reply = fallbackRes.text || '';
+        } catch (fErr: any) {
+          throw new Error(`Cả 2 mô hình (${preferredModel} và gemini-2.5-flash) đều lỗi: ${fErr.message}`);
+        }
+      } else {
+        throw modelErr;
+      }
+    }
+
+    if (!reply) {
+      reply = 'Xin lỗi, tôi chưa thể đưa ra phản hồi lúc này.';
+    }
     return res.json({ success: true, reply, providerUsed: 'gemini' });
   } catch (error: any) {
     console.error('Error in AI Agent Chat:', error);
