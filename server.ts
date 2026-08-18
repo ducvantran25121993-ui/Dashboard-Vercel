@@ -110,17 +110,7 @@ Hãy trả về danh sách các sáng kiến với định dạng JSON chuẩn (
 // API endpoint for AI Agent Assistant & Copilot with tools and system capabilities
 app.post('/api/ai-agent-chat', async (req, res) => {
   try {
-    const { messages, contextData, agentPersona } = req.body;
-
-    let gemini: GoogleGenAI;
-    try {
-      gemini = getGeminiClient();
-    } catch (err: any) {
-      return res.status(500).json({
-        error: 'Chưa cấu hình API Key Gemini hoặc API Key không hợp lệ.',
-        details: err.message,
-      });
-    }
+    const { messages, contextData, agentPersona, provider = 'gemini', model, customApiKey, customBaseUrl } = req.body;
 
     const systemInstruction = `
 Bạn là "Tâm Đức Smile AI Agent" — Trợ Lý Trí Tuệ Nhân Tạo & Điều Hành Tăng Trưởng Cấp Cao (Chief AI Officer & Growth Copilot) thuộc Hệ Thống Nha Khoa Thẩm Mỹ Tâm Đức Smile.
@@ -141,14 +131,123 @@ PHONG CÁCH PHẢN HỒI:
 - Đưa ra các gợi ý tiếp theo (Follow-up Actions) để người dùng chọn nhanh.
 `;
 
-    // Format conversation history for Gemini
+    // 1. OPENAI (ChatGPT GPT-4o, o3-mini) or Compatible API (DeepSeek, Groq, OpenRouter, Custom)
+    if (provider === 'openai' || provider === 'deepseek' || provider === 'custom') {
+      const apiKey = customApiKey || process.env.OPENAI_API_KEY || process.env.DEEPSEEK_API_KEY;
+      if (!apiKey) {
+        return res.status(400).json({
+          error: `Chưa có API Key cho ${provider.toUpperCase()}. Vui lòng nhập API Key trong phần "Kết Nối AI Khác" trên giao diện.`,
+        });
+      }
+
+      let endpointUrl = 'https://api.openai.com/v1/chat/completions';
+      if (provider === 'deepseek') {
+        endpointUrl = 'https://api.deepseek.com/chat/completions';
+      } else if (provider === 'custom' && customBaseUrl) {
+        endpointUrl = customBaseUrl.endsWith('/chat/completions')
+          ? customBaseUrl
+          : `${customBaseUrl.replace(/\/+$/, '')}/chat/completions`;
+      }
+
+      const openAiMessages = [
+        { role: 'system', content: systemInstruction },
+        ...(messages || []).map((m: { role: string; content: string }) => ({
+          role: m.role === 'user' ? 'user' : 'assistant',
+          content: m.content,
+        })),
+      ];
+
+      const defaultModel =
+        provider === 'deepseek'
+          ? 'deepseek-chat'
+          : provider === 'openai'
+          ? (model || 'gpt-4o')
+          : (model || 'gpt-4o-mini');
+
+      const response = await fetch(endpointUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: model || defaultModel,
+          messages: openAiMessages,
+          temperature: 0.7,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return res.status(response.status).json({
+          error: `Lỗi từ ${provider.toUpperCase()}: ${errorText}`,
+        });
+      }
+
+      const resData: any = await response.json();
+      const reply = resData.choices?.[0]?.message?.content || 'Không có phản hồi từ mô hình AI.';
+      return res.json({ success: true, reply, providerUsed: provider });
+    }
+
+    // 2. ANTHROPIC CLAUDE
+    if (provider === 'claude') {
+      const apiKey = customApiKey || process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        return res.status(400).json({
+          error: 'Chưa có API Key Anthropic Claude. Vui lòng nhập API Key trong phần "Kết Nối AI Khác".',
+        });
+      }
+
+      const claudeMessages = (messages || []).map((m: { role: string; content: string }) => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.content,
+      }));
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: model || 'claude-3-5-sonnet-20241022',
+          max_tokens: 4096,
+          system: systemInstruction,
+          messages: claudeMessages,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return res.status(response.status).json({
+          error: `Lỗi từ Anthropic Claude: ${errorText}`,
+        });
+      }
+
+      const resData: any = await response.json();
+      const reply = resData.content?.[0]?.text || 'Không có phản hồi từ Claude.';
+      return res.json({ success: true, reply, providerUsed: 'claude' });
+    }
+
+    // 3. DEFAULT: GOOGLE GEMINI
+    let gemini: GoogleGenAI;
+    try {
+      gemini = getGeminiClient();
+    } catch (err: any) {
+      return res.status(500).json({
+        error: 'Chưa cấu hình API Key Gemini hoặc API Key không hợp lệ.',
+        details: err.message,
+      });
+    }
+
     const formattedContents = (messages || []).map((msg: { role: string; content: string }) => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }],
     }));
 
     const response = await gemini.models.generateContent({
-      model: 'gemini-3.7-flash',
+      model: model || 'gemini-3.7-flash',
       contents: formattedContents,
       config: {
         systemInstruction,
@@ -157,7 +256,7 @@ PHONG CÁCH PHẢN HỒI:
     });
 
     const reply = response.text || 'Xin lỗi, tôi chưa thể đưa ra phản hồi lúc này.';
-    return res.json({ success: true, reply });
+    return res.json({ success: true, reply, providerUsed: 'gemini' });
   } catch (error: any) {
     console.error('Error in AI Agent Chat:', error);
     return res.status(500).json({

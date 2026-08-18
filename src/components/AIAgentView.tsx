@@ -20,9 +20,88 @@ import {
   ChevronRight,
   User,
   Flame,
-  FileText
+  FileText,
+  Settings2,
+  SlidersHorizontal,
+  KeyRound,
+  Globe,
+  CheckCheck,
+  ExternalLink,
+  Layers
 } from 'lucide-react';
 import { MonthDataset } from '../data/revenueData';
+
+export type AIProvider = 'gemini' | 'openai' | 'claude' | 'deepseek' | 'custom';
+
+interface AIProviderConfig {
+  id: AIProvider;
+  name: string;
+  badge: string;
+  badgeColor: string;
+  models: string[];
+  defaultModel: string;
+  apiKeyPlaceholder: string;
+  description: string;
+  docUrl: string;
+}
+
+const AI_PROVIDERS: AIProviderConfig[] = [
+  {
+    id: 'gemini',
+    name: 'Google Gemini AI',
+    badge: 'Mặc định có sẵn',
+    badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/30',
+    models: ['gemini-3.7-flash', 'gemini-2.5-pro', 'gemini-2.5-flash'],
+    defaultModel: 'gemini-3.7-flash',
+    apiKeyPlaceholder: 'Đã cấu hình server-side (Có thể nhập key riêng)',
+    description: 'Mô hình siêu tốc độ cao & suy luận sâu từ Google DeepMind.',
+    docUrl: 'https://aistudio.google.com/app/apikey',
+  },
+  {
+    id: 'openai',
+    name: 'OpenAI (ChatGPT)',
+    badge: 'GPT-4o / o3-mini',
+    badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30',
+    models: ['gpt-4o', 'gpt-4o-mini', 'o3-mini', 'gpt-4-turbo'],
+    defaultModel: 'gpt-4o',
+    apiKeyPlaceholder: 'sk-proj-... hoặc sk-...',
+    description: 'Mô hình ChatGPT hàng đầu thế giới về phân tích văn bản & logic.',
+    docUrl: 'https://platform.openai.com/api-keys',
+  },
+  {
+    id: 'claude',
+    name: 'Anthropic Claude',
+    badge: 'Claude 3.5 Sonnet',
+    badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-400/30',
+    models: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022'],
+    defaultModel: 'claude-3-5-sonnet-20241022',
+    apiKeyPlaceholder: 'sk-ant-api03-...',
+    description: 'Chuyên gia viết kịch bản, hành văn tự nhiên & tư duy chiến lược xuất sắc.',
+    docUrl: 'https://console.anthropic.com/settings/keys',
+  },
+  {
+    id: 'deepseek',
+    name: 'DeepSeek AI',
+    badge: 'DeepSeek-V3 / R1',
+    badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-400/30',
+    models: ['deepseek-chat', 'deepseek-reasoner'],
+    defaultModel: 'deepseek-chat',
+    apiKeyPlaceholder: 'sk-...',
+    description: 'Mô hình suy luận mã nguồn mở chi phí tối ưu hàng đầu hiện nay.',
+    docUrl: 'https://platform.deepseek.com/api_keys',
+  },
+  {
+    id: 'custom',
+    name: 'Custom / OpenRouter / Groq',
+    badge: 'Tùy chỉnh endpoint',
+    badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-400/30',
+    models: ['custom-model'],
+    defaultModel: 'custom-model',
+    apiKeyPlaceholder: 'API Key của nhà cung cấp',
+    description: 'Kết nối bất kỳ máy chủ LLM nào hỗ trợ chuẩn OpenAI API tương thích.',
+    docUrl: 'https://openrouter.ai/keys',
+  },
+];
 
 interface Message {
   id: string;
@@ -30,6 +109,7 @@ interface Message {
   content: string;
   timestamp: string;
   agentTask?: string;
+  providerUsed?: string;
   suggestions?: string[];
 }
 
@@ -38,6 +118,43 @@ interface AIAgentViewProps {
 }
 
 export const AIAgentView: React.FC<AIAgentViewProps> = ({ monthlyDatasets }) => {
+  // Provider settings state (persisted in localStorage)
+  const [selectedProvider, setSelectedProvider] = useState<AIProvider>(() => {
+    try {
+      return (localStorage.getItem('ai_agent_provider') as AIProvider) || 'gemini';
+    } catch {
+      return 'gemini';
+    }
+  });
+
+  const [selectedModel, setSelectedModel] = useState<string>(() => {
+    try {
+      return localStorage.getItem('ai_agent_model') || 'gemini-3.7-flash';
+    } catch {
+      return 'gemini-3.7-flash';
+    }
+  });
+
+  const [apiKeys, setApiKeys] = useState<{ [key in AIProvider]?: string }>(() => {
+    try {
+      const cached = localStorage.getItem('ai_agent_custom_keys');
+      return cached ? JSON.parse(cached) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const [customBaseUrl, setCustomBaseUrl] = useState<string>(() => {
+    try {
+      return localStorage.getItem('ai_agent_custom_base_url') || 'https://api.openai.com/v1';
+    } catch {
+      return 'https://api.openai.com/v1';
+    }
+  });
+
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [saveSuccessNotice, setSaveSuccessNotice] = useState(false);
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -49,6 +166,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
 * 🎯 **Tối ưu chiến dịch Ads**: Giảm chi phí CPA, phân bổ ngân sách giờ vàng, nâng cao chất lượng Lead.
 * 🦷 **Chiến lược dịch vụ mũi nhọn**: Phễu khách Răng Sứ, Trồng Răng Implant Toàn Hàm & Khách Kiều Bào.
 * 📞 **Soạn kịch bản Telesales & Xử lý từ chối**: Tăng tỷ lệ khách đến phòng khám (Show-up Rate).
+* 🌐 **Đa mô hình AI**: Bạn có thể bấm nút **"Cấu hình kết nối AI"** góc trên bên phải để chuyển sang **OpenAI (ChatGPT), Anthropic Claude, DeepSeek, OpenRouter hoặc Local AI**.
 
 *Bạn muốn phân tích số liệu nào hay cần tôi lên kế hoạch gì hôm nay?*`,
       timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
@@ -74,6 +192,22 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  const handleSaveSettings = () => {
+    try {
+      localStorage.setItem('ai_agent_provider', selectedProvider);
+      localStorage.setItem('ai_agent_model', selectedModel);
+      localStorage.setItem('ai_agent_custom_keys', JSON.stringify(apiKeys));
+      localStorage.setItem('ai_agent_custom_base_url', customBaseUrl);
+    } catch {
+      // ignore
+    }
+    setSaveSuccessNotice(true);
+    setTimeout(() => {
+      setSaveSuccessNotice(false);
+      setIsSettingsOpen(false);
+    }, 1200);
+  };
 
   // Handle Copy text
   const handleCopy = (id: string, text: string) => {
@@ -105,6 +239,8 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
     };
   };
 
+  const currentProviderObj = AI_PROVIDERS.find((p) => p.id === selectedProvider) || AI_PROVIDERS[0];
+
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputQuery).trim();
     if (!query || isLoading) return;
@@ -135,6 +271,10 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
           messages: historyPayload,
           contextData,
           agentPersona: selectedPresetMode,
+          provider: selectedProvider,
+          model: selectedModel,
+          customApiKey: apiKeys[selectedProvider] || '',
+          customBaseUrl: selectedProvider === 'custom' ? customBaseUrl : undefined,
         }),
       });
 
@@ -150,6 +290,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
         content: data.reply,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
         agentTask: 'Tự động tổng hợp số liệu & đề xuất kế hoạch thực thi',
+        providerUsed: currentProviderObj.name + ` (${selectedModel})`,
         suggestions: [
           'Chi tiết hóa bước hành động tiếp theo',
           'Soạn thông điệp quảng cáo (Ad Copy) cho ý tưởng trên',
@@ -162,7 +303,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `⚠️ **Không thể kết nối đến AI Agent lúc này.**\n\n*Chi tiết:* ${err.message || 'Lỗi mạng hoặc hệ thống đang bận.'}\n\n*Vui lòng thử lại hoặc chọn câu hỏi gợi ý khác.*`,
+        content: `⚠️ **Không thể nhận phản hồi từ ${currentProviderObj.name}.**\n\n*Nguyên nhân:* ${err.message || 'Lỗi mạng hoặc chưa nhập API Key hợp lệ.'}\n\n👉 **Gợi ý**: Bấm nút **"Cấu hình kết nối AI"** ở góc trên để kiểm tra lại API Key hoặc chọn nhà cung cấp AI khác.`,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -176,7 +317,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
       {
         id: 'welcome-reset',
         role: 'assistant',
-        content: 'Đã làm mới phiên làm việc. Tôi sẵn sàng nhận lệnh mới từ bạn!',
+        content: `Đã làm mới phiên làm việc với mô hình **${currentProviderObj.name} (${selectedModel})**. Tôi sẵn sàng nhận lệnh mới từ bạn!`,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
           '📊 Đánh giá tổng quan hiệu suất các tháng',
@@ -188,7 +329,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] min-h-[600px] bg-slate-950/60 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl">
+    <div className="flex flex-col h-[calc(100vh-140px)] min-h-[600px] bg-slate-950/60 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl relative">
       {/* 1. Header of AI Agent Tab */}
       <div className="px-6 py-4 bg-slate-900/90 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
@@ -199,13 +340,21 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
             <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900 ring-2 ring-emerald-500/30 animate-pulse" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
                 Tâm Đức Smile AI Agent
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border border-cyan-400/30">
-                  Gemini 3.7 Pro Agent
-                </span>
               </h2>
+              {/* Provider Badge button that opens modal */}
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border transition-all flex items-center gap-1.5 hover:scale-105 ${currentProviderObj.badgeColor}`}
+                title="Bấm để chuyển đổi mô hình hoặc cài đặt API Key"
+              >
+                <Sparkles className="w-3 h-3" />
+                <span>{currentProviderObj.name}</span>
+                <span className="opacity-75 text-[10px]">({selectedModel})</span>
+                <SlidersHorizontal className="w-3 h-3 ml-0.5 opacity-80" />
+              </button>
             </div>
             <p className="text-xs text-slate-400">
               Trợ lý Điều hành Tăng trưởng & Phân tích Dữ liệu Marketing Thời gian thực
@@ -248,6 +397,16 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
             </button>
           </div>
 
+          {/* Connect Other AI Button */}
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 hover:border-cyan-400 transition-all text-xs font-bold flex items-center gap-1.5 shadow-sm"
+            title="Mở cấu hình kết nối các mô hình AI khác (ChatGPT, Claude, DeepSeek)"
+          >
+            <Settings2 className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Kết Nối AI Khác</span>
+          </button>
+
           <button
             onClick={handleClearHistory}
             className="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700/60 transition-colors"
@@ -281,10 +440,17 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
                 }`}
               >
                 {/* Agent Header Tag */}
-                {!isUser && message.agentTask && (
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-cyan-400 mb-2 pb-2 border-b border-slate-800">
-                    <Zap className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
-                    <span>{message.agentTask}</span>
+                {!isUser && (
+                  <div className="flex items-center justify-between gap-2 text-[11px] font-semibold text-cyan-400 mb-2 pb-2 border-b border-slate-800">
+                    <div className="flex items-center gap-1.5">
+                      <Zap className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
+                      <span>{message.agentTask || 'AI Phân tích & Tư vấn'}</span>
+                    </div>
+                    {message.providerUsed && (
+                      <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
+                        {message.providerUsed}
+                      </span>
+                    )}
                   </div>
                 )}
 
@@ -360,7 +526,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
               <span className="text-xs text-slate-400 font-medium">
-                AI Agent đang phân tích số liệu phòng khám & tạo giải pháp tối ưu...
+                {currentProviderObj.name} đang phân tích số liệu phòng khám & tạo giải pháp tối ưu...
               </span>
             </div>
           </div>
@@ -408,7 +574,7 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
-            placeholder="Nhập câu hỏi, yêu cầu phân tích số liệu hoặc nhờ AI soạn chiến lược..."
+            placeholder={`Hỏi ${currentProviderObj.name} (${selectedModel}) về dữ liệu, chiến dịch Ads hoặc kế hoạch tăng trưởng...`}
             className="flex-1 px-4 py-3 bg-slate-950/80 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
             disabled={isLoading}
           />
@@ -423,6 +589,194 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
           </button>
         </form>
       </div>
+
+      {/* 4. MODAL: Cấu Hình Kết Nối Với Các AI Khác */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-2xl w-full p-6 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                  <SlidersHorizontal className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                    Cấu Hình Kết Nối Các Nhà Cung Cấp AI
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Lựa chọn hoặc đổi mô hình AI để xử lý bài toán tăng trưởng phòng khám
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsSettingsOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-5 pr-1">
+              {/* Provider Selection Cards */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">
+                  1. Chọn Nhà Cung Cấp AI (AI Provider):
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {AI_PROVIDERS.map((provider) => {
+                    const isSelected = selectedProvider === provider.id;
+                    return (
+                      <div
+                        key={provider.id}
+                        onClick={() => {
+                          setSelectedProvider(provider.id);
+                          if (!provider.models.includes(selectedModel)) {
+                            setSelectedModel(provider.defaultModel);
+                          }
+                        }}
+                        className={`p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
+                          isSelected
+                            ? 'bg-cyan-950/40 border-cyan-400 shadow-md shadow-cyan-500/10 ring-1 ring-cyan-400'
+                            : 'bg-slate-800/50 border-slate-700/70 hover:bg-slate-800 hover:border-slate-600'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-sm text-white flex items-center gap-1.5">
+                            {provider.name}
+                          </span>
+                          {isSelected && <CheckCheck className="w-4 h-4 text-cyan-400" />}
+                        </div>
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+                          {provider.description}
+                        </p>
+                        <div className="mt-2.5 flex items-center justify-between">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${provider.badgeColor}`}>
+                            {provider.badge}
+                          </span>
+                          <a
+                            href={provider.docUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-0.5 hover:underline"
+                          >
+                            Lấy Key <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Model Selection */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">
+                  2. Chọn Mô Hình (Model):
+                </label>
+                {selectedProvider === 'custom' ? (
+                  <input
+                    type="text"
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    placeholder="Nhập tên model (ví dụ: anthropic/claude-3.5-sonnet hoặc llama-3.3-70b)"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  />
+                ) : (
+                  <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  >
+                    {currentProviderObj.models.map((m) => (
+                      <option key={m} value={m}>
+                        {m} {m === currentProviderObj.defaultModel ? ' (Khuyên dùng)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {/* API Key Input (if needed) */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+                    3. API Key cho {currentProviderObj.name}:
+                  </label>
+                  {selectedProvider === 'gemini' && (
+                    <span className="text-[11px] text-emerald-400 font-medium">
+                      ✓ Đã kết nối sẵn qua Server
+                    </span>
+                  )}
+                </div>
+                <input
+                  type="password"
+                  value={apiKeys[selectedProvider] || ''}
+                  onChange={(e) =>
+                    setApiKeys({
+                      ...apiKeys,
+                      [selectedProvider]: e.target.value,
+                    })
+                  }
+                  placeholder={currentProviderObj.apiKeyPlaceholder}
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">
+                  API Key được lưu an toàn trong trình duyệt của bạn (Local Storage) và chỉ truyền lên backend khi gọi lệnh AI.
+                </p>
+              </div>
+
+              {/* Custom Base URL if custom provider */}
+              {selectedProvider === 'custom' && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-purple-400" />
+                    Custom Base URL:
+                  </label>
+                  <input
+                    type="text"
+                    value={customBaseUrl}
+                    onChange={(e) => setCustomBaseUrl(e.target.value)}
+                    placeholder="https://openrouter.ai/api/v1 hoặc http://localhost:11434/v1"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+              <div>
+                {saveSuccessNotice && (
+                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 animate-in fade-in">
+                    <Check className="w-4 h-4" /> Đã lưu cấu hình thành công!
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold transition-colors"
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveSettings}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-1.5"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Lưu & Kích Hoạt AI Này</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
