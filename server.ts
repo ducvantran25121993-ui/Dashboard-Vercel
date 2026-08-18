@@ -232,11 +232,17 @@ PHONG CÁCH PHẢN HỒI:
 
     // 3. DEFAULT: GOOGLE GEMINI
     let gemini: GoogleGenAI;
+    const effectiveGeminiKey = customApiKey || process.env.GEMINI_API_KEY;
+    if (!effectiveGeminiKey) {
+      return res.status(500).json({
+        error: 'Chưa cấu hình API Key Gemini. Vui lòng nhập API Key trong phần "Kết Nối AI Khác".',
+      });
+    }
     try {
-      gemini = getGeminiClient();
+      gemini = new GoogleGenAI({ apiKey: effectiveGeminiKey });
     } catch (err: any) {
       return res.status(500).json({
-        error: 'Chưa cấu hình API Key Gemini hoặc API Key không hợp lệ.',
+        error: 'Khởi tạo Google GenAI SDK thất bại: ' + err.message,
         details: err.message,
       });
     }

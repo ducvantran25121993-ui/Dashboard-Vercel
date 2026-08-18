@@ -278,7 +278,16 @@ Tôi có thể hỗ trợ bạn trực tiếp các nhiệm vụ thực chiến:
         }),
       });
 
-      const data = await response.json();
+      const textResponse = await response.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(textResponse);
+      } catch {
+        // If server returned non-JSON (e.g. 404 or proxy HTML error), provide fallback
+        data = {
+          error: `Máy chủ trả về kết quả không hợp lệ (${response.status}): ${textResponse.slice(0, 120)}...`,
+        };
+      }
 
       if (!response.ok || data.error) {
         throw new Error(data.error || 'Lỗi xử lý phản hồi từ AI Agent');
