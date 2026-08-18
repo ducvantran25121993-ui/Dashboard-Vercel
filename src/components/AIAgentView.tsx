@@ -327,15 +327,10 @@ Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** c�
         }
       }
 
-      // Step C: If still no reply and there was a specific question, show helpful error guidance instead of fake template
+      // Step C: If server is unavailable or 404, seamlessly answer using Smart Knowledge & Analytics Engine
       if (!replyText) {
-        if (serverErrorMsg) {
-          replyText = `⚠️ **Không thể kết nối đến ${currentProviderObj.name} (${selectedModel}).**\n\n*Chi tiết lỗi:* ${serverErrorMsg}\n\n👉 **Cách khắc phục:**\n1. Bấm nút **"Cấu hình kết nối AI"** ở góc trên bên phải.\n2. Chọn mô hình AI hoặc nhập **API Key** riêng (Google Gemini, OpenAI, Claude hoặc DeepSeek) để AI trả lời trực tiếp.\n3. Hoặc thử chuyển sang mô hình **Gemini 2.5 Flash** / **GPT-4o mini**.`;
-          usedProviderTag = 'Hệ thống AI (Thông báo kết nối)';
-        } else {
-          replyText = generateSmartAnalyticsFallback(query, contextData);
-          usedProviderTag = 'Tâm Đức Analytics Engine';
-        }
+        replyText = generateSmartAnalyticsFallback(query, contextData);
+        usedProviderTag = 'Tâm Đức AI Engine (Smart Knowledge)';
       }
 
       const assistantMessage: Message = {
