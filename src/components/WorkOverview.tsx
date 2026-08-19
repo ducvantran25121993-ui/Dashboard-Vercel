@@ -205,7 +205,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
               )}
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Tổng Quan Chiến Dịch & Hiệu Quả
+              Tổng Quan Doanh Thu, Công Việc & Hiệu Quả
             </h2>
             <p className="text-slate-400 text-sm max-w-3xl">
               Theo dõi nhịp độ tăng trưởng, phân bổ ngân sách Google Ads, năng suất phễu chuyển đổi và các sáng kiến đổi mới tăng tốc doanh thu.
@@ -218,7 +218,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
               className="px-4 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.02] transition-all flex items-center gap-2"
             >
               <TrendingUp className="w-4 h-4" />
-              <span>Xem Báo Cáo Google Ads</span>
+              <span>Xem Báo Cáo Doanh Thu</span>
               <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>
