@@ -60,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'google_ads',
-      label: 'Google Ads',
+      label: 'Doanh Thu',
       icon: TrendingUp,
       badge: 'Live Sheet',
       badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
@@ -74,9 +74,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'campaigns',
-      label: 'Chiến dịch',
+      label: 'Google Ads',
       icon: Megaphone,
-      badge: '6 Active',
+      badge: 'Active',
       badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     },
     {
