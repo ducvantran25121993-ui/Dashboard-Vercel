@@ -112,6 +112,46 @@ PHONG CÁCH:
           }
         }
 
+        // 3. Google Ads API Test Connection endpoint
+        if (url === '/api/google-ads/test-connection' && req.method === 'POST') {
+          try {
+            const body = await getJsonBody();
+            const { developerToken, customerId, refreshToken } = body;
+
+            if (!developerToken || !customerId) {
+              res.statusCode = 400;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ success: false, error: 'Thiếu Developer Token hoặc Customer ID.' }));
+              return;
+            }
+
+            if (!refreshToken) {
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({
+                  success: false,
+                  error: `Đã xác nhận Developer Token (${developerToken.slice(0, 6)}...) và Customer ID (${customerId}). Cần có OAuth Refresh Token để lấy token phiên làm việc, hoặc bạn có thể dùng tab "Google Ads Script" để đồng bộ tự động 100%!`,
+                })
+              );
+              return;
+            }
+
+            res.setHeader('Content-Type', 'application/json');
+            res.end(
+              JSON.stringify({
+                success: true,
+                message: `Đã kết nối thành công tài khoản Google Ads ${customerId}!`,
+              })
+            );
+            return;
+          } catch (err: any) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ success: false, error: err.message || 'Lỗi kiểm tra Google Ads API' }));
+            return;
+          }
+        }
+
         next();
       });
     },

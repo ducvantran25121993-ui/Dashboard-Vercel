@@ -459,7 +459,7 @@ export default function App() {
         {/* Footer */}
         <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500 mt-auto">
           <div className="max-w-[1650px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p>Báo Cáo Doanh Thu Theo Tháng, Chi Phí (VAT) & Data Dịch Vụ Theo Ngày</p>
+            <p></p>
             <p className="text-slate-600">
               © 2026 Team Google Ads. Tài Liệu Bảo Mật - Lưu Hành Nội Bộ
             </p>

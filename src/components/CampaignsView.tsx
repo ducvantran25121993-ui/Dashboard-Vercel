@@ -1,133 +1,942 @@
-import React from 'react';
-import { Megaphone, Play, Pause, TrendingUp, DollarSign, Target, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { 
+  Megaphone, Play, Pause, TrendingUp, DollarSign, Target, CheckCircle, 
+  Zap, ShieldCheck, RefreshCw, Filter, Search, ExternalLink, Link2, 
+  Sparkles, Check, AlertCircle, ArrowUpRight, BarChart3, Eye, MousePointerClick,
+  Calendar, Table, LineChart, ChevronLeft, ChevronRight, Download, CalendarRange,
+  Percent, CircleDot, ArrowUpDown
+} from 'lucide-react';
 import { DisplayUnit } from '../types';
+import { GoogleAdsConnectModal } from './GoogleAdsConnectModal';
+import { 
+  fetchCampaignsSheet, 
+  CampaignItem, 
+  DailyCampaignRecord,
+  DEFAULT_CAMPAIGNS_SHEET_URL, 
+  DEFAULT_CAMPAIGNS, 
+  generateMockDailyRecords,
+  formatVND 
+} from '../services/campaignsSheetService';
 
 interface CampaignsViewProps {
   displayUnit: DisplayUnit;
 }
 
+type DatePreset = 'all' | 'today' | 'yesterday' | 'last7days' | 'last30days' | 'thisMonth' | 'lastMonth' | 'custom';
+
 export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => {
-  const campaigns = [
-    {
-      id: 1,
-      name: 'Google Search - Trồng Răng Implant Toàn Hàm (TP.HCM)',
-      status: 'Đang chạy',
-      budget: '45.000.000 đ/tháng',
-      spent: '38.200.000 đ',
-      leads: '185 Leads',
-      cpa: '206.000 đ',
-      roas: '7.8x',
-      type: 'Google Search',
-    },
-    {
-      id: 2,
-      name: 'Performance Max - Bọc Răng Sứ Thẩm Mỹ (Miền Tây)',
-      status: 'Đang chạy',
-      budget: '35.000.000 đ/tháng',
-      spent: '29.500.000 đ',
-      leads: '210 Leads',
-      cpa: '140.000 đ',
-      roas: '8.4x',
-      type: 'PMax',
-    },
-    {
-      id: 3,
-      name: 'Google Ads - Khách Hàng Việt Kiều Hồi Hương Làm Răng',
-      status: 'Đang chạy',
-      budget: '25.000.000 đ/tháng',
-      spent: '22.100.000 đ',
-      leads: '92 Leads',
-      cpa: '240.000 đ',
-      roas: '11.2x',
-      type: 'Search & Display',
-    },
-    {
-      id: 4,
-      name: 'Youtube Video Ads - Trải Nghiệm Khách Hàng Thực Tế',
-      status: 'Đang chạy',
-      budget: '20.000.000 đ/tháng',
-      spent: '18.400.000 đ',
-      leads: '115 Leads',
-      cpa: '160.000 đ',
-      roas: '5.6x',
-      type: 'Video',
-    },
-    {
-      id: 5,
-      name: 'Google Search - Niềng Răng Trong Suốt Invisalign',
-      status: 'Đang chạy',
-      budget: '15.000.000 đ/tháng',
-      spent: '12.800.000 đ',
-      leads: '78 Leads',
-      cpa: '164.000 đ',
-      roas: '6.2x',
-      type: 'Search',
-    },
-  ];
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [sheetUrl, setSheetUrl] = useState<string>(() => {
+    try {
+      return localStorage.getItem('gads_campaigns_sheet_url') || DEFAULT_CAMPAIGNS_SHEET_URL;
+    } catch {
+      return DEFAULT_CAMPAIGNS_SHEET_URL;
+    }
+  });
+
+  const [viewMode, setViewMode] = useState<'campaigns' | 'daily'>('campaigns');
+  
+  // Date filter state
+  const [datePreset, setDatePreset] = useState<DatePreset>('all');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+
+  const [campaigns, setCampaigns] = useState<CampaignItem[]>(DEFAULT_CAMPAIGNS);
+  const [dailyRecords, setDailyRecords] = useState<DailyCampaignRecord[]>(generateMockDailyRecords());
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLive, setIsLive] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState<string>('all');
+  const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
+  const [tempUrl, setTempUrl] = useState(sheetUrl);
+
+  // Pagination for daily logs
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 25;
+
+  const loadData = useCallback(async (urlToFetch: string = sheetUrl) => {
+    setIsLoading(true);
+    try {
+      const result = await fetchCampaignsSheet(urlToFetch);
+      if (result.campaigns && result.campaigns.length > 0) {
+        setCampaigns(result.campaigns);
+      }
+      if (result.dailyRecords && result.dailyRecords.length > 0) {
+        setDailyRecords(result.dailyRecords);
+      }
+      setIsLive(result.isLive);
+      setLastUpdated(result.lastUpdated);
+    } catch (e) {
+      console.error('Failed to fetch campaigns:', e);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [sheetUrl]);
+
+  useEffect(() => {
+    loadData(sheetUrl);
+  }, [sheetUrl, loadData]);
+
+  const handleSaveSheetUrl = () => {
+    const trimmed = tempUrl.trim();
+    if (!trimmed) return;
+    setSheetUrl(trimmed);
+    try {
+      localStorage.setItem('gads_campaigns_sheet_url', trimmed);
+    } catch {
+      // ignore
+    }
+    setIsUrlModalOpen(false);
+    loadData(trimmed);
+  };
+
+  // Helper to normalize date string to Date object
+  const parseRecordDate = (rec: DailyCampaignRecord): Date | null => {
+    if (!rec.date && !rec.dateFormatted) return null;
+    const str = rec.date || rec.dateFormatted;
+    if (str.includes('-')) {
+      const parts = str.split('-');
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      }
+    } else if (str.includes('/')) {
+      const parts = str.split('/');
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+      }
+    }
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  // Apply preset quick filters
+  const applyPreset = (preset: DatePreset) => {
+    setDatePreset(preset);
+    setSelectedMonth('all');
+    setCurrentPage(1);
+
+    const now = new Date(2026, 7, 18); // Defaulting based on current app timeframe
+
+    const toInputStr = (d: Date) => {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
+    if (preset === 'all') {
+      setStartDate('');
+      setEndDate('');
+    } else if (preset === 'today') {
+      const s = toInputStr(now);
+      setStartDate(s);
+      setEndDate(s);
+    } else if (preset === 'yesterday') {
+      const yd = new Date(now);
+      yd.setDate(yd.getDate() - 1);
+      const s = toInputStr(yd);
+      setStartDate(s);
+      setEndDate(s);
+    } else if (preset === 'last7days') {
+      const d7 = new Date(now);
+      d7.setDate(d7.getDate() - 7);
+      setStartDate(toInputStr(d7));
+      setEndDate(toInputStr(now));
+    } else if (preset === 'last30days') {
+      const d30 = new Date(now);
+      d30.setDate(d30.getDate() - 30);
+      setStartDate(toInputStr(d30));
+      setEndDate(toInputStr(now));
+    } else if (preset === 'thisMonth') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      setStartDate(toInputStr(firstDay));
+      setEndDate(toInputStr(now));
+    } else if (preset === 'lastMonth') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+      setStartDate(toInputStr(firstDay));
+      setEndDate(toInputStr(lastDay));
+    }
+  };
+
+  // Extract all available months from daily records dynamically
+  const availableMonthsList = useMemo(() => {
+    const monthSet = new Set<number>();
+    dailyRecords.forEach((rec) => {
+      const d = parseRecordDate(rec);
+      if (d) {
+        const m = d.getMonth() + 1;
+        monthSet.add(m);
+      }
+    });
+
+    if (monthSet.size === 0) {
+      return [8, 7, 6, 5, 4, 3, 2, 1];
+    }
+    return Array.from(monthSet).sort((a, b) => b - a);
+  }, [dailyRecords]);
+
+  // Filter daily records by custom date range, preset, month, and search query
+  const filteredDailyRecords = useMemo(() => {
+    return dailyRecords.filter((rec) => {
+      const matchesSearch = rec.campaignName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            rec.dateFormatted.includes(searchQuery);
+
+      if (!matchesSearch) return false;
+
+      const recDate = parseRecordDate(rec);
+
+      // Month pill filtering
+      if (selectedMonth !== 'all') {
+        if (!recDate) return false;
+        const m = recDate.getMonth() + 1;
+        if (m !== parseInt(selectedMonth, 10)) return false;
+      }
+
+      // Start Date & End Date filtering
+      if (startDate && recDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        if (recDate < start) return false;
+      }
+
+      if (endDate && recDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        if (recDate > end) return false;
+      }
+
+      return true;
+    });
+  }, [dailyRecords, searchQuery, selectedMonth, startDate, endDate]);
+
+  // Paginated daily records
+  const paginatedDaily = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredDailyRecords.slice(start, start + itemsPerPage);
+  }, [filteredDailyRecords, currentPage]);
+
+  const totalPages = Math.ceil(filteredDailyRecords.length / itemsPerPage) || 1;
+
+  // Filtered campaigns for Campaign Mode
+  const filteredCampaigns = useMemo(() => {
+    return campaigns.filter((camp) => {
+      const matchesSearch = camp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            camp.type.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesType = selectedType === 'all' || camp.type.toLowerCase().includes(selectedType.toLowerCase());
+      return matchesSearch && matchesType;
+    });
+  }, [campaigns, searchQuery, selectedType]);
+
+  // Dynamic totals calculation based on filtered results
+  const isCustomFiltered = Boolean(startDate || endDate || selectedMonth !== 'all');
+
+  const totalSpent = useMemo(() => {
+    if (!isCustomFiltered && viewMode === 'campaigns') {
+      return campaigns.reduce((s, c) => s + c.spentNum, 0);
+    }
+    return filteredDailyRecords.reduce((s, d) => s + d.spent, 0);
+  }, [isCustomFiltered, viewMode, campaigns, filteredDailyRecords]);
+
+  const totalConversions = useMemo(() => {
+    if (!isCustomFiltered && viewMode === 'campaigns') {
+      return campaigns.reduce((s, c) => s + c.leadsNum, 0);
+    }
+    return filteredDailyRecords.reduce((s, d) => s + d.leads, 0);
+  }, [isCustomFiltered, viewMode, campaigns, filteredDailyRecords]);
+
+  const totalClicks = useMemo(() => {
+    if (!isCustomFiltered && viewMode === 'campaigns') {
+      return campaigns.reduce((s, c) => s + (c.clicks || 0), 0);
+    }
+    return filteredDailyRecords.reduce((s, d) => s + d.clicks, 0);
+  }, [isCustomFiltered, viewMode, campaigns, filteredDailyRecords]);
+
+  const totalImpressions = useMemo(() => {
+    if (!isCustomFiltered && viewMode === 'campaigns') {
+      return campaigns.reduce((s, c) => s + (c.impressions || 0), 0);
+    }
+    return filteredDailyRecords.reduce((s, d) => s + d.impressions, 0);
+  }, [isCustomFiltered, viewMode, campaigns, filteredDailyRecords]);
+
+  const avgCpa = totalConversions > 0 ? Math.round(totalSpent / totalConversions) : 0;
+  const avgCpc = totalClicks > 0 ? Math.round(totalSpent / totalClicks) : 0;
+  const avgCtr = totalImpressions > 0 ? `${((totalClicks / totalImpressions) * 100).toFixed(2)}%` : '0.00%';
+  const avgConvRate = totalClicks > 0 ? `${((totalConversions / totalClicks) * 100).toFixed(2)}%` : '0.00%';
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-amber-950/60 to-slate-900 border border-slate-800 p-6 shadow-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-6 font-sans">
+      {/* Google Ads Header Bar */}
+      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/70 to-slate-900 border border-slate-800 p-6 shadow-xl flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center gap-1">
-              <Megaphone className="w-3.5 h-3.5 text-amber-400" /> Quản Lý Chiến Dịch
+              <Megaphone className="w-3.5 h-3.5 text-amber-400" /> Báo Cáo Chiến Dịch Google Ads
             </span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> CID: 297-136-7807 (Tâm Đức Smile)
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-400/30 flex items-center gap-1">
+              <CalendarRange className="w-3.5 h-3.5 text-purple-400" /> Toàn Bộ Lịch Sử Chiến Dịch
+            </span>
+            {isLive ? (
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                Live Google Sheet ({dailyRecords.length.toLocaleString('vi-VN')} bản ghi)
+              </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">
+                Dữ liệu mẫu
+              </span>
+            )}
           </div>
-          <h2 className="text-2xl font-extrabold text-white">Chiến Dịch Quảng Cáo Google Đang Chạy</h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Theo dõi chi tiêu thực tế, số lượng chuyển đổi và hệ số ROAS của từng chiến dịch.
+          <h2 className="text-2xl font-black text-white">Quản Lý & Hiệu Suất Chiến Dịch Google Ads</h2>
+          <p className="text-slate-400 text-sm mt-1 flex items-center gap-2 flex-wrap">
+            <span>Theo dõi chỉ số chi phí, lượt hiển thị, lượt nhấp, CTR, CPC trung bình và lượt chuyển đổi.</span>
+            {lastUpdated && (
+              <span className="text-xs text-slate-500">
+                (Đồng bộ lúc: {lastUpdated.toLocaleTimeString('vi-VN')})
+              </span>
+            )}
           </p>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => loadData(sheetUrl)}
+            disabled={isLoading}
+            className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 hover:text-white transition-colors"
+            title="Làm mới dữ liệu từ Google Sheet"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-cyan-400' : ''}`} />
+          </button>
+
+          <button
+            onClick={() => {
+              setTempUrl(sheetUrl);
+              setIsUrlModalOpen(true);
+            }}
+            className="px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition-all"
+            title="Đổi link Google Sheet"
+          >
+            <Link2 className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">Google Sheet URL</span>
+          </button>
+
+          <button
+            onClick={() => setIsConnectModalOpen(true)}
+            className="px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 shadow-lg shadow-cyan-500/20 border border-cyan-400/40 flex items-center gap-2 transition-all shrink-0 cursor-pointer"
+          >
+            <Zap className="w-4 h-4" />
+            <span>Lấy Code Script Toàn Bộ Lịch Sử</span>
+          </button>
         </div>
       </div>
 
-      {/* Campaigns Table */}
-      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-6 shadow-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
-            <thead>
-              <tr className="border-b border-slate-800 text-slate-400 font-bold uppercase text-[11px]">
-                <th className="py-3 px-3">Tên Chiến Dịch</th>
-                <th className="py-3 px-3">Trạng Thái</th>
-                <th className="py-3 px-3">Ngân Sách / Chi Tiêu</th>
-                <th className="py-3 px-3">Số Lead</th>
-                <th className="py-3 px-3">CPA (Chi phí/Lead)</th>
-                <th className="py-3 px-3">Hệ số ROAS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800">
-              {campaigns.map((camp) => (
-                <tr key={camp.id} className="hover:bg-slate-800/50 transition-colors">
-                  <td className="py-3.5 px-3">
-                    <div className="font-bold text-white">{camp.name}</div>
-                    <span className="text-[11px] text-slate-400">{camp.type}</span>
-                  </td>
-                  <td className="py-3.5 px-3">
-                    <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1 w-fit">
-                      <Play className="w-3 h-3 fill-emerald-400" />
-                      {camp.status}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-bold text-slate-200">{camp.spent}</div>
-                    <div className="text-[11px] text-slate-400">Hạn mức: {camp.budget}</div>
-                  </td>
-                  <td className="py-3.5 px-3 font-bold text-cyan-300">
-                    {camp.leads}
-                  </td>
-                  <td className="py-3.5 px-3 font-semibold text-amber-300">
-                    {camp.cpa}
-                  </td>
-                  <td className="py-3.5 px-3 font-black text-emerald-400">
-                    {camp.roas}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* DATE RANGE SELECTOR & FILTER TOOLBAR (Trực quan, dễ chọn ngày cụ thể) */}
+      <div className="p-5 rounded-2xl bg-slate-900/95 border border-slate-800 shadow-xl space-y-4">
+        {/* Top row: View Switcher & Quick Date Presets */}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* View mode toggle */}
+          <div className="flex items-center gap-1 bg-slate-950 p-1.5 rounded-xl border border-slate-800 shrink-0">
+            <button
+              onClick={() => setViewMode('campaigns')}
+              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                viewMode === 'campaigns'
+                  ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Table className="w-4 h-4" />
+              <span>Bảng Chiến Dịch (Google Ads)</span>
+            </button>
+            <button
+              onClick={() => setViewMode('daily')}
+              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                viewMode === 'daily'
+                  ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Chi Tiết Từng Ngày ({filteredDailyRecords.length.toLocaleString('vi-VN')} dòng)</span>
+            </button>
+          </div>
+
+          {/* Quick Date Presets */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs font-bold text-slate-400 flex items-center gap-1 mr-1">
+              <CalendarRange className="w-3.5 h-3.5 text-cyan-400" />
+              Khoảng Thời Gian:
+            </span>
+            {[
+              { id: 'all', label: 'Tất Cả' },
+              { id: 'today', label: 'Hôm Nay' },
+              { id: 'yesterday', label: 'Hôm Qua' },
+              { id: 'last7days', label: '7 Ngày Qua' },
+              { id: 'last30days', label: '30 Ngày Qua' },
+              { id: 'thisMonth', label: 'Tháng Này' },
+              { id: 'lastMonth', label: 'Tháng Trước' },
+            ].map((p) => (
+              <button
+                key={p.id}
+                onClick={() => applyPreset(p.id as DatePreset)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  datePreset === p.id && !startDate && !endDate && selectedMonth === 'all'
+                    ? 'bg-indigo-600 text-white font-bold shadow ring-1 ring-indigo-400'
+                    : 'bg-slate-800/90 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700/70'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom row: Custom Date Picker Inputs & Quick Month Tags */}
+        <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-4">
+          {/* Specific Date Range Inputs (Chọn ngày cụ thể) */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-slate-400 font-semibold flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+              Chọn ngày cụ thể:
+            </span>
+            
+            <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-700/80">
+              <label className="text-[11px] text-slate-400 font-medium">Từ:</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setDatePreset('custom');
+                  setSelectedMonth('all');
+                  setCurrentPage(1);
+                }}
+                className="bg-transparent text-xs text-cyan-300 font-mono focus:outline-none cursor-pointer"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-700/80">
+              <label className="text-[11px] text-slate-400 font-medium">Đến:</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setDatePreset('custom');
+                  setSelectedMonth('all');
+                  setCurrentPage(1);
+                }}
+                className="bg-transparent text-xs text-cyan-300 font-mono focus:outline-none cursor-pointer"
+              />
+            </div>
+
+            {(startDate || endDate || selectedMonth !== 'all') && (
+              <button
+                onClick={() => applyPreset('all')}
+                className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/30 transition-all"
+              >
+                ✕ Xóa bộ lọc ngày
+              </button>
+            )}
+          </div>
+
+          {/* Quick Month Selector */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs text-slate-400 font-semibold mr-1">
+              Lọc theo tháng:
+            </span>
+            {availableMonthsList.map((m) => (
+              <button
+                key={m}
+                onClick={() => {
+                  setSelectedMonth(String(m));
+                  setDatePreset('custom');
+                  setStartDate('');
+                  setEndDate('');
+                  setCurrentPage(1);
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  selectedMonth === String(m)
+                    ? 'bg-indigo-600 text-white font-bold border border-indigo-400 shadow ring-1 ring-indigo-400'
+                    : 'bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/60'
+                }`}
+              >
+                Tháng {m}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* KPI METRIC CARDS (Formatted like Google Ads Overview) */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Metric 1: Cost (Chi phí) */}
+        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-1.5">
+          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+            <span>Chi Phí (Cost)</span>
+            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
+              <DollarSign className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-white">
+            {formatVND(totalSpent)}
+          </div>
+          <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
+            <span>Chi phí trung bình:</span>
+            <span className="font-bold text-slate-200">{avgCpc.toLocaleString('vi-VN')} đ / click</span>
+          </div>
+        </div>
+
+        {/* Metric 2: Conversions (Lượt chuyển đổi) */}
+        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-1.5">
+          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+            <span>Lượt Chuyển Đổi (Conversions)</span>
+            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <Target className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-emerald-300">
+            {totalConversions.toLocaleString('vi-VN')} <span className="text-sm font-semibold">chuyển đổi</span>
+          </div>
+          <div className="text-[11px] text-emerald-400/80 font-medium">
+            Tỷ lệ chuyển đổi: <strong className="text-emerald-300">{avgConvRate}</strong>
+          </div>
+        </div>
+
+        {/* Metric 3: Cost / Conv. (Chi phí / Lượt chuyển đổi) */}
+        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-1.5">
+          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+            <span>Chi Phí / Lượt Chuyển Đổi (CPA)</span>
+            <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-amber-300">
+            {avgCpa.toLocaleString('vi-VN')} <span className="text-sm font-semibold">đ</span>
+          </div>
+          <div className="text-[11px] text-emerald-400 font-medium">
+            Chi phí tối ưu trên mỗi lead thực tế
+          </div>
+        </div>
+
+        {/* Metric 4: Clicks & CTR % */}
+        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-1.5">
+          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+            <span>Lượt Nhấp & CTR (%)</span>
+            <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400">
+              <MousePointerClick className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-purple-300">
+            {totalClicks.toLocaleString('vi-VN')} <span className="text-sm font-semibold">clicks</span>
+          </div>
+          <div className="text-[11px] text-purple-400 font-semibold">
+            CTR: <span className="text-white font-bold">{avgCtr}</span> ({totalImpressions.toLocaleString('vi-VN')} hiển thị)
+          </div>
+        </div>
+      </div>
+
+      {/* Filter & Search Toolbar */}
+      <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+        {/* Search */}
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder={viewMode === 'daily' ? 'Tìm theo ngày (DD/MM/YYYY) hoặc chiến dịch...' : 'Tìm kiếm chiến dịch (Implant, Sứ...)'}
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:border-cyan-500 outline-none transition-all"
+          />
+        </div>
+
+        {/* Type Filter Pills for Campaign Mode */}
+        {viewMode === 'campaigns' ? (
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+            {[
+              { id: 'all', label: 'Tất Cả Loại' },
+              { id: 'search', label: 'Search' },
+              { id: 'pmax', label: 'PMax' },
+              { id: 'video', label: 'Video / Youtube' },
+              { id: 'display', label: 'Display' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedType(tab.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  selectedType === tab.id
+                    ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
+                    : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="text-xs text-slate-400 font-medium flex items-center gap-2">
+            <span>Đang hiển thị:</span>
+            <span className="font-bold text-cyan-300">{filteredDailyRecords.length.toLocaleString('vi-VN')}</span>
+            <span>ngày có số liệu</span>
+          </div>
+        )}
+      </div>
+
+      {/* GOOGLE ADS CAMPAIGN REPORTING TABLES */}
+      {viewMode === 'campaigns' ? (
+        /* 1. GOOGLE ADS CAMPAIGNS SUMMARY TABLE */
+        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-6 shadow-xl overflow-hidden space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <Table className="w-4 h-4 text-cyan-400" />
+              Báo Cáo Hiệu Suất Chiến Dịch (Chuẩn Google Ads)
+            </h3>
+            <span className="text-xs text-slate-400">
+              {filteredCampaigns.length} chiến dịch
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-800 text-slate-400 font-bold text-[11px] bg-slate-950/60 uppercase tracking-wider">
+                  <th className="py-3.5 px-3 min-w-[240px]">Chiến Dịch</th>
+                  <th className="py-3.5 px-3">Trạng Thái</th>
+                  <th className="py-3.5 px-3 text-right">Lượt Hiển Thị</th>
+                  <th className="py-3.5 px-3 text-right">Lượt Nhấp</th>
+                  <th className="py-3.5 px-3 text-right">CTR (%)</th>
+                  <th className="py-3.5 px-3 text-right">CPC Trung Bình</th>
+                  <th className="py-3.5 px-3 text-right">Chi Phí</th>
+                  <th className="py-3.5 px-3 text-right">Lượt Chuyển Đổi</th>
+                  <th className="py-3.5 px-3 text-right">Chi Phí / Lượt Chuyển Đổi</th>
+                  <th className="py-3.5 px-3 text-right">Tỷ Lệ Chuyển Đổi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/80">
+                {filteredCampaigns.map((camp) => (
+                  <tr key={camp.id} className="hover:bg-slate-800/50 transition-colors">
+                    {/* Chiến dịch */}
+                    <td className="py-3.5 px-3">
+                      <div className="font-bold text-white flex items-center gap-1.5">
+                        {camp.name}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-slate-800 text-cyan-400 border border-slate-700">
+                          {camp.type}
+                        </span>
+                        {camp.budget && (
+                          <span className="text-[11px] text-slate-400">
+                            Ngân sách: {camp.budget}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Trạng thái */}
+                    <td className="py-3.5 px-3">
+                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 w-fit ${
+                        camp.status === 'Đang chạy'
+                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                          : 'bg-slate-800 text-slate-400 border border-slate-700'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${camp.status === 'Đang chạy' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+                        {camp.status}
+                      </span>
+                    </td>
+
+                    {/* Lượt hiển thị */}
+                    <td className="py-3.5 px-3 text-right font-medium text-slate-300">
+                      {camp.impressions ? camp.impressions.toLocaleString('vi-VN') : '--'}
+                    </td>
+
+                    {/* Lượt nhấp */}
+                    <td className="py-3.5 px-3 text-right font-bold text-slate-200">
+                      {camp.clicks ? camp.clicks.toLocaleString('vi-VN') : '--'}
+                    </td>
+
+                    {/* CTR % */}
+                    <td className="py-3.5 px-3 text-right font-black text-cyan-400">
+                      {camp.ctr || '0.00%'}
+                    </td>
+
+                    {/* CPC trung bình */}
+                    <td className="py-3.5 px-3 text-right font-semibold text-slate-200">
+                      {camp.cpc || '--'}
+                    </td>
+
+                    {/* Chi phí */}
+                    <td className="py-3.5 px-3 text-right font-extrabold text-white">
+                      {camp.spent}
+                    </td>
+
+                    {/* Lượt chuyển đổi */}
+                    <td className="py-3.5 px-3 text-right font-black text-emerald-300">
+                      <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30">
+                        {camp.leads}
+                      </span>
+                    </td>
+
+                    {/* Chi phí / Lượt chuyển đổi (CPA) */}
+                    <td className="py-3.5 px-3 text-right font-bold text-amber-300">
+                      {camp.cpa}
+                    </td>
+
+                    {/* Tỷ lệ chuyển đổi % */}
+                    <td className="py-3.5 px-3 text-right font-bold text-purple-300">
+                      {camp.convRate || '0.00%'}
+                    </td>
+                  </tr>
+                ))}
+
+                {/* Google Ads Total Summary Row */}
+                <tr className="bg-slate-950/80 font-bold border-t-2 border-slate-700 text-xs sm:text-sm">
+                  <td className="py-4 px-3 text-white font-extrabold flex items-center gap-1.5">
+                    <span>Tổng cộng: Tất cả chiến dịch</span>
+                  </td>
+                  <td className="py-4 px-3 text-slate-400 font-semibold">
+                    {filteredCampaigns.length} Active
+                  </td>
+                  <td className="py-4 px-3 text-right text-slate-300 font-bold">
+                    {totalImpressions.toLocaleString('vi-VN')}
+                  </td>
+                  <td className="py-4 px-3 text-right text-slate-200 font-bold">
+                    {totalClicks.toLocaleString('vi-VN')}
+                  </td>
+                  <td className="py-4 px-3 text-right text-cyan-400 font-black">
+                    {avgCtr}
+                  </td>
+                  <td className="py-4 px-3 text-right text-slate-200 font-bold">
+                    {avgCpc.toLocaleString('vi-VN')} đ
+                  </td>
+                  <td className="py-4 px-3 text-right text-white font-black text-sm sm:text-base">
+                    {formatVND(totalSpent)}
+                  </td>
+                  <td className="py-4 px-3 text-right text-emerald-300 font-black text-sm sm:text-base">
+                    {totalConversions.toLocaleString('vi-VN')}
+                  </td>
+                  <td className="py-4 px-3 text-right text-amber-300 font-black">
+                    {avgCpa.toLocaleString('vi-VN')} đ
+                  </td>
+                  <td className="py-4 px-3 text-right text-purple-300 font-black">
+                    {avgConvRate}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        /* 2. GOOGLE ADS DAILY BREAKDOWN TABLE */
+        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-6 shadow-xl space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-cyan-400" />
+              Chi Tiết Theo Từng Ngày (Đầy Đủ Cột Google Ads)
+            </h3>
+            <span className="text-xs text-slate-400 font-medium">
+              Trang {currentPage} / {totalPages} (Tổng số: {filteredDailyRecords.length.toLocaleString('vi-VN')} ngày)
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-800 text-slate-400 font-bold text-[11px] bg-slate-950/60 uppercase tracking-wider">
+                  <th className="py-3.5 px-3 min-w-[120px]">Ngày</th>
+                  <th className="py-3.5 px-3 min-w-[200px]">Chiến Dịch</th>
+                  <th className="py-3.5 px-3">Trạng Thái</th>
+                  <th className="py-3.5 px-3 text-right">Lượt Hiển Thị</th>
+                  <th className="py-3.5 px-3 text-right">Lượt Nhấp</th>
+                  <th className="py-3.5 px-3 text-right">CTR (%)</th>
+                  <th className="py-3.5 px-3 text-right">CPC Trung Bình</th>
+                  <th className="py-3.5 px-3 text-right">Chi Phí</th>
+                  <th className="py-3.5 px-3 text-right">Lượt Chuyển Đổi</th>
+                  <th className="py-3.5 px-3 text-right">Chi Phí / Lượt Chuyển Đổi</th>
+                  <th className="py-3.5 px-3 text-right">Tỷ Lệ Chuyển Đổi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/80">
+                {paginatedDaily.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-800/50 transition-colors">
+                    {/* Ngày */}
+                    <td className="py-3.5 px-3">
+                      <div className="font-bold text-cyan-400 font-mono flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-cyan-500/70" />
+                        {row.dateFormatted}
+                      </div>
+                    </td>
+
+                    {/* Chiến dịch */}
+                    <td className="py-3.5 px-3">
+                      <div className="font-semibold text-slate-200 line-clamp-1">{row.campaignName}</div>
+                    </td>
+
+                    {/* Trạng thái */}
+                    <td className="py-3.5 px-3">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-fit ${
+                        row.status === 'Đang chạy'
+                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                          : 'bg-slate-800 text-slate-400 border border-slate-700'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${row.status === 'Đang chạy' ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                        {row.status}
+                      </span>
+                    </td>
+
+                    {/* Lượt hiển thị */}
+                    <td className="py-3.5 px-3 text-right font-medium text-slate-300">
+                      {row.impressions.toLocaleString('vi-VN')}
+                    </td>
+
+                    {/* Lượt nhấp */}
+                    <td className="py-3.5 px-3 text-right font-bold text-slate-200">
+                      {row.clicks.toLocaleString('vi-VN')}
+                    </td>
+
+                    {/* CTR % */}
+                    <td className="py-3.5 px-3 text-right font-black text-cyan-400">
+                      {row.ctr}
+                    </td>
+
+                    {/* CPC Trung Bình */}
+                    <td className="py-3.5 px-3 text-right font-semibold text-slate-200">
+                      {row.cpc.toLocaleString('vi-VN')} đ
+                    </td>
+
+                    {/* Chi Phí */}
+                    <td className="py-3.5 px-3 text-right font-black text-white">
+                      {row.spent.toLocaleString('vi-VN')} đ
+                    </td>
+
+                    {/* Lượt chuyển đổi */}
+                    <td className="py-3.5 px-3 text-right font-black text-emerald-300">
+                      <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30">
+                        {row.leads}
+                      </span>
+                    </td>
+
+                    {/* Chi phí / Lượt chuyển đổi (CPA) */}
+                    <td className="py-3.5 px-3 text-right font-bold text-amber-300">
+                      {row.cpa.toLocaleString('vi-VN')} đ
+                    </td>
+
+                    {/* Tỷ lệ chuyển đổi % */}
+                    <td className="py-3.5 px-3 text-right font-bold text-purple-300">
+                      {row.convRate || '0.00%'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex flex-wrap items-center justify-between pt-4 border-t border-slate-800 gap-3">
+            <div className="text-xs text-slate-400">
+              Hiển thị {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredDailyRecords.length)} trên tổng số {filteredDailyRecords.length.toLocaleString('vi-VN')} ngày
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition-all"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Trang trước</span>
+              </button>
+              <span className="text-xs font-bold text-cyan-300 px-2">
+                {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition-all"
+              >
+                <span>Trang sau</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Google Ads Script Modal */}
+      <GoogleAdsConnectModal
+        isOpen={isConnectModalOpen}
+        onClose={() => setIsConnectModalOpen(false)}
+        onSyncSuccess={() => loadData(sheetUrl)}
+      />
+
+      {/* Google Sheet URL Config Modal */}
+      {isUrlModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Link2 className="w-5 h-5 text-cyan-400" />
+                Cấu Hình Google Sheet Báo Cáo Chiến Dịch
+              </h3>
+              <button
+                onClick={() => setIsUrlModalOpen(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-xs font-bold text-slate-300">
+                Link Google Sheet Báo Cáo Google Ads:
+              </label>
+              <input
+                type="text"
+                value={tempUrl}
+                onChange={(e) => setTempUrl(e.target.value)}
+                placeholder="https://docs.google.com/spreadsheets/d/.../edit"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-cyan-300 font-mono focus:border-cyan-500 outline-none"
+              />
+              <p className="text-[11px] text-slate-400">
+                Bảng tính Google Sheet cần được bật quyền <strong>"Bất kỳ ai có liên kết (Viewer)"</strong> để hệ thống đọc tự động.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <a
+                href={tempUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-cyan-400 hover:underline flex items-center gap-1"
+              >
+                <span>Mở Google Sheet</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsUrlModalOpen(false)}
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleSaveSheetUrl}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg"
+                >
+                  Lưu & Đồng Bộ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
