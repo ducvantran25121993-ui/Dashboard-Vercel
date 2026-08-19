@@ -297,6 +297,108 @@ PHONG CÁCH TRẢ LỜI:
   }
 });
 
+// API endpoint for AI Campaign Analysis (Google Ads Campaign Optimization)
+app.post('/api/analyze-campaigns', async (req, res) => {
+  try {
+    const { campaigns, summaryMetrics, customQuestion, focusCampaign, timeRange } = req.body;
+
+    let gemini: GoogleGenAI;
+    try {
+      gemini = getGeminiClient();
+    } catch (err: any) {
+      return res.status(500).json({
+        error: 'Chưa cấu hình API Key Gemini hoặc API Key không hợp lệ.',
+        details: err.message,
+      });
+    }
+
+    const campaignSummaryList = (campaigns || []).slice(0, 50).map((c: any) => ({
+      name: c.name,
+      status: c.status,
+      type: c.type,
+      spent: c.spent || `${c.spentNum?.toLocaleString('vi-VN')} đ`,
+      clicks: c.clicks,
+      impressions: c.impressions,
+      leads: c.leads,
+      cpa: c.cpa,
+      cpc: c.cpc,
+      ctr: c.ctr,
+      convRate: c.convRate,
+    }));
+
+    const systemInstruction = `
+Bạn là Chuyên Gia Cấp Cao Tối Ưu Hóa Google Ads & Giám Đốc Tiếp Thị Số (Senior Google Ads Specialist & CMO) cho Hệ Thống Nha Khoa Tâm Đức Smile.
+Nhiệm vụ của bạn là phân tích sâu sắc các chiến dịch Google Ads đang chạy, phát hiện các điểm nghẽn, các chiến dịch xuất sắc và đề xuất phương án tối ưu ngân sách, giảm CPA, tăng tỷ lệ chuyển đổi.
+
+DỮ LIỆU TỔNG QUAN TÀI KHOẢN:
+- Khoảng thời gian phân tích: ${timeRange || 'Khoảng thời gian đang chọn'}
+- Tổng chi phí: ${summaryMetrics?.totalSpent ? summaryMetrics.totalSpent.toLocaleString('vi-VN') + ' đ' : 'N/A'}
+- Tổng lượt chuyển đổi: ${summaryMetrics?.totalConversions ? summaryMetrics.totalConversions.toLocaleString('vi-VN') : 'N/A'}
+- Tổng clicks: ${summaryMetrics?.totalClicks ? summaryMetrics.totalClicks.toLocaleString('vi-VN') : 'N/A'}
+- CTR trung bình: ${summaryMetrics?.avgCtr || 'N/A'}
+- CPA trung bình: ${summaryMetrics?.avgCpa ? summaryMetrics.avgCpa.toLocaleString('vi-VN') + ' đ' : 'N/A'}
+- CPC trung bình: ${summaryMetrics?.avgCpc ? summaryMetrics.avgCpc.toLocaleString('vi-VN') + ' đ' : 'N/A'}
+- Tổng số chiến dịch: ${campaigns?.length || 0} (${campaigns?.filter((c: any) => c.status === 'Đang chạy').length || 0} đang chạy)
+
+DANH SÁCH CHI TIẾT CHIẾN DỊCH:
+${JSON.stringify(campaignSummaryList, null, 2)}
+`;
+
+    const userPrompt = focusCampaign
+      ? `Hãy phân tích chuyên sâu riêng cho chiến dịch: "${focusCampaign.name}".
+Dữ liệu chiến dịch:
+- Trạng thái: ${focusCampaign.status}
+- Loại: ${focusCampaign.type}
+- Chi phí: ${focusCampaign.spent}
+- Lượt nhấp: ${focusCampaign.clicks} (Hiển thị: ${focusCampaign.impressions})
+- CTR: ${focusCampaign.ctr}
+- CPC trung bình: ${focusCampaign.cpc}
+- Lượt chuyển đổi: ${focusCampaign.leads}
+- CPA: ${focusCampaign.cpa}
+- Tỷ lệ chuyển đổi: ${focusCampaign.convRate}
+
+Đưa ra đánh giá:
+1. Hiệu suất chiến dịch này có đạt chuẩn hay không so với mặt bằng nha khoa?
+2. Điểm mạnh và điểm yếu cụ thể (CTR, CPC, CPA).
+3. 3 hành động cụ thể để tối ưu chiến dịch này ngay (điều chỉnh ngân sách, từ khóa phủ định, mẫu quảng cáo, trang đích).`
+      : customQuestion
+      ? `Người dùng hỏi: "${customQuestion}". Hãy dựa vào toàn bộ số liệu các chiến dịch trên để trả lời chi tiết, thực tế và có số liệu chứng minh.`
+      : `Hãy thực hiện một báo cáo Kiểm Tra & Tối Ưu Toàn Diện (Full Google Ads Audit & Action Plan) cho các chiến dịch:
+1. **Đánh giá tổng quan & Điểm hiệu suất (Health Score từ 1-100)**.
+2. **Top 3 - 5 Chiến dịch Hiệu Quả Nhất**: Những chiến dịch đang mang lại nhiều Lead nhất với CPA tối ưu (phân tích tại sao hiệu quả).
+3. **Top 3 - 5 Chiến dịch Cần Tối Ưu / Lãng Phí Ngân Sách**: Những chiến dịch có CPA quá cao, CTR thấp hoặc tốn ngân sách nhưng ít chuyển đổi.
+4. **Phân tích theo Dịch Vụ Cốt Lõi**:
+   - Trồng Răng Implant (HCM & Tỉnh)
+   - Bọc Răng Sứ Thẩm Mỹ
+   - Khách Hàng Việt Kiều (Châu Á, Mỹ, Châu Âu)
+   - Performance Max (PMax) & Video Youtube
+5. **Kế hoạch hành động cụ thể trong 7 ngày tới**:
+   - Điều chỉnh ngân sách (chiến dịch nào nên tăng ngân sách, chiến dịch nào nên giảm/tạm dừng).
+   - Tối ưu giá thầu (Bidding Strategy: Target CPA, Maximize Conversions).
+   - Tối ưu mẫu quảng cáo và từ khóa phủ định.`;
+
+    const response = await gemini.models.generateContent({
+      model: 'gemini-3.7-flash',
+      contents: [
+        { role: 'user', parts: [{ text: userPrompt }] }
+      ],
+      config: {
+        systemInstruction,
+        temperature: 0.7,
+      },
+    });
+
+    const reply = response.text || 'Không có phản hồi phân tích từ AI.';
+    return res.json({ success: true, analysis: reply });
+  } catch (error: any) {
+    console.error('Error analyzing campaigns:', error);
+    return res.status(500).json({
+      error: 'Không thể phân tích chiến dịch bằng AI lúc này.',
+      details: error.message,
+    });
+  }
+});
+
 // Vite middleware in dev or static serving in prod
 async function start() {
   if (process.env.NODE_ENV !== 'production') {

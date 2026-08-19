@@ -227,7 +227,7 @@ Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** c�
     const summaryList = (monthlyDatasets || []).map((ds) => {
       const totalRev = ds.regions.reduce((s, r) => s + (r.revenue || 0), 0);
       const totalCost = ds.regions.reduce((s, r) => s + (r.costVAT || 0), 0);
-      const totalData = ds.regions.reduce((s, r) => s + (r.customerData || 0), 0);
+      const totalData = ds.regions.reduce((s, r) => s + (r.totalData || 0), 0);
       const ratio = totalRev > 0 ? ((totalCost / totalRev) * 100).toFixed(1) : '0';
       return {
         month: ds.label,

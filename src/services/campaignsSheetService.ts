@@ -247,13 +247,15 @@ function parseCSV(csv: string): string[][] {
   });
 }
 
-function parseNumber(val: string | undefined): number {
-  if (!val) return 0;
-  const clean = val
-    .replace(/[đ%xX]/gi, '')
-    .replace(/\./g, '')
-    .replace(/,/g, '.')
-    .replace(/\s/g, '');
+function parseVal(v: string | undefined): number {
+  if (!v) return 0;
+  let clean = v.trim().replace(/^"|"$/g, '').replace(/[đ%xX]/gi, '').trim();
+  // Handle Vietnamese comma decimal vs thousand dots
+  if (clean.includes(',') && !clean.includes('.')) {
+    clean = clean.replace(/,/g, '.');
+  } else if (clean.includes('.') && clean.includes(',')) {
+    clean = clean.replace(/\./g, '').replace(/,/g, '.');
+  }
   const num = parseFloat(clean);
   return isNaN(num) ? 0 : num;
 }
@@ -263,9 +265,9 @@ export function formatVND(amount: number): string {
     return `${(amount / 1000000000).toFixed(2)} Tỷ đ`;
   }
   if (amount >= 1000000) {
-    return `${(amount / 1000000).toFixed(1)} Tr đ`;
+    return `${(amount / 1000000).toFixed(2)} Tr đ`;
   }
-  return `${amount.toLocaleString('vi-VN')} đ`;
+  return `${Math.round(amount).toLocaleString('vi-VN')} đ`;
 }
 
 // Fetch and parse campaigns Google Sheet with Daily records
@@ -395,17 +397,18 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
     let rawCost = costCol >= 0 ? row[costCol] : '0';
     const rawConv = convCol >= 0 ? row[convCol] : '0';
 
-    let costNum = parseNumber(rawCost);
-    if (costNum > 10000000000) {
-      costNum = Math.round(costNum / 1000000);
-    }
+    const impNum = Math.round(parseVal(rawImp));
+    const clicksNum = Math.round(parseVal(rawClicks));
+    const rawCostNum = parseVal(rawCost);
+    // If cost is exported in micros (e.g. from Google Ads script metrics.cost_micros), divide by 1,000,000
+    const costColName = costCol >= 0 ? header[costCol] : '';
+    const isMicros = costColName.includes('micros') || rawCostNum > 50000000;
+    const costNum = isMicros ? Math.round(rawCostNum / 1000000) : Math.round(rawCostNum);
 
-    const impNum = parseNumber(rawImp);
-    const clicksNum = parseNumber(rawClicks);
-    const convNum = parseNumber(rawConv);
+    const convNum = Math.round(parseVal(rawConv) * 10) / 10;
     const cpaNum = convNum > 0 ? Math.round(costNum / convNum) : 0;
-    const ctr = ctrCol >= 0 && row[ctrCol] ? row[ctrCol] : (impNum > 0 ? `${((clicksNum / impNum) * 100).toFixed(2)}%` : '5.0%');
-    const cpc = clicksNum > 0 ? Math.round(costNum / clicksNum) : 1500;
+    const ctr = impNum > 0 ? `${((clicksNum / impNum) * 100).toFixed(2)}%` : '0.00%';
+    const cpc = clicksNum > 0 ? Math.round(costNum / clicksNum) : 0;
 
     let type = 'Google Search';
     const lowerName = name.toLowerCase();
@@ -447,13 +450,16 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
       prev.impressions += impNum;
       prev.clicks += clicksNum;
       prev.leads += convNum;
+      if (status === 'Đang chạy') {
+        prev.status = 'Đang chạy';
+      }
     }
   }
 
   const finalCampaigns: CampaignItem[] = Array.from(campaignMap.entries()).map(([cName, stats], idx) => {
     const cpa = stats.leads > 0 ? Math.round(stats.spent / stats.leads) : 0;
-    const ctr = stats.impressions > 0 ? `${((stats.clicks / stats.impressions) * 100).toFixed(2)}%` : '5.00%';
-    const cpcNum = stats.clicks > 0 ? Math.round(stats.spent / stats.clicks) : 1500;
+    const ctr = stats.impressions > 0 ? `${((stats.clicks / stats.impressions) * 100).toFixed(2)}%` : '0.00%';
+    const cpcNum = stats.clicks > 0 ? Math.round(stats.spent / stats.clicks) : 0;
     const cpc = `${cpcNum.toLocaleString('vi-VN')} đ`;
     const convRate = stats.clicks > 0 ? `${((stats.leads / stats.clicks) * 100).toFixed(2)}%` : '0.00%';
 
@@ -465,7 +471,7 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
       spentNum: stats.spent,
       impressions: stats.impressions,
       clicks: stats.clicks,
-      leads: `${stats.leads.toLocaleString('vi-VN')}`,
+      leads: `${Math.round(stats.leads).toLocaleString('vi-VN')}`,
       leadsNum: stats.leads,
       cpa: `${cpa.toLocaleString('vi-VN')} đ`,
       roas: '8.0x',

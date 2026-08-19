@@ -340,7 +340,7 @@ export default function App() {
           )}
 
           {activeSidebarTab === 'campaigns' && (
-            <CampaignsView displayUnit={displayUnit} />
+            <CampaignsView displayUnit={displayUnit} userRole={userRole} />
           )}
 
           {activeSidebarTab === 'sales_copilot' && <SalesCopilotView />}

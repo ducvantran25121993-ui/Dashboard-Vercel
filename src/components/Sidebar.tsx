@@ -76,8 +76,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'campaigns',
       label: 'Google Ads',
       icon: Megaphone,
-      badge: 'Active',
-      badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+      badge: '59 Active',
+      badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
     },
     {
       id: 'sales_copilot',

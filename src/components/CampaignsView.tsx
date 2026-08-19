@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { DisplayUnit } from '../types';
 import { GoogleAdsConnectModal } from './GoogleAdsConnectModal';
+import { CampaignAiAnalystModal } from './CampaignAiAnalystModal';
 import { 
   fetchCampaignsSheet, 
   CampaignItem, 
@@ -20,12 +21,16 @@ import {
 
 interface CampaignsViewProps {
   displayUnit: DisplayUnit;
+  userRole?: 'admin' | 'staff' | null;
 }
 
 type DatePreset = 'all' | 'today' | 'yesterday' | 'last7days' | 'last30days' | 'thisMonth' | 'lastMonth' | 'custom';
 
-export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => {
+export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userRole = 'admin' }) => {
+  const isAdmin = userRole !== 'staff';
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [aiFocusCampaign, setAiFocusCampaign] = useState<CampaignItem | null>(null);
   const [sheetUrl, setSheetUrl] = useState<string>(() => {
     try {
       return localStorage.getItem('gads_campaigns_sheet_url') || DEFAULT_CAMPAIGNS_SHEET_URL;
@@ -49,12 +54,17 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'enabled' | 'paused'>('enabled');
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
   const [tempUrl, setTempUrl] = useState(sheetUrl);
 
   // Pagination for daily logs
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 25;
+
+  const enabledCount = useMemo(() => campaigns.filter((c) => c.status === 'Đang chạy').length, [campaigns]);
+  const pausedCount = useMemo(() => campaigns.filter((c) => c.status !== 'Đang chạy').length, [campaigns]);
+  const totalCount = campaigns.length;
 
   const loadData = useCallback(async (urlToFetch: string = sheetUrl) => {
     setIsLoading(true);
@@ -220,46 +230,122 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
 
   const totalPages = Math.ceil(filteredDailyRecords.length / itemsPerPage) || 1;
 
-  // Filtered campaigns for Campaign Mode
+  // Filtered campaigns for Campaign Mode - dynamically aggregated from filteredDailyRecords
   const filteredCampaigns = useMemo(() => {
-    return campaigns.filter((camp) => {
+    // Base map initialized with all campaigns to ensure no active campaign is lost
+    const campMap = new Map<string, {
+      name: string;
+      type: string;
+      status: string;
+      spent: number;
+      leads: number;
+      clicks: number;
+      impressions: number;
+      budget?: string;
+    }>();
+
+    campaigns.forEach((c) => {
+      campMap.set(c.name, {
+        name: c.name,
+        type: c.type,
+        status: c.status,
+        spent: 0,
+        leads: 0,
+        clicks: 0,
+        impressions: 0,
+        budget: c.budget,
+      });
+    });
+
+    if (filteredDailyRecords.length > 0) {
+      filteredDailyRecords.forEach((rec) => {
+        if (!campMap.has(rec.campaignName)) {
+          let type = 'Google Search';
+          const lower = rec.campaignName.toLowerCase();
+          if (lower.includes('pmax') || lower.includes('performance max')) type = 'PMax';
+          else if (lower.includes('video') || lower.includes('youtube')) type = 'Youtube Video';
+          else if (lower.includes('display') || lower.includes('gdn')) type = 'Google Display';
+          else if (lower.includes('re') || lower.includes('remarketing')) type = 'Remarketing';
+
+          campMap.set(rec.campaignName, {
+            name: rec.campaignName,
+            type,
+            status: rec.status,
+            spent: rec.spent,
+            leads: rec.leads,
+            clicks: rec.clicks,
+            impressions: rec.impressions,
+          });
+        } else {
+          const prev = campMap.get(rec.campaignName)!;
+          prev.spent += rec.spent;
+          prev.leads += rec.leads;
+          prev.clicks += rec.clicks;
+          prev.impressions += rec.impressions;
+          if (rec.status === 'Đang chạy') {
+            prev.status = 'Đang chạy';
+          }
+        }
+      });
+    }
+
+    const list: CampaignItem[] = Array.from(campMap.values()).map((c, idx) => {
+      const cpa = c.leads > 0 ? Math.round(c.spent / c.leads) : 0;
+      const ctr = c.impressions > 0 ? `${((c.clicks / c.impressions) * 100).toFixed(2)}%` : '0.00%';
+      const cpcNum = c.clicks > 0 ? Math.round(c.spent / c.clicks) : 0;
+      const convRate = c.clicks > 0 ? `${((c.leads / c.clicks) * 100).toFixed(2)}%` : '0.00%';
+
+      return {
+        id: idx + 1,
+        name: c.name,
+        status: c.status,
+        spent: `${c.spent.toLocaleString('vi-VN')} đ`,
+        spentNum: c.spent,
+        impressions: c.impressions,
+        clicks: c.clicks,
+        leads: `${Math.round(c.leads).toLocaleString('vi-VN')}`,
+        leadsNum: c.leads,
+        cpa: `${cpa.toLocaleString('vi-VN')} đ`,
+        roas: '8.0x',
+        ctr,
+        cpc: `${cpcNum.toLocaleString('vi-VN')} đ`,
+        cpcNum,
+        convRate,
+        type: c.type,
+        budget: c.budget,
+      };
+    });
+
+    return list.filter((camp) => {
+      const matchesStatus = 
+        statusFilter === 'all' ? true :
+        statusFilter === 'enabled' ? camp.status === 'Đang chạy' :
+        camp.status !== 'Đang chạy';
+
       const matchesSearch = camp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             camp.type.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = selectedType === 'all' || camp.type.toLowerCase().includes(selectedType.toLowerCase());
-      return matchesSearch && matchesType;
+
+      return matchesStatus && matchesSearch && matchesType;
     });
-  }, [campaigns, searchQuery, selectedType]);
+  }, [filteredDailyRecords, campaigns, searchQuery, selectedType, statusFilter]);
 
   // Dynamic totals calculation based on filtered results
-  const isCustomFiltered = Boolean(startDate || endDate || selectedMonth !== 'all');
-
   const totalSpent = useMemo(() => {
-    if (!isCustomFiltered && viewMode === 'campaigns') {
-      return campaigns.reduce((s, c) => s + c.spentNum, 0);
-    }
     return filteredDailyRecords.reduce((s, d) => s + d.spent, 0);
-  }, [isCustomFiltered, viewMode, campaigns, filteredDailyRecords]);
+  }, [filteredDailyRecords]);
 
   const totalConversions = useMemo(() => {
-    if (!isCustomFiltered && viewMode === 'campaigns') {
-      return campaigns.reduce((s, c) => s + c.leadsNum, 0);
-    }
-    return filteredDailyRecords.reduce((s, d) => s + d.leads, 0);
-  }, [isCustomFiltered, viewMode, campaigns, filteredDailyRecords]);
+    return Math.round(filteredDailyRecords.reduce((s, d) => s + d.leads, 0));
+  }, [filteredDailyRecords]);
 
   const totalClicks = useMemo(() => {
-    if (!isCustomFiltered && viewMode === 'campaigns') {
-      return campaigns.reduce((s, c) => s + (c.clicks || 0), 0);
-    }
     return filteredDailyRecords.reduce((s, d) => s + d.clicks, 0);
-  }, [isCustomFiltered, viewMode, campaigns, filteredDailyRecords]);
+  }, [filteredDailyRecords]);
 
   const totalImpressions = useMemo(() => {
-    if (!isCustomFiltered && viewMode === 'campaigns') {
-      return campaigns.reduce((s, c) => s + (c.impressions || 0), 0);
-    }
     return filteredDailyRecords.reduce((s, d) => s + d.impressions, 0);
-  }, [isCustomFiltered, viewMode, campaigns, filteredDailyRecords]);
+  }, [filteredDailyRecords]);
 
   const avgCpa = totalConversions > 0 ? Math.round(totalSpent / totalConversions) : 0;
   const avgCpc = totalClicks > 0 ? Math.round(totalSpent / totalClicks) : 0;
@@ -272,14 +358,14 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
       <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/70 to-slate-900 border border-slate-800 p-6 shadow-xl flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center gap-1">
-              <Megaphone className="w-3.5 h-3.5 text-amber-400" /> Báo Cáo Chiến Dịch Google Ads
-            </span>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> CID: 297-136-7807 (Tâm Đức Smile)
+              <Zap className="w-3.5 h-3.5 text-emerald-400" /> {enabledCount} Chiến Dịch Đang Chạy (Enabled)
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-400/30 flex items-center gap-1">
-              <CalendarRange className="w-3.5 h-3.5 text-purple-400" /> Toàn Bộ Lịch Sử Chiến Dịch
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+              {pausedCount} Tạm Dừng
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30 flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-400" /> CID: 297-136-7807 (Tâm Đức Smile)
             </span>
             {isLive ? (
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center gap-1">
@@ -315,23 +401,39 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
 
           <button
             onClick={() => {
-              setTempUrl(sheetUrl);
-              setIsUrlModalOpen(true);
+              setAiFocusCampaign(null);
+              setIsAiModalOpen(true);
             }}
-            className="px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition-all"
-            title="Đổi link Google Sheet"
+            className="px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-white shadow-lg shadow-purple-500/25 border border-purple-400/40 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
           >
-            <Link2 className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Google Sheet URL</span>
+            <Sparkles className="w-4 h-4 animate-pulse text-amber-300" />
+            <span>✨ AI Phân Tích & Tối Ưu Chiến Dịch</span>
           </button>
 
-          <button
-            onClick={() => setIsConnectModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 shadow-lg shadow-cyan-500/20 border border-cyan-400/40 flex items-center gap-2 transition-all shrink-0 cursor-pointer"
-          >
-            <Zap className="w-4 h-4" />
-            <span>Lấy Code Script Toàn Bộ Lịch Sử</span>
-          </button>
+          {/* Admin-only Configuration Buttons */}
+          {isAdmin && (
+            <>
+              <button
+                onClick={() => {
+                  setTempUrl(sheetUrl);
+                  setIsUrlModalOpen(true);
+                }}
+                className="px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition-all"
+                title="Đổi link Google Sheet"
+              >
+                <Link2 className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="hidden sm:inline">Google Sheet URL</span>
+              </button>
+
+              <button
+                onClick={() => setIsConnectModalOpen(true)}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 shadow-lg shadow-cyan-500/20 border border-cyan-400/40 flex items-center gap-2 transition-all shrink-0 cursor-pointer"
+              >
+                <Zap className="w-4 h-4" />
+                <span>Lấy Code Script Toàn Bộ Lịch Sử</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -404,40 +506,72 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
               Chọn ngày cụ thể:
             </span>
             
-            <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-700/80">
-              <label className="text-[11px] text-slate-400 font-medium">Từ:</label>
+            <div 
+              onClick={(e) => {
+                const input = e.currentTarget.querySelector('input');
+                try {
+                  input?.showPicker?.();
+                } catch {
+                  input?.focus();
+                }
+              }}
+              className="flex items-center gap-2 bg-slate-950 hover:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700/80 hover:border-cyan-500/60 transition-all cursor-pointer group"
+            >
+              <label className="text-[11px] text-slate-400 group-hover:text-cyan-300 font-medium cursor-pointer">Từ:</label>
               <input
                 type="date"
                 value={startDate}
+                onClick={(e) => {
+                  try {
+                    (e.target as HTMLInputElement).showPicker?.();
+                  } catch {}
+                }}
                 onChange={(e) => {
                   setStartDate(e.target.value);
                   setDatePreset('custom');
                   setSelectedMonth('all');
                   setCurrentPage(1);
                 }}
-                className="bg-transparent text-xs text-cyan-300 font-mono focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs text-cyan-300 font-mono focus:outline-none cursor-pointer [color-scheme:dark]"
               />
+              <Calendar className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform cursor-pointer" />
             </div>
 
-            <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-700/80">
-              <label className="text-[11px] text-slate-400 font-medium">Đến:</label>
+            <div 
+              onClick={(e) => {
+                const input = e.currentTarget.querySelector('input');
+                try {
+                  input?.showPicker?.();
+                } catch {
+                  input?.focus();
+                }
+              }}
+              className="flex items-center gap-2 bg-slate-950 hover:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700/80 hover:border-cyan-500/60 transition-all cursor-pointer group"
+            >
+              <label className="text-[11px] text-slate-400 group-hover:text-cyan-300 font-medium cursor-pointer">Đến:</label>
               <input
                 type="date"
                 value={endDate}
+                onClick={(e) => {
+                  try {
+                    (e.target as HTMLInputElement).showPicker?.();
+                  } catch {}
+                }}
                 onChange={(e) => {
                   setEndDate(e.target.value);
                   setDatePreset('custom');
                   setSelectedMonth('all');
                   setCurrentPage(1);
                 }}
-                className="bg-transparent text-xs text-cyan-300 font-mono focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs text-cyan-300 font-mono focus:outline-none cursor-pointer [color-scheme:dark]"
               />
+              <Calendar className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform cursor-pointer" />
             </div>
 
             {(startDate || endDate || selectedMonth !== 'all') && (
               <button
                 onClick={() => applyPreset('all')}
-                className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/30 transition-all"
+                className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/30 transition-all hover:bg-amber-500/20"
               >
                 ✕ Xóa bộ lọc ngày
               </button>
@@ -557,28 +691,56 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
           />
         </div>
 
-        {/* Type Filter Pills for Campaign Mode */}
+        {/* Status and Type Filter Pills for Campaign Mode */}
         {viewMode === 'campaigns' ? (
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-            {[
-              { id: 'all', label: 'Tất Cả Loại' },
-              { id: 'search', label: 'Search' },
-              { id: 'pmax', label: 'PMax' },
-              { id: 'video', label: 'Video / Youtube' },
-              { id: 'display', label: 'Display' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedType(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                  selectedType === tab.id
-                    ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
-                    : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="flex items-center gap-3 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 flex-wrap sm:flex-nowrap">
+            {/* Status Filter */}
+            <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+              {[
+                { id: 'enabled', label: `Đang chạy (${enabledCount})` },
+                { id: 'all', label: `Tất cả (${totalCount})` },
+                { id: 'paused', label: `Tạm dừng (${pausedCount})` },
+              ].map((st) => (
+                <button
+                  key={st.id}
+                  onClick={() => setStatusFilter(st.id as any)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+                    statusFilter === st.id
+                      ? st.id === 'enabled'
+                        ? 'bg-emerald-600 text-white shadow-md'
+                        : st.id === 'paused'
+                        ? 'bg-amber-600 text-white shadow-md'
+                        : 'bg-indigo-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {st.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Type Filter */}
+            <div className="flex items-center gap-1">
+              {[
+                { id: 'all', label: 'Tất Cả Loại' },
+                { id: 'search', label: 'Search' },
+                { id: 'pmax', label: 'PMax' },
+                { id: 'video', label: 'Video' },
+                { id: 'display', label: 'Display' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedType(tab.id)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                    selectedType === tab.id
+                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
+                      : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="text-xs text-slate-400 font-medium flex items-center gap-2">
@@ -598,8 +760,10 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
               <Table className="w-4 h-4 text-cyan-400" />
               Báo Cáo Hiệu Suất Chiến Dịch (Chuẩn Google Ads)
             </h3>
-            <span className="text-xs text-slate-400">
-              {filteredCampaigns.length} chiến dịch
+            <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+              <span>Đang hiển thị:</span>
+              <span className="text-emerald-400 font-black">{filteredCampaigns.length}</span>
+              <span>/ {totalCount} chiến dịch</span>
             </span>
           </div>
 
@@ -617,6 +781,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
                   <th className="py-3.5 px-3 text-right">Lượt Chuyển Đổi</th>
                   <th className="py-3.5 px-3 text-right">Chi Phí / Lượt Chuyển Đổi</th>
                   <th className="py-3.5 px-3 text-right">Tỷ Lệ Chuyển Đổi</th>
+                  <th className="py-3.5 px-3 text-right">AI Phân Tích</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
@@ -692,6 +857,21 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
                     <td className="py-3.5 px-3 text-right font-bold text-purple-300">
                       {camp.convRate || '0.00%'}
                     </td>
+
+                    {/* AI Audit Action */}
+                    <td className="py-3.5 px-3 text-right">
+                      <button
+                        onClick={() => {
+                          setAiFocusCampaign(camp);
+                          setIsAiModalOpen(true);
+                        }}
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-white border border-indigo-500/30 inline-flex items-center gap-1 transition-all shadow-sm cursor-pointer"
+                        title="Dùng AI phân tích riêng chiến dịch này"
+                      >
+                        <Sparkles className="w-3 h-3 text-amber-300" />
+                        <span>AI Audit</span>
+                      </button>
+                    </td>
                   </tr>
                 ))}
 
@@ -726,6 +906,9 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
                   </td>
                   <td className="py-4 px-3 text-right text-purple-300 font-black">
                     {avgConvRate}
+                  </td>
+                  <td className="py-4 px-3 text-right text-slate-500 font-medium">
+                    --
                   </td>
                 </tr>
               </tbody>
@@ -937,6 +1120,34 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit }) => 
           </div>
         </div>
       )}
+
+      {/* AI CAMPAIGN ANALYST & OPTIMIZATION MODAL */}
+      <CampaignAiAnalystModal
+        isOpen={isAiModalOpen}
+        onClose={() => {
+          setIsAiModalOpen(false);
+          setAiFocusCampaign(null);
+        }}
+        campaigns={filteredCampaigns}
+        summaryMetrics={{
+          totalSpent,
+          totalConversions,
+          totalClicks,
+          totalImpressions,
+          avgCpa,
+          avgCpc,
+          avgCtr,
+          avgConvRate,
+        }}
+        timeRangeLabel={
+          selectedMonth !== 'all'
+            ? `Tháng ${selectedMonth}/2026`
+            : startDate && endDate
+            ? `${startDate} đến ${endDate}`
+            : 'Toàn bộ thời gian'
+        }
+        initialFocusCampaign={aiFocusCampaign}
+      />
     </div>
   );
 };
