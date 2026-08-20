@@ -51,6 +51,10 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
 
   const [campaigns, setCampaigns] = useState<CampaignItem[]>(DEFAULT_CAMPAIGNS);
   const [dailyRecords, setDailyRecords] = useState<DailyCampaignRecord[]>(generateMockDailyRecords());
+  const [searchTerms, setSearchTerms] = useState<any[]>([]);
+  const [keywords, setKeywords] = useState<any[]>([]);
+  const [hourlyData, setHourlyData] = useState<any[]>([]);
+  const [locationData, setLocationData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLive, setIsLive] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -84,6 +88,18 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
       }
       if (result.dailyRecords && result.dailyRecords.length > 0) {
         setDailyRecords(result.dailyRecords);
+      }
+      if (result.searchTerms && result.searchTerms.length > 0) {
+        setSearchTerms(result.searchTerms);
+      }
+      if (result.keywords && result.keywords.length > 0) {
+        setKeywords(result.keywords);
+      }
+      if (result.hourlyData && result.hourlyData.length > 0) {
+        setHourlyData(result.hourlyData);
+      }
+      if (result.locationData && result.locationData.length > 0) {
+        setLocationData(result.locationData);
       }
       setIsLive(result.isLive);
       setLastUpdated(result.lastUpdated);
@@ -696,6 +712,10 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
       <CampaignAi7DayAnalysis
         dailyRecords={dailyRecords}
         campaigns={campaigns}
+        searchTerms={searchTerms}
+        keywords={keywords}
+        hourlyData={hourlyData}
+        locationData={locationData}
         onApply7DayFilter={() => applyPreset('last7days')}
         onOpenDetailedAiModal={() => {
           setAiFocusCampaign(null);

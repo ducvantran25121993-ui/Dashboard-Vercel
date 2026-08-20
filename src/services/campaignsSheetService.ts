@@ -33,9 +33,68 @@ export interface DailyCampaignRecord {
   convRate?: string;
 }
 
+export interface SearchTermItem {
+  id: string;
+  campaign: string;
+  adGroup: string;
+  searchTerm: string;
+  matchType: string;
+  impressions: number;
+  clicks: number;
+  ctr: string;
+  avgCpc: number;
+  cost: number;
+  leads: number;
+  cpa: number;
+  isNegativeTrigger?: boolean;
+}
+
+export interface KeywordItem {
+  id: string;
+  campaign: string;
+  adGroup: string;
+  keyword: string;
+  matchType: string;
+  qualityScore: number | string;
+  landingExp: string;
+  adRelevance: string;
+  impressions: number;
+  clicks: number;
+  cost: number;
+  leads: number;
+  cpa: number;
+  status: string;
+}
+
+export interface HourlyItem {
+  dayOfWeek: string;
+  hour: string;
+  hourNum: number;
+  impressions: number;
+  clicks: number;
+  cost: number;
+  leads: number;
+  cpa: number;
+  isGoldenHour?: boolean;
+}
+
+export interface LocationItem {
+  campaign: string;
+  location: string;
+  impressions: number;
+  clicks: number;
+  cost: number;
+  leads: number;
+  cpa: number;
+}
+
 export interface CampaignFetchResult {
   campaigns: CampaignItem[];
   dailyRecords: DailyCampaignRecord[];
+  searchTerms: SearchTermItem[];
+  keywords: KeywordItem[];
+  hourlyData: HourlyItem[];
+  locationData: LocationItem[];
   totalSpent: number;
   totalLeads: number;
   totalClicks: number;
@@ -260,7 +319,132 @@ export function generateMockDailyRecords(): DailyCampaignRecord[] {
   return records.reverse(); // Newest first
 }
 
-// Helper to parse CSV format safely
+// Generate mock real-world search terms for Tam Duc Smile
+export function generateMockSearchTerms(): SearchTermItem[] {
+  const terms: Array<{ term: string; camp: string; adg: string; match: string; imp: number; clicks: number; cost: number; leads: number; isNeg?: boolean }> = [
+    { term: 'trồng răng implant toàn hàm all on 4 giá bao nhiêu', camp: 'Google Search - Trồng Răng Implant Toàn Hàm All-on-4 / All-on-6 (TP.HCM)', adg: 'Implant All-on-4', match: 'PHRASE', imp: 1840, clicks: 195, cost: 3200000, leads: 18, isNeg: false },
+    { term: 'cấy ghép implant nha khoa tâm đức smile có tốt không', camp: 'Google Search - Trồng Răng Implant Đơn Lẻ Straumann Thụy Sĩ', adg: 'Thương Hiệu & Uy Tín', match: 'PHRASE', imp: 1420, clicks: 168, cost: 2450000, leads: 15, isNeg: false },
+    { term: 'bảng giá bọc răng sứ cercon hcm 2026', camp: 'Performance Max - Bọc Răng Sứ Thẩm Mỹ Cao Cấp Cercon & Lava (Miền Tây)', adg: 'Bọc Sứ Cercon', match: 'PHRASE', imp: 2150, clicks: 230, cost: 2850000, leads: 22, isNeg: false },
+    { term: 'niềng răng trong suốt invisalign trả góp tphcm', camp: 'Google Search - Niềng Răng Trong Suốt Invisalign & Khay Trong', adg: 'Niềng Trong Suốt', match: 'PHRASE', imp: 1650, clicks: 142, cost: 2100000, leads: 12, isNeg: false },
+    { term: 'trồng răng implant straumann thụy sĩ giá rẻ nhất', camp: 'Google Search - Trồng Răng Implant Đơn Lẻ Straumann Thụy Sĩ', adg: 'Trụ Straumann', match: 'EXACT', imp: 980, clicks: 110, cost: 1750000, leads: 11, isNeg: false },
+    { term: 'nha khoa uy tín gần đây quận 10 chuyên cấy implant', camp: 'Google Ads - Nha Khoa Uy Tín Gần Đây Quận 10 - Tâm Đức Smile', adg: 'Nha Khoa Gần Đây Q10', match: 'PHRASE', imp: 1320, clicks: 145, cost: 1890000, leads: 14, isNeg: false },
+    { term: 'trồng răng implant miễn phí cho người nghèo ở đâu', camp: 'Google Search - Trồng Răng Implant Toàn Hàm All-on-4 / All-on-6 (TP.HCM)', adg: 'Implant Chung', match: 'BROAD', imp: 850, clicks: 76, cost: 1150000, leads: 0, isNeg: true },
+    { term: 'cách tự làm trắng răng tại nhà bằng baking soda', camp: 'Google Search - Tẩy Trắng Răng Laser Whitening Công Nghệ Đức', adg: 'Tẩy Trắng Răng', match: 'BROAD', imp: 1120, clicks: 88, cost: 980000, leads: 0, isNeg: true },
+    { term: 'học nghề phụ tá nha khoa lương bao nhiêu', camp: 'Google Ads - Nha Khoa Uy Tín Gần Đây Quận 1 - Tâm Đức Smile', adg: 'Chung', match: 'BROAD', imp: 620, clicks: 45, cost: 520000, leads: 0, isNeg: true },
+    { term: 'kinh nghiệm tự bọc răng sứ tại nhà', camp: 'Performance Max - Bọc Răng Sứ Thẩm Mỹ Cao Cấp Cercon & Lava (Miền Tây)', adg: 'Bọc Sứ', match: 'BROAD', imp: 710, clicks: 52, cost: 680000, leads: 0, isNeg: true },
+    { term: 'địa chỉ nhổ răng khôn không đau uy tín sài gòn', camp: 'Google Search - Nhổ Răng Khôn Không Đau Sóng Siêu Âm Piezotome', adg: 'Nhổ Răng Khôn Piezotome', match: 'PHRASE', imp: 1450, clicks: 160, cost: 1600000, leads: 19, isNeg: false },
+    { term: 'việt kiều về nước bọc răng sứ trọn gói đưa đón', camp: 'Google Ads - Khách Hàng Việt Kiều Hồi Hương Làm Răng Trọn Gói', adg: 'Việt Kiều Làm Răng', match: 'PHRASE', imp: 890, clicks: 105, cost: 2350000, leads: 16, isNeg: false },
+    { term: 'trồng răng implant cho người già 70 tuổi bị tiểu đường', camp: 'Google Search - Trồng Răng Implant Cho Người Tiểu Đường, Tim Mạch', adg: 'Implant Tiểu Đường', match: 'PHRASE', imp: 740, clicks: 82, cost: 1350000, leads: 9, isNeg: false },
+  ];
+
+  return terms.map((t, idx) => {
+    const cpa = t.leads > 0 ? Math.round(t.cost / t.leads) : 0;
+    const avgCpc = t.clicks > 0 ? Math.round(t.cost / t.clicks) : 0;
+    const ctr = t.imp > 0 ? `${((t.clicks / t.imp) * 100).toFixed(2)}%` : '0.00%';
+    return {
+      id: `st-${idx + 1}`,
+      campaign: t.camp,
+      adGroup: t.adg,
+      searchTerm: t.term,
+      matchType: t.match,
+      impressions: t.imp,
+      clicks: t.clicks,
+      ctr,
+      avgCpc,
+      cost: t.cost,
+      leads: t.leads,
+      cpa,
+      isNegativeTrigger: t.isNeg ?? (t.leads === 0 && t.cost > 400000),
+    };
+  });
+}
+
+// Generate mock real-world keywords with Quality Score
+export function generateMockKeywords(): KeywordItem[] {
+  const kws: Array<{ kw: string; camp: string; adg: string; match: string; qs: number; landing: string; adRel: string; imp: number; clicks: number; cost: number; leads: number; status: string }> = [
+    { kw: 'trồng răng implant', camp: 'Google Search - Trồng Răng Implant Toàn Hàm All-on-4 / All-on-6 (TP.HCM)', adg: 'Implant All-on-4', match: 'PHRASE', qs: 9, landing: 'Trên mức trung bình', adRel: 'Trên mức trung bình', imp: 3400, clicks: 380, cost: 5800000, leads: 32, status: 'Đang chạy' },
+    { kw: 'cấy ghép implant', camp: 'Google Search - Trồng Răng Implant Đơn Lẻ Straumann Thụy Sĩ', adg: 'Trụ Straumann', match: 'PHRASE', qs: 8, landing: 'Trên mức trung bình', adRel: 'Trung bình', imp: 2900, clicks: 310, cost: 4600000, leads: 26, status: 'Đang chạy' },
+    { kw: '[bảng giá implant 2026]', camp: 'Google Search - Giá Trồng Răng Implant Bao Nhiêu 1 Trụ 2026', adg: 'Bảng Giá Implant', match: 'EXACT', qs: 10, landing: 'Trên mức trung bình', adRel: 'Trên mức trung bình', imp: 1800, clicks: 240, cost: 3100000, leads: 24, status: 'Đang chạy' },
+    { kw: 'bọc răng sứ cercon', camp: 'Performance Max - Bọc Răng Sứ Thẩm Mỹ Cao Cấp Cercon & Lava (Miền Tây)', adg: 'Bọc Sứ Cercon', match: 'PHRASE', qs: 9, landing: 'Trên mức trung bình', adRel: 'Trên mức trung bình', imp: 2700, clicks: 295, cost: 3600000, leads: 25, status: 'Đang chạy' },
+    { kw: 'niềng răng invisalign', camp: 'Google Search - Niềng Răng Trong Suốt Invisalign & Khay Trong', adg: 'Niềng Trong Suốt', match: 'PHRASE', qs: 8, landing: 'Trung bình', adRel: 'Trên mức trung bình', imp: 2200, clicks: 190, cost: 2900000, leads: 16, status: 'Đang chạy' },
+    { kw: 'nha khoa uy tín', camp: 'Google Ads - Nha Khoa Uy Tín Gần Đây Quận 1 - Tâm Đức Smile', adg: 'Chung', match: 'BROAD', qs: 5, landing: 'Dưới mức trung bình', adRel: 'Trung bình', imp: 4100, clicks: 280, cost: 3800000, leads: 11, status: 'Đang chạy' },
+    { kw: 'làm răng trả góp', camp: 'Google Search - Niềng Răng Trả Góp 0% Lãi Suất TPHCM', adg: 'Trả Góp', match: 'PHRASE', qs: 8, landing: 'Trên mức trung bình', adRel: 'Trên mức trung bình', imp: 1900, clicks: 210, cost: 2400000, leads: 18, status: 'Đang chạy' },
+    { kw: 'nhổ răng khôn không đau', camp: 'Google Search - Nhổ Răng Khôn Không Đau Sóng Siêu Âm Piezotome', adg: 'Nhổ Răng Khôn Piezotome', match: 'PHRASE', qs: 9, landing: 'Trên mức trung bình', adRel: 'Trên mức trung bình', imp: 1950, clicks: 215, cost: 2150000, leads: 22, status: 'Đang chạy' },
+    { kw: 'tẩy trắng răng laser', camp: 'Google Search - Tẩy Trắng Răng Laser Whitening Công Nghệ Đức', adg: 'Tẩy Trắng Răng', match: 'PHRASE', qs: 7, landing: 'Trung bình', adRel: 'Trung bình', imp: 1400, clicks: 130, cost: 1450000, leads: 9, status: 'Đang chạy' },
+    { kw: 'chữa đau răng', camp: 'Google Search - Điều Trị Tủy Răng & Hàn Trám Răng Thẩm Mỹ', adg: 'Chữa Tủy Trám Răng', match: 'BROAD', qs: 4, landing: 'Dưới mức trung bình', adRel: 'Dưới mức trung bình', imp: 2600, clicks: 150, cost: 1800000, leads: 4, status: 'Tạm dừng' },
+  ];
+
+  return kws.map((k, idx) => {
+    const cpa = k.leads > 0 ? Math.round(k.cost / k.leads) : 0;
+    return {
+      id: `kw-${idx + 1}`,
+      campaign: k.camp,
+      adGroup: k.adg,
+      keyword: k.kw,
+      matchType: k.match,
+      qualityScore: k.qs,
+      landingExp: k.landing,
+      adRelevance: k.adRel,
+      impressions: k.imp,
+      clicks: k.clicks,
+      cost: k.cost,
+      leads: k.leads,
+      cpa,
+      status: k.status,
+    };
+  });
+}
+
+// Generate mock hourly peak performance
+export function generateMockHourlyData(): HourlyItem[] {
+  const hours = [
+    { hour: '0h', h: 0, leads: 0, cost: 180000, clicks: 12, imp: 210, dow: 'Thứ 2 - Chủ Nhật' },
+    { hour: '1h', h: 1, leads: 0, cost: 120000, clicks: 8, imp: 140, dow: 'Thứ 2 - Chủ Nhật' },
+    { hour: '2h', h: 2, leads: 0, cost: 90000, clicks: 5, imp: 90, dow: 'Thứ 2 - Chủ Nhật' },
+    { hour: '6h', h: 6, leads: 2, cost: 350000, clicks: 28, imp: 450, dow: 'Thứ 2 - Chủ Nhật' },
+    { hour: '8h', h: 8, leads: 14, cost: 1850000, clicks: 145, imp: 2200, dow: 'Thứ 2 - Thứ 6' },
+    { hour: '9h', h: 9, leads: 28, cost: 3400000, clicks: 265, imp: 4100, dow: 'Thứ 2 - Thứ 6' },
+    { hour: '10h', h: 10, leads: 32, cost: 3850000, clicks: 290, imp: 4600, dow: 'Thứ 2 - Thứ 6' },
+    { hour: '11h', h: 11, leads: 24, cost: 2900000, clicks: 220, imp: 3500, dow: 'Thứ 2 - Thứ 6' },
+    { hour: '12h', h: 12, leads: 12, cost: 1650000, clicks: 130, imp: 2100, dow: 'Thứ 2 - Thứ 6' },
+    { hour: '14h', h: 14, leads: 26, cost: 3200000, clicks: 245, imp: 3900, dow: 'Thứ 2 - Thứ 6' },
+    { hour: '15h', h: 15, leads: 30, cost: 3600000, clicks: 275, imp: 4300, dow: 'Thứ 2 - Thứ 6' },
+    { hour: '16h', h: 16, leads: 22, cost: 2750000, clicks: 210, imp: 3300, dow: 'Thứ 2 - Thứ 6' },
+    { hour: '19h', h: 19, leads: 20, cost: 2500000, clicks: 195, imp: 3100, dow: 'Thứ 2 - Chủ Nhật' },
+    { hour: '20h', h: 20, leads: 25, cost: 3100000, clicks: 240, imp: 3800, dow: 'Thứ 2 - Chủ Nhật' },
+    { hour: '21h', h: 21, leads: 18, cost: 2300000, clicks: 175, imp: 2800, dow: 'Thứ 2 - Chủ Nhật' },
+    { hour: '22h', h: 22, leads: 8, cost: 1200000, clicks: 95, imp: 1500, dow: 'Thứ 2 - Chủ Nhật' },
+    { hour: '23h', h: 23, leads: 2, cost: 550000, clicks: 42, imp: 680, dow: 'Thứ 2 - Chủ Nhật' },
+  ];
+
+  return hours.map((h) => {
+    const cpa = h.leads > 0 ? Math.round(h.cost / h.leads) : 0;
+    const isGoldenHour = (h.h >= 8 && h.h <= 11) || (h.h >= 14 && h.h <= 16) || (h.h >= 19 && h.h <= 21);
+    return {
+      dayOfWeek: h.dow,
+      hour: h.hour,
+      hourNum: h.h,
+      impressions: h.imp,
+      clicks: h.clicks,
+      cost: h.cost,
+      leads: h.leads,
+      cpa,
+      isGoldenHour,
+    };
+  });
+}
+
+// Generate mock location data
+export function generateMockLocationData(): LocationItem[] {
+  return [
+    { campaign: 'Google Search - Toàn Hệ Thống', location: 'Hồ Chí Minh (TP.HCM)', impressions: 24500, clicks: 2200, cost: 28500000, leads: 190, cpa: 150000 },
+    { campaign: 'Google Search - Toàn Hệ Thống', location: 'Bình Dương (Thủ Dầu Một / Dĩ An)', impressions: 9800, clicks: 860, cost: 10800000, leads: 74, cpa: 145945 },
+    { campaign: 'Google Search - Toàn Hệ Thống', location: 'Cần Thơ (Ninh Kiều)', impressions: 7200, clicks: 640, cost: 7900000, leads: 52, cpa: 151923 },
+    { campaign: 'Google Search - Toàn Hệ Thống', location: 'Đồng Nai (Biên Hòa)', impressions: 6500, clicks: 580, cost: 7100000, leads: 48, cpa: 147916 },
+    { campaign: 'Google Search - Toàn Hệ Thống', location: 'Tiền Giang (Mỹ Tho)', impressions: 4200, clicks: 370, cost: 4400000, leads: 31, cpa: 141935 },
+    { campaign: 'Google Search - Toàn Hệ Thống', location: 'Bà Rịa - Vũng Tàu', impressions: 3800, clicks: 330, cost: 4100000, leads: 26, cpa: 157692 },
+  ];
+}
 function parseCSV(csv: string): string[][] {
   const lines: string[] = [];
   let currentLine = '';
@@ -326,17 +510,221 @@ export function formatVND(amount: number): string {
   return `${Math.round(amount).toLocaleString('vi-VN')} đ`;
 }
 
-// Fetch and parse campaigns Google Sheet with Daily records
+// Parse Search_Terms CSV
+function parseSearchTermsSheet(csvText: string): SearchTermItem[] {
+  const rows = parseCSV(csvText);
+  if (rows.length < 2) return generateMockSearchTerms();
+
+  const header = rows[0].map(h => h.toLowerCase().trim());
+  const colCamp = header.findIndex(h => h.includes('campaign') || h.includes('chiến dịch'));
+  const colAdg = header.findIndex(h => h.includes('ad group') || h.includes('nhóm'));
+  const colTerm = header.findIndex(h => h.includes('search term') || h.includes('cụm từ') || h.includes('từ khóa tìm'));
+  const colMatch = header.findIndex(h => h.includes('match') || h.includes('đối sánh'));
+  const colImp = header.findIndex(h => h.includes('impression') || h.includes('hiển thị'));
+  const colClicks = header.findIndex(h => h.includes('click') || h.includes('nhấp'));
+  const colCost = header.findIndex(h => h.includes('cost') || h.includes('chi phí') || h.includes('tiền'));
+  const colConv = header.findIndex(h => h.includes('conversion') || h.includes('chuyển đổi') || h.includes('lead'));
+
+  const items: SearchTermItem[] = [];
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    if (!row || row.length === 0) continue;
+    const term = (colTerm >= 0 ? row[colTerm] : row[2]) || '';
+    if (!term.trim() || term.toLowerCase().includes('total') || term.toLowerCase().includes('tổng')) continue;
+
+    const camp = (colCamp >= 0 ? row[colCamp] : row[0]) || 'Google Search';
+    const adg = (colAdg >= 0 ? row[colAdg] : row[1]) || 'Chung';
+    const match = (colMatch >= 0 ? row[colMatch] : 'PHRASE') || 'PHRASE';
+    const imp = Math.round(parseVal(colImp >= 0 ? row[colImp] : '0'));
+    const clicks = Math.round(parseVal(colClicks >= 0 ? row[colClicks] : '0'));
+    let costRaw = parseVal(colCost >= 0 ? row[colCost] : '0');
+    const cost = costRaw > 50000000 ? Math.round(costRaw / 1000000) : Math.round(costRaw);
+    const leads = Math.round(parseVal(colConv >= 0 ? row[colConv] : '0') * 10) / 10;
+    const cpa = leads > 0 ? Math.round(cost / leads) : 0;
+    const avgCpc = clicks > 0 ? Math.round(cost / clicks) : 0;
+    const ctr = imp > 0 ? `${((clicks / imp) * 100).toFixed(2)}%` : '0.00%';
+
+    items.push({
+      id: `st-${r}`,
+      campaign: camp,
+      adGroup: adg,
+      searchTerm: term,
+      matchType: match,
+      impressions: imp,
+      clicks,
+      ctr,
+      avgCpc,
+      cost,
+      leads,
+      cpa,
+      isNegativeTrigger: leads === 0 && cost > 400000,
+    });
+  }
+
+  return items.length > 0 ? items : generateMockSearchTerms();
+}
+
+// Parse Keywords CSV
+function parseKeywordsSheet(csvText: string): KeywordItem[] {
+  const rows = parseCSV(csvText);
+  if (rows.length < 2) return generateMockKeywords();
+
+  const header = rows[0].map(h => h.toLowerCase().trim());
+  const colCamp = header.findIndex(h => h.includes('campaign') || h.includes('chiến dịch'));
+  const colAdg = header.findIndex(h => h.includes('ad group') || h.includes('nhóm'));
+  const colKw = header.findIndex(h => h.includes('keyword') || h.includes('từ khóa') || h.includes('text'));
+  const colMatch = header.findIndex(h => h.includes('match') || h.includes('đối sánh'));
+  const colQs = header.findIndex(h => h.includes('quality') || h.includes('điểm chất lượng') || h.includes('score'));
+  const colLanding = header.findIndex(h => h.includes('landing') || h.includes('trang đích'));
+  const colAdRel = header.findIndex(h => h.includes('relevance') || h.includes('liên quan'));
+  const colImp = header.findIndex(h => h.includes('impression') || h.includes('hiển thị'));
+  const colClicks = header.findIndex(h => h.includes('click') || h.includes('nhấp'));
+  const colCost = header.findIndex(h => h.includes('cost') || h.includes('chi phí'));
+  const colConv = header.findIndex(h => h.includes('conversion') || h.includes('chuyển đổi') || h.includes('lead'));
+  const colStatus = header.findIndex(h => h.includes('status') || h.includes('trạng thái'));
+
+  const items: KeywordItem[] = [];
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    if (!row || row.length === 0) continue;
+    const kw = (colKw >= 0 ? row[colKw] : row[2]) || '';
+    if (!kw.trim() || kw.toLowerCase().includes('total') || kw.toLowerCase().includes('tổng')) continue;
+
+    const camp = (colCamp >= 0 ? row[colCamp] : row[0]) || 'Google Search';
+    const adg = (colAdg >= 0 ? row[colAdg] : row[1]) || 'Nhóm';
+    const match = (colMatch >= 0 ? row[colMatch] : 'PHRASE') || 'PHRASE';
+    const qsRaw = colQs >= 0 ? row[colQs] : '8';
+    const qs = !isNaN(parseFloat(qsRaw)) ? Math.round(parseFloat(qsRaw)) : 8;
+    const landing = (colLanding >= 0 ? row[colLanding] : 'Trung bình') || 'Trung bình';
+    const adRel = (colAdRel >= 0 ? row[colAdRel] : 'Trên mức trung bình') || 'Trên mức trung bình';
+    const imp = Math.round(parseVal(colImp >= 0 ? row[colImp] : '0'));
+    const clicks = Math.round(parseVal(colClicks >= 0 ? row[colClicks] : '0'));
+    let costRaw = parseVal(colCost >= 0 ? row[colCost] : '0');
+    const cost = costRaw > 50000000 ? Math.round(costRaw / 1000000) : Math.round(costRaw);
+    const leads = Math.round(parseVal(colConv >= 0 ? row[colConv] : '0') * 10) / 10;
+    const cpa = leads > 0 ? Math.round(cost / leads) : 0;
+    const status = (colStatus >= 0 ? row[colStatus] : 'Đang chạy') || 'Đang chạy';
+
+    items.push({
+      id: `kw-${r}`,
+      campaign: camp,
+      adGroup: adg,
+      keyword: kw,
+      matchType: match,
+      qualityScore: qs,
+      landingExp: landing,
+      adRelevance: adRel,
+      impressions: imp,
+      clicks,
+      cost,
+      leads,
+      cpa,
+      status,
+    });
+  }
+
+  return items.length > 0 ? items : generateMockKeywords();
+}
+
+// Parse Hourly Performance CSV
+function parseHourlySheet(csvText: string): HourlyItem[] {
+  const rows = parseCSV(csvText);
+  if (rows.length < 2) return generateMockHourlyData();
+
+  const header = rows[0].map(h => h.toLowerCase().trim());
+  const colDow = header.findIndex(h => h.includes('day of week') || h.includes('thứ') || h.includes('ngày'));
+  const colHour = header.findIndex(h => h.includes('hour') || h.includes('giờ'));
+  const colImp = header.findIndex(h => h.includes('impression') || h.includes('hiển thị'));
+  const colClicks = header.findIndex(h => h.includes('click') || h.includes('nhấp'));
+  const colCost = header.findIndex(h => h.includes('cost') || h.includes('chi phí'));
+  const colConv = header.findIndex(h => h.includes('conversion') || h.includes('chuyển đổi') || h.includes('lead'));
+
+  const items: HourlyItem[] = [];
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    if (!row || row.length === 0) continue;
+    const hourStr = (colHour >= 0 ? row[colHour] : row[1]) || `${r % 24}h`;
+    const hNum = parseInt(hourStr.replace(/\D/g, ''), 10) || 0;
+    const dow = (colDow >= 0 ? row[colDow] : 'Thứ 2 - Thứ 6') || 'Thứ 2 - Thứ 6';
+    const imp = Math.round(parseVal(colImp >= 0 ? row[colImp] : '0'));
+    const clicks = Math.round(parseVal(colClicks >= 0 ? row[colClicks] : '0'));
+    let costRaw = parseVal(colCost >= 0 ? row[colCost] : '0');
+    const cost = costRaw > 50000000 ? Math.round(costRaw / 1000000) : Math.round(costRaw);
+    const leads = Math.round(parseVal(colConv >= 0 ? row[colConv] : '0') * 10) / 10;
+    const cpa = leads > 0 ? Math.round(cost / leads) : 0;
+    const isGoldenHour = (hNum >= 8 && hNum <= 11) || (hNum >= 14 && hNum <= 16) || (hNum >= 19 && hNum <= 21);
+
+    items.push({
+      dayOfWeek: dow,
+      hour: `${hNum}h`,
+      hourNum: hNum,
+      impressions: imp,
+      clicks,
+      cost,
+      leads,
+      cpa,
+      isGoldenHour,
+    });
+  }
+
+  return items.length > 0 ? items : generateMockHourlyData();
+}
+
+// Parse Location Performance CSV
+function parseLocationSheet(csvText: string): LocationItem[] {
+  const rows = parseCSV(csvText);
+  if (rows.length < 2) return generateMockLocationData();
+
+  const header = rows[0].map(h => h.toLowerCase().trim());
+  const colCamp = header.findIndex(h => h.includes('campaign') || h.includes('chiến dịch'));
+  const colLoc = header.findIndex(h => h.includes('location') || h.includes('vị trí') || h.includes('khu vực') || h.includes('tỉnh'));
+  const colImp = header.findIndex(h => h.includes('impression') || h.includes('hiển thị'));
+  const colClicks = header.findIndex(h => h.includes('click') || h.includes('nhấp'));
+  const colCost = header.findIndex(h => h.includes('cost') || h.includes('chi phí'));
+  const colConv = header.findIndex(h => h.includes('conversion') || h.includes('chuyển đổi') || h.includes('lead'));
+
+  const items: LocationItem[] = [];
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    if (!row || row.length === 0) continue;
+    const loc = (colLoc >= 0 ? row[colLoc] : row[1]) || '';
+    if (!loc.trim() || loc.toLowerCase().includes('total') || loc.toLowerCase().includes('tổng')) continue;
+
+    const camp = (colCamp >= 0 ? row[colCamp] : row[0]) || 'Google Search';
+    const imp = Math.round(parseVal(colImp >= 0 ? row[colImp] : '0'));
+    const clicks = Math.round(parseVal(colClicks >= 0 ? row[colClicks] : '0'));
+    let costRaw = parseVal(colCost >= 0 ? row[colCost] : '0');
+    const cost = costRaw > 50000000 ? Math.round(costRaw / 1000000) : Math.round(costRaw);
+    const leads = Math.round(parseVal(colConv >= 0 ? row[colConv] : '0') * 10) / 10;
+    const cpa = leads > 0 ? Math.round(cost / leads) : 0;
+
+    items.push({
+      campaign: camp,
+      location: loc,
+      impressions: imp,
+      clicks,
+      cost,
+      leads,
+      cpa,
+    });
+  }
+
+  return items.length > 0 ? items : generateMockLocationData();
+}
+
+// Fetch and parse campaigns Google Sheet with Daily records, Search Terms, Keywords, Hourly & Location performance
 export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_URL): Promise<CampaignFetchResult> {
   const spreadsheetMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
   const spreadsheetId = spreadsheetMatch ? spreadsheetMatch[1] : '1w182-MqSp-W1lL3885aglEhbABwhx4bsasblqirJnMg';
   
   const gidMatch = url.match(/[#&?]gid=([0-9]+)/);
   const gid = gidMatch ? gidMatch[1] : '0';
+  const cacheBust = Date.now();
 
   const exportUrls = [
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}&_t=${cacheBust}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}&_t=${cacheBust}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('Campaigns')}&_t=${cacheBust}`,
   ];
 
   let csvText = '';
@@ -344,10 +732,11 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
 
   for (const expUrl of exportUrls) {
     try {
-      const resp = await fetch(expUrl);
+      const resp = await fetch(expUrl, { cache: 'no-store' });
       if (resp.ok) {
-        csvText = await resp.text();
-        if (csvText && csvText.length > 20 && !csvText.includes('<!DOCTYPE html>')) {
+        const txt = await resp.text();
+        if (txt && txt.length > 20 && !txt.includes('<!DOCTYPE html>')) {
+          csvText = txt;
           isLive = true;
           break;
         }
@@ -357,7 +746,55 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
     }
   }
 
+  // Fetch optional sub-sheets: Search_Terms, Keywords, Hourly_Performance, Location_Performance
+  const fetchSubSheet = async (sheetName: string): Promise<string> => {
+    const urls = [
+      `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}&_t=${cacheBust}`,
+      `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&sheet=${encodeURIComponent(sheetName)}&_t=${cacheBust}`,
+    ];
+    for (const u of urls) {
+      try {
+        const res = await fetch(u, { cache: 'no-store' });
+        if (res.ok) {
+          const t = await res.text();
+          if (t && t.length > 20 && !t.includes('<!DOCTYPE html>') && !t.includes('Error')) {
+            return t;
+          }
+        }
+      } catch {
+        // continue
+      }
+    }
+    return '';
+  };
+
+  let searchTermsCsv = '';
+  let keywordsCsv = '';
+  let hourlyCsv = '';
+  let locationCsv = '';
+
+  if (isLive) {
+    try {
+      const [stRes, kwRes, hRes, locRes] = await Promise.all([
+        fetchSubSheet('Search_Terms'),
+        fetchSubSheet('Keywords'),
+        fetchSubSheet('Hourly_Performance'),
+        fetchSubSheet('Location_Performance'),
+      ]);
+      searchTermsCsv = stRes;
+      keywordsCsv = kwRes;
+      hourlyCsv = hRes;
+      locationCsv = locRes;
+    } catch {
+      // ignore
+    }
+  }
+
   const defaultMockDaily = generateMockDailyRecords();
+  const searchTerms = searchTermsCsv ? parseSearchTermsSheet(searchTermsCsv) : generateMockSearchTerms();
+  const keywords = keywordsCsv ? parseKeywordsSheet(keywordsCsv) : generateMockKeywords();
+  const hourlyData = hourlyCsv ? parseHourlySheet(hourlyCsv) : generateMockHourlyData();
+  const locationData = locationCsv ? parseLocationSheet(locationCsv) : generateMockLocationData();
 
   if (!isLive || !csvText) {
     const totalSpent = DEFAULT_CAMPAIGNS.reduce((s, c) => s + c.spentNum, 0);
@@ -370,6 +807,10 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
     return {
       campaigns: DEFAULT_CAMPAIGNS,
       dailyRecords: defaultMockDaily,
+      searchTerms,
+      keywords,
+      hourlyData,
+      locationData,
       totalSpent,
       totalLeads,
       totalClicks,
@@ -389,6 +830,10 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
     return {
       campaigns: DEFAULT_CAMPAIGNS,
       dailyRecords: defaultMockDaily,
+      searchTerms,
+      keywords,
+      hourlyData,
+      locationData,
       totalSpent: DEFAULT_CAMPAIGNS.reduce((s, c) => s + c.spentNum, 0),
       totalLeads: DEFAULT_CAMPAIGNS.reduce((s, c) => s + c.leadsNum, 0),
       totalClicks: DEFAULT_CAMPAIGNS.reduce((s, c) => s + (c.clicks || 0), 0),
@@ -554,6 +999,10 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
   return {
     campaigns: campaignsToUse,
     dailyRecords: dailyToUse,
+    searchTerms,
+    keywords,
+    hourlyData,
+    locationData,
     totalSpent,
     totalLeads,
     totalClicks,

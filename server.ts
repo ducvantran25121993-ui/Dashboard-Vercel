@@ -408,6 +408,10 @@ app.post('/api/analyze-7days-campaigns', async (req, res) => {
       topCampaigns, 
       warningCampaigns, 
       allCampaignsSample,
+      searchTerms,
+      keywords,
+      hourlyData,
+      locationData,
       dateRangeLabel 
     } = req.body;
 
@@ -452,6 +456,18 @@ ${JSON.stringify(warningCampaigns || [], null, 2)}
 4. MẪU CÁC CHIẾN DỊCH TIÊU BIỂU KHÁC (BAO GỒM SEARCH & CÁC LOẠI HÌNH KHÁC):
 ${JSON.stringify(allCampaignsSample || [], null, 2)}
 
+5. CỤM TỪ TÌM KIẾM THỰC TẾ (SEARCH TERMS & TRUY VẤN NGƯỜI DÙNG):
+${JSON.stringify((searchTerms || []).slice(0, 15), null, 2)}
+
+6. TỪ KHÓA & ĐIỂM CHẤT LƯỢNG (KEYWORDS & QUALITY SCORE 1-10):
+${JSON.stringify((keywords || []).slice(0, 15), null, 2)}
+
+7. HIỆU SUẤT THEO KHUNG GIỜ VÀNG (HOURLY PEAK PERFORMANCE):
+${JSON.stringify((hourlyData || []).slice(0, 24), null, 2)}
+
+8. PHÂN BỐ KHU VỰC ĐỊA LÝ (LOCATION PERFORMANCE):
+${JSON.stringify((locationData || []).slice(0, 10), null, 2)}
+
 ---
 YÊU CẦU BÁO CÁO:
 Hãy xây dựng bản Báo Cáo & Đề Xuất Tối Ưu Chiến Dịch sau 7 ngày với các phần rõ ràng như sau:
@@ -462,9 +478,10 @@ Hãy xây dựng bản Báo Cáo & Đề Xuất Tối Ưu Chiến Dịch sau 7 n
 
 ### 2. 🔍 PHÂN TÍCH CHUYÊN SÂU & CHIẾN LƯỢC TỐI ƯU CHIẾN DỊCH SEARCH (TÌM KIẾM)
 - **Đánh giá hiệu suất mạng Tìm Kiếm (Search Network)**: Phân tích chỉ số CTR, CPC trung bình và tỷ lệ chuyển đổi của các chiến dịch Search.
-- **Tối ưu Loại Đối Sánh Từ Khóa (Match Types)**: Hướng dẫn cấu trúc từ khóa chính xác [Exact] và cụm từ "Phrase", hạn chế rò rỉ ngân sách do Broad Match.
-- **Tối ưu Tỷ lệ hiển thị đầu trang (Search Impression Share & Absolute Top IS)**: Đề xuất chiến lược nâng thứ hạng tìm kiếm cho các từ khóa "hot" có ý định mua cao (High Intent).
-- **Tối ưu Mẫu Quảng Cáo Thích Ứng (RSA - Responsive Search Ads)**: Đề xuất cải thiện Điểm chất lượng (Ad Strength: Excellent), tối ưu 15 tiêu đề (Headlines) và 4 mô tả (Descriptions) đánh vào tâm lý khách hàng (bác sĩ giỏi, không đau, giá minh bạch, trả góp).
+- **Phân tích Cụm Từ Tìm Kiếm Thực Tế (Search Terms)**: Chỉ ra các truy vấn chuyển đổi tốt nhất cần thêm vào từ khóa chính thức, và các truy vấn rác cần phủ định ngay.
+- **Tối ưu Điểm Chất Lượng (Quality Score 1-10)**: Đánh giá tỷ lệ trải nghiệm trang đích (Landing Page) & độ liên quan mẫu quảng cáo (Ad Relevance).
+- **Phân Tích Khung Giờ Vàng (Hourly Bidding Schedule)**: Giờ nào tạo nhiều lead rẻ nhất (đề xuất tăng bid +20-30%), giờ nào rò rỉ ngân sách (đề xuất giảm bid hoặc tắt).
+- **Tối ưu Mẫu Quảng Cáo Thích Ứng (RSA - Responsive Search Ads)**: Đề xuất cải thiện Điểm chất lượng (Ad Strength: Excellent), tối ưu tiêu đề và mô tả đánh trúng tâm lý bệnh nhân nha khoa.
 
 ### 3. 🚀 ĐỀ XUẤT SCALE & TĂNG NGÂN SÁCH (Top Chiến Dịch Thắng Lớn)
 - Chỉ rõ 2-3 chiến dịch xuất sắc nhất nên tăng ngân sách bao nhiêu % (ví dụ: +15% đến +25%).
