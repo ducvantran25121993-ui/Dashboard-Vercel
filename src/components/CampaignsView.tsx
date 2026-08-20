@@ -229,6 +229,14 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
     });
   }, [dailyRecords, searchQuery, selectedMonth, startDate, endDate]);
 
+  // Active campaigns running count (currently 59, automatically scales as new campaigns are added)
+  const activeCampaignsCount = useMemo(() => {
+    const activeOnly = campaigns.filter(
+      (c) => c.status === 'Đang chạy' || !c.status.toLowerCase().includes('dừng')
+    );
+    return activeOnly.length > 0 ? activeOnly.length : campaigns.length;
+  }, [campaigns]);
+
   // Paginated daily records
   const paginatedDaily = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -473,7 +481,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
               <span>
                 {datePreset === 'all' && !startDate && !endDate && selectedMonth === 'all'
                   ? 'Chi Tiết Từng Dòng'
-                  : `Chi Tiết Từng Ngày (${filteredDailyRecords.length.toLocaleString('vi-VN')} dòng)`}
+                  : `Chi Tiết Từng Ngày (${activeCampaignsCount} dòng)`}
               </span>
             </button>
           </div>
