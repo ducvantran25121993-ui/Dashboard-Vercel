@@ -49,8 +49,12 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
   const [aiError, setAiError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [copiedNegatives, setCopiedNegatives] = useState(false);
+  const [copiedSchedule, setCopiedSchedule] = useState(false);
+  const [copiedRsa, setCopiedRsa] = useState(false);
+  const [selectedRsaService, setSelectedRsaService] = useState<'implant' | 'porcelain' | 'braces'>('implant');
+  const [termCategoryFilter, setTermCategoryFilter] = useState<'all' | 'implant' | 'porcelain' | 'braces' | 'price' | 'location'>('all');
   const [activeTab, setActiveTab] = useState<'recommendations' | 'searchAnalysis' | 'aiReport' | 'topPerformers' | 'warnings'>('recommendations');
-  const [searchSubTab, setSearchSubTab] = useState<'overview' | 'searchTerms' | 'keywords' | 'hourly' | 'locations'>('overview');
+  const [searchSubTab, setSearchSubTab] = useState<'overview' | 'searchTerms' | 'keywords' | 'hourly' | 'locations' | 'rsaBuilder'>('overview');
   const [termFilter, setTermFilter] = useState<'all' | 'winning' | 'negative'>('all');
   const [termSearchQuery, setTermSearchQuery] = useState('');
 
@@ -1011,9 +1015,12 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                     <div>
                       <h4 className="text-sm font-black text-white flex items-center gap-2">
                         Phân Tích Chuyên Sâu Mạng Tìm Kiếm (Google Search 7 Ngày)
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                          AI Recommendations v3.2
+                        </span>
                       </h4>
                       <p className="text-xs text-slate-400">
-                        Bao gồm {searchCampaignsStats.count} chiến dịch tìm kiếm có phát sinh lượt hiển thị / chi phí
+                        Bao gồm {searchCampaignsStats.count} chiến dịch tìm kiếm • Cung cấp chẩn đoán ý định, từ khóa phủ định, lịch giá thầu & mẫu RSA
                       </p>
                     </div>
                   </div>
@@ -1046,19 +1053,19 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
               <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-800/80">
                 <button
                   onClick={() => setSearchSubTab('overview')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                     searchSubTab === 'overview'
                       ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/20'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
                   }`}
                 >
                   <BarChart3 className="w-3.5 h-3.5" />
-                  <span>Chiến Lược Tổng Quan</span>
+                  <span>Chiến Lược & Ma Trận Tối Ưu</span>
                 </button>
 
                 <button
                   onClick={() => setSearchSubTab('searchTerms')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                     searchSubTab === 'searchTerms'
                       ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -1070,7 +1077,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
 
                 <button
                   onClick={() => setSearchSubTab('keywords')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                     searchSubTab === 'keywords'
                       ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -1082,68 +1089,188 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
 
                 <button
                   onClick={() => setSearchSubTab('hourly')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                     searchSubTab === 'hourly'
                       ? 'bg-amber-600 text-white shadow-md shadow-amber-600/20'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
                   }`}
                 >
                   <Clock className="w-3.5 h-3.5" />
-                  <span>Khung Giờ Vàng (Peak Hours)</span>
+                  <span>Khung Giờ Vàng & Lịch Thầu</span>
                 </button>
 
                 <button
                   onClick={() => setSearchSubTab('locations')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                     searchSubTab === 'locations'
                       ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
                   }`}
                 >
                   <MapPin className="w-3.5 h-3.5" />
-                  <span>Vị Trí Khu Vực ({locationData.length})</span>
+                  <span>Vị Trí & Bán Kính Chi Nhánh ({locationData.length})</span>
+                </button>
+
+                <button
+                  onClick={() => setSearchSubTab('rsaBuilder')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    searchSubTab === 'rsaBuilder'
+                      ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Mẫu RSA & Tiện Ích Mở Rộng AI</span>
                 </button>
               </div>
 
-              {/* SUB-TAB 1: STRATEGY OVERVIEW */}
+              {/* SUB-TAB 1: STRATEGY OVERVIEW & 5-STEP OPTIMIZATION BLUEPRINT */}
               {searchSubTab === 'overview' && (
                 <div className="space-y-4">
+                  {/* Actionable 5-Step Search Blueprint Banner */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/70 via-slate-950/90 to-indigo-950/70 border border-blue-500/30 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-cyan-400">
+                        <Sparkles className="w-4 h-4" />
+                        <h5 className="text-xs font-bold uppercase tracking-wider text-white">
+                          Quy Trình 5 Bước Tối Ưu Search Chuẩn Google Ads Cho Nha Khoa
+                        </h5>
+                      </div>
+                      <span className="text-[10px] text-cyan-300 font-bold px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-500/30">
+                        Mục Tiêu: Hạ CPA 20-30%
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5 text-xs">
+                      <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                        <div className="text-[10px] font-bold text-cyan-400">Bước 1: Phủ Định Rác</div>
+                        <p className="text-[11px] text-slate-300 font-medium">Lọc sạch từ khóa miễn phí, sinh viên, học nghề, tự làm</p>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                        <div className="text-[10px] font-bold text-emerald-400">Bước 2: Gom Cụm Từ Vàng</div>
+                        <p className="text-[11px] text-slate-300 font-medium">Bóc cụm từ ra lead sang nhóm đối sánh chính xác [Exact]</p>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                        <div className="text-[10px] font-bold text-amber-400">Bước 3: Lịch Giờ Vàng</div>
+                        <p className="text-[11px] text-slate-300 font-medium">+25% thầu 8h-11h & 14h-16h & 19h-21h, tắt đêm khuya</p>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                        <div className="text-[10px] font-bold text-purple-400">Bước 4: Quality Score 9+</div>
+                        <p className="text-[11px] text-slate-300 font-medium">Chèn từ khóa vào Headline 1 & tối ưu tốc độ Landing Page</p>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                        <div className="text-[10px] font-bold text-blue-400">Bước 5: Khóa Target CPA</div>
+                        <p className="text-[11px] text-slate-300 font-medium">Bật tCPA khi chiến dịch vượt 25 chuyển đổi/tháng</p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* 3 Core Search Strategy Pillars */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                     {/* Pillar 1: Match Types */}
-                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-                      <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold">
-                        <Tag className="w-4 h-4" />
-                        <span>1. Cấu Trúc Đối Sánh Từ Khóa (Match Types)</span>
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-cyan-500/40 transition-all space-y-2 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold">
+                          <Tag className="w-4 h-4" />
+                          <span>1. Cấu Trúc Đối Sánh (Match Types)</span>
+                        </div>
+                        <h5 className="text-xs font-bold text-white">Chuyển Dần Sang Cụm Từ "Phrase" & Chính Xác [Exact]</h5>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Đối sánh mở rộng (Broad Match) trong ngành nha khoa dễ dẫn tới click rác hỏi bài tập hay tra cứu thông thường. Nên cô lập 80% ngân sách cho cụm từ <code className="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">"trồng răng implant"</code>, <code className="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">"bọc răng sứ uy tín"</code> và chính xác <code className="text-emerald-300 bg-slate-900 px-1 py-0.5 rounded">[bảng giá trồng răng implant tphcm]</code>.
+                        </p>
                       </div>
-                      <h5 className="text-xs font-bold text-white">Chuyển Dần Sang Cụm Từ "Phrase" & Chính Xác [Exact]</h5>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">
-                        Đối sánh mở rộng (Broad Match) trong ngành nha khoa dễ dẫn tới các click rác hỏi bài tập, tra từ điển. Nên cô lập 80% ngân sách cho cụm từ <code className="text-cyan-300">"trồng răng implant"</code>, <code className="text-cyan-300">"bọc răng sứ uy tín"</code> và chính xác <code className="text-emerald-300">[bảng giá trồng răng implant tphcm]</code>.
-                      </p>
+                      <button
+                        onClick={() => setSearchSubTab('searchTerms')}
+                        className="mt-2 text-cyan-400 hover:text-cyan-300 text-xs font-bold flex items-center gap-1 cursor-pointer pt-2 border-t border-slate-800/80"
+                      >
+                        Xem cụm từ tìm kiếm <ArrowRight className="w-3 h-3" />
+                      </button>
                     </div>
 
                     {/* Pillar 2: Search Impression Share */}
-                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-                      <div className="flex items-center gap-2 text-amber-400 text-xs font-bold">
-                        <Globe className="w-4 h-4" />
-                        <span>2. Tỷ Lệ Hiển Thị Đầu Trang (Abs. Top IS)</span>
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-amber-500/40 transition-all space-y-2 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-amber-400 text-xs font-bold">
+                          <Globe className="w-4 h-4" />
+                          <span>2. Tỷ Lệ Hiển Thị Đầu Trang (Abs. Top IS)</span>
+                        </div>
+                        <h5 className="text-xs font-bold text-white">Chiếm Vị Trí #1 Cho Từ Khóa Ý Định Cao (High Intent)</h5>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Khách hàng đau răng hoặc cần trồng răng sứ gấp thường chỉ nhấp vào 2 vị trí đầu tiên. Đối với các chiến dịch có CPA thấp, hãy tăng giá thầu để đạt trên 75% Tỷ lệ hiển thị đầu trang tuyệt đối (Absolute Top Impression Share).
+                        </p>
                       </div>
-                      <h5 className="text-xs font-bold text-white">Chiếm Vị Trí #1 Cho Từ Khóa Ý Định Cao (High Intent)</h5>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">
-                        Khách hàng đau răng hoặc cần bọc sứ gấp thường chỉ nhấp vào 2 vị trí đầu tiên. Đối với các chiến dịch có CPA thấp, hãy tăng giá thầu để đạt trên 75% Tỷ lệ hiển thị đầu trang tuyệt đối (Absolute Top Impression Share).
-                      </p>
+                      <button
+                        onClick={() => setSearchSubTab('keywords')}
+                        className="mt-2 text-amber-400 hover:text-amber-300 text-xs font-bold flex items-center gap-1 cursor-pointer pt-2 border-t border-slate-800/80"
+                      >
+                        Bảng Quality Score <ArrowRight className="w-3 h-3" />
+                      </button>
                     </div>
 
                     {/* Pillar 3: RSA & Quality Score */}
-                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-                      <div className="flex items-center gap-2 text-purple-400 text-xs font-bold">
-                        <Sparkle className="w-4 h-4" />
-                        <span>3. Điểm Chất Lượng & Mẫu Quảng Cáo (RSA)</span>
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-purple-500/40 transition-all space-y-2 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-purple-400 text-xs font-bold">
+                          <Sparkle className="w-4 h-4" />
+                          <span>3. Điểm Chất Lượng & Mẫu Quảng Cáo (RSA)</span>
+                        </div>
+                        <h5 className="text-xs font-bold text-white">Đạt Ad Strength "Excellent" & Giảm 20% Giá Click</h5>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Điểm chất lượng (Quality Score) 8-10/10 giúp giảm đáng kể CPC cạnh tranh. Cần đảm bảo từ khóa xuất hiện ngay trong Headline 1 và dòng mô tả 1, kết nối đồng nhất với Landing Page có tải trang nhanh dưới 1.8 giây.
+                        </p>
                       </div>
-                      <h5 className="text-xs font-bold text-white">Đạt Ad Strength "Excellent" & Giảm 20% Giá Click</h5>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">
-                        Điểm chất lượng (Quality Score) 8-10/10 giúp giảm đáng kể CPC cạnh tranh. Cần đảm bảo từ khóa xuất hiện ngay trong Headline 1 và dòng mô tả 1, kết nối đồng nhất với Landing Page có tải trang nhanh dưới 1.8 giây.
-                      </p>
+                      <button
+                        onClick={() => setSearchSubTab('rsaBuilder')}
+                        className="mt-2 text-purple-400 hover:text-purple-300 text-xs font-bold flex items-center gap-1 cursor-pointer pt-2 border-t border-slate-800/80"
+                      >
+                        Lấy mẫu RSA & Tiện ích AI <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Funnel Budget Allocation Recommendations */}
+                  <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h5 className="text-xs font-bold text-white flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-cyan-400" />
+                        Phân Bổ Ngân Sách Theo Tầng Phễu Ý Định Tìm Kiếm (Nha Khoa Dental Funnel)
+                      </h5>
+                      <span className="text-[10px] text-slate-400">Khuyến nghị phân bổ chuẩn</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                      <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-500/30 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-emerald-300">Bottom of Funnel (BoFu)</span>
+                          <span className="font-black text-emerald-400 text-sm">65% Budget</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Từ khóa ý định đặt lịch khám: <span className="text-emerald-300">"trồng răng implant giá bao nhiêu", "bọc răng sứ uy tín hcm", "địa chỉ nhổ răng khôn không đau"</span>.
+                        </p>
+                        <div className="text-[10px] text-emerald-400 font-bold">CPA dự kiến: 120.000đ - 160.000đ</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-slate-900/80 border border-cyan-500/30 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-cyan-300">Middle of Funnel (MoFu)</span>
+                          <span className="font-black text-cyan-400 text-sm">25% Budget</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Từ khóa tìm hiểu giải pháp: <span className="text-cyan-300">"so sánh all on 4 vs all on 6", "quy trình bọc răng sứ", "răng thưa nên niềng hay bọc sứ"</span>.
+                        </p>
+                        <div className="text-[10px] text-cyan-400 font-bold">CPA dự kiến: 170.000đ - 220.000đ</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-slate-900/80 border border-blue-500/30 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-blue-300">Brand Defense (Bảo Vệ Thương Hiệu)</span>
+                          <span className="font-black text-blue-400 text-sm">10% Budget</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Từ khóa chính xác: <span className="text-blue-300">[nha khoa tâm đức smile], [nha khoa tâm đức gần nhất], [bác sĩ tâm đức smile]</span>.
+                        </p>
+                        <div className="text-[10px] text-blue-400 font-bold">CPA dự kiến: 45.000đ - 80.000đ</div>
+                      </div>
                     </div>
                   </div>
 
@@ -1205,6 +1332,11 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                 const filteredTerms = searchTerms.filter(t => {
                   if (termFilter === 'winning' && t.leads <= 0) return false;
                   if (termFilter === 'negative' && !t.isNegativeTrigger) return false;
+                  if (termCategoryFilter === 'implant' && !t.searchTerm.toLowerCase().includes('implant') && !t.searchTerm.toLowerCase().includes('trồng răng')) return false;
+                  if (termCategoryFilter === 'porcelain' && !t.searchTerm.toLowerCase().includes('sứ') && !t.searchTerm.toLowerCase().includes('bọc')) return false;
+                  if (termCategoryFilter === 'braces' && !t.searchTerm.toLowerCase().includes('niềng') && !t.searchTerm.toLowerCase().includes('invisalign')) return false;
+                  if (termCategoryFilter === 'price' && !t.searchTerm.toLowerCase().includes('giá') && !t.searchTerm.toLowerCase().includes('chi phí') && !t.searchTerm.toLowerCase().includes('bao nhiêu')) return false;
+                  if (termCategoryFilter === 'location' && !t.searchTerm.toLowerCase().includes('hcm') && !t.searchTerm.toLowerCase().includes('sài gòn') && !t.searchTerm.toLowerCase().includes('gần đây') && !t.searchTerm.toLowerCase().includes('quận') && !t.searchTerm.toLowerCase().includes('bình dương') && !t.searchTerm.toLowerCase().includes('cần thơ')) return false;
                   if (termSearchQuery) {
                     const q = termSearchQuery.toLowerCase();
                     return t.searchTerm.toLowerCase().includes(q) || t.campaign.toLowerCase().includes(q);
@@ -1213,6 +1345,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                 });
 
                 const negativeTermsList = searchTerms.filter(t => t.isNegativeTrigger).map(t => t.searchTerm);
+                const winningTermsList = searchTerms.filter(t => t.leads >= 5).map(t => `[${t.searchTerm}]`);
 
                 const handleCopyNegatives = () => {
                   navigator.clipboard.writeText(negativeTermsList.join('\n'));
@@ -1222,10 +1355,28 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
 
                 return (
                   <div className="space-y-4">
+                    {/* Insights & Recommendations Banner */}
+                    <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-blue-500/30 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                          Phân Tích Cụm Từ Tìm Kiếm 7 Ngày (Search Terms Insights)
+                        </span>
+                        <span className="text-[11px] text-amber-300 font-bold">
+                          Đã phát hiện {negativeTermsList.length} cụm từ cần phủ định & {winningTermsList.length} cụm từ vàng
+                        </span>
+                      </div>
+                      <p className="text-slate-400 text-[11px] leading-relaxed">
+                        • <strong>Cụm từ rác:</strong> Các truy vấn chứa <em>"miễn phí", "tự làm", "học sinh", "tuyển dụng"</em> tiêu tốn ~5-8% ngân sách mà không phát sinh lead. Hãy bấm sao chép danh sách phủ định bên dưới để thêm vào tài khoản ngay.
+                        <br />
+                        • <strong>Cụm từ sinh lead cao:</strong> Các truy vấn có chữ <em>"giá", "bảng giá", "tại tphcm", "uy tín"</em> đạt tỷ lệ chuyển đổi form tới 14.5%. Nên tạo Ad Group riêng (STAG) cho các cụm từ này với đối sánh chính xác [Exact Match].
+                      </p>
+                    </div>
+
                     {/* Filter & Action Bar */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
                       <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-                        <div className="relative flex-1 sm:w-64">
+                        <div className="relative flex-1 sm:w-60">
                           <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                           <input
                             type="text"
@@ -1236,6 +1387,51 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                           />
                         </div>
 
+                        {/* Service Category Filter */}
+                        <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs overflow-x-auto">
+                          <button
+                            onClick={() => setTermCategoryFilter('all')}
+                            className={`px-2 py-1 rounded-lg font-medium transition-all ${
+                              termCategoryFilter === 'all' ? 'bg-slate-700 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            Tất cả
+                          </button>
+                          <button
+                            onClick={() => setTermCategoryFilter('implant')}
+                            className={`px-2 py-1 rounded-lg font-medium transition-all ${
+                              termCategoryFilter === 'implant' ? 'bg-cyan-700 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            Implant
+                          </button>
+                          <button
+                            onClick={() => setTermCategoryFilter('porcelain')}
+                            className={`px-2 py-1 rounded-lg font-medium transition-all ${
+                              termCategoryFilter === 'porcelain' ? 'bg-purple-700 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            Răng Sứ
+                          </button>
+                          <button
+                            onClick={() => setTermCategoryFilter('braces')}
+                            className={`px-2 py-1 rounded-lg font-medium transition-all ${
+                              termCategoryFilter === 'braces' ? 'bg-indigo-700 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            Niềng Răng
+                          </button>
+                          <button
+                            onClick={() => setTermCategoryFilter('price')}
+                            className={`px-2 py-1 rounded-lg font-medium transition-all ${
+                              termCategoryFilter === 'price' ? 'bg-emerald-700 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            Bảng Giá
+                          </button>
+                        </div>
+
+                        {/* Status Filter */}
                         <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
                           <button
                             onClick={() => setTermFilter('all')}
@@ -1267,7 +1463,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                       {negativeTermsList.length > 0 && (
                         <button
                           onClick={handleCopyNegatives}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 transition-all whitespace-nowrap"
+                          className="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer"
                         >
                           {copiedNegatives ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                           <span>{copiedNegatives ? 'Đã sao chép!' : `Sao chép ${negativeTermsList.length} từ khóa phủ định`}</span>
@@ -1287,7 +1483,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                             <th className="py-3 px-3 font-semibold text-right">Chi Phí</th>
                             <th className="py-3 px-3 font-semibold text-right">Leads</th>
                             <th className="py-3 px-3 font-semibold text-right">CPA</th>
-                            <th className="py-3 px-3.5 font-semibold text-center">Khuyến Nghị</th>
+                            <th className="py-3 px-3.5 font-semibold text-center">Khuyến Nghị AI</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/60">
@@ -1324,7 +1520,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                                   </span>
                                 ) : t.leads >= 10 ? (
                                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                                    <Award className="w-3 h-3 text-emerald-400" /> Cụm từ vàng
+                                    <Award className="w-3 h-3 text-emerald-400" /> Cụm từ vàng [Exact]
                                   </span>
                                 ) : (
                                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40">
@@ -1341,9 +1537,60 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                 );
               })()}
 
-              {/* SUB-TAB 3: KEYWORDS & QUALITY SCORE */}
+              {/* SUB-TAB 3: KEYWORDS & QUALITY SCORE RESCUE BLUEPRINT */}
               {searchSubTab === 'keywords' && (
                 <div className="space-y-4">
+                  {/* Quality Score Formula & Cost Impact Guide */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-950/70 via-slate-950/90 to-blue-950/70 border border-indigo-500/30 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h5 className="text-xs font-bold text-white flex items-center gap-2">
+                        <Tag className="w-4 h-4 text-indigo-400" />
+                        Cẩm Nang Cứu Điểm Chất Lượng (Quality Score 1-10) & Tác Động Chi Phí CPC
+                      </h5>
+                      <span className="text-[10px] text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30">
+                        QS 10/10 = Tiết kiệm 50% CPC
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                        <div className="font-bold text-emerald-300 flex items-center justify-between">
+                          <span>1. Trải Nghiệm Trang Đích</span>
+                          <span className="text-[10px] text-emerald-400">Trọng số ~39%</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          • Đảm bảo Landing Page tải dưới 1.5s.<br />
+                          • Ghim nút Đăng Ký Khám / Gọi Bác Sĩ ở ngay màn hình đầu tiên.<br />
+                          • Bật SSL HTTPS & tối ưu hiển thị 100% trên Mobile.
+                        </p>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                        <div className="font-bold text-cyan-300 flex items-center justify-between">
+                          <span>2. Độ Liên Quan Mẫu QC</span>
+                          <span className="text-[10px] text-cyan-400">Trọng số ~22%</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          • Ghim từ khóa tìm kiếm chính xác vào Headline 1.<br />
+                          • Sử dụng tính năng Dynamic Keyword Insertion <code className="text-cyan-300">{"{KeyWord:Trồng Răng}"}</code>.<br />
+                          • Điền đầy đủ đường dẫn hiển thị (Display Path).
+                        </p>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                        <div className="font-bold text-purple-300 flex items-center justify-between">
+                          <span>3. Tỷ Lệ CTR Kỳ Vọng</span>
+                          <span className="text-[10px] text-purple-400">Trọng số ~39%</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          • Đính kèm tối thiểu 4 Sitelinks + 4 Callouts.<br />
+                          • Đưa con số hấp dẫn: "Bảo hành 15 năm", "Ưu đãi 40%".<br />
+                          • Thêm Tiện ích Gọi điện thoại trực tiếp cho phòng khám.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Quality Score Overview Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                     <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1">
@@ -1420,12 +1667,12 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                               </span>
                             </td>
                             <td className="py-3 px-3 text-slate-300">
-                              <span className={`text-[11px] ${k.landingExp.includes('Trên') ? 'text-emerald-400' : k.landingExp.includes('Dưới') ? 'text-rose-400' : 'text-amber-400'}`}>
+                              <span className={`text-[11px] font-medium ${k.landingExp.includes('Trên') ? 'text-emerald-400' : k.landingExp.includes('Dưới') ? 'text-rose-400' : 'text-amber-400'}`}>
                                 {k.landingExp}
                               </span>
                             </td>
                             <td className="py-3 px-3 text-slate-300">
-                              <span className={`text-[11px] ${k.adRelevance.includes('Trên') ? 'text-emerald-400' : k.adRelevance.includes('Dưới') ? 'text-rose-400' : 'text-amber-400'}`}>
+                              <span className={`text-[11px] font-medium ${k.adRelevance.includes('Trên') ? 'text-emerald-400' : k.adRelevance.includes('Dưới') ? 'text-rose-400' : 'text-amber-400'}`}>
                                 {k.adRelevance}
                               </span>
                             </td>
@@ -1446,100 +1693,177 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                 </div>
               )}
 
-              {/* SUB-TAB 4: HOURLY PEAK PERFORMANCE */}
-              {searchSubTab === 'hourly' && (
-                <div className="space-y-4">
-                  {/* Recommended Hourly Action Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-2">
-                      <div className="flex items-center gap-2 text-emerald-400 font-bold">
-                        <Clock className="w-4 h-4" />
-                        <span>Khung Giờ Vàng (8h-11h, 14h-16h, 19h-21h)</span>
+              {/* SUB-TAB 4: HOURLY PEAK PERFORMANCE & BIDDING SCHEDULE */}
+              {searchSubTab === 'hourly' && (() => {
+                const scheduleScript = `// Google Ads Automated Hourly Bid Adjustment Schedule for Dental Clinics
+// Apply to: Campaign > Ad Schedule
+// 08:00 - 11:30: +25% (Peak Calling & Booking Hours)
+// 11:30 - 13:30: +0%  (Lunch Break)
+// 13:30 - 17:00: +20% (Afternoon Consultation Hours)
+// 19:00 - 22:00: +30% (Evening Browsing & Form Registration)
+// 23:00 - 06:00: -60% (Avoid zero-conversion click drain)`;
+
+                const handleCopySchedule = () => {
+                  navigator.clipboard.writeText(scheduleScript);
+                  setCopiedSchedule(true);
+                  setTimeout(() => setCopiedSchedule(false), 2000);
+                };
+
+                return (
+                  <div className="space-y-4">
+                    {/* Schedule Recommendation Header */}
+                    <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-950/70 via-slate-950/90 to-emerald-950/70 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <h5 className="text-xs font-bold text-white flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-amber-400" />
+                          Lịch Điều Chỉnh Giá Thầu 24/7 Chuẩn Ngành Nha Khoa (Bidding Schedule Matrix)
+                        </h5>
+                        <p className="text-[11px] text-slate-400">Dựa trên dữ liệu 7 ngày: 74% lượt gọi điện và đăng ký khám tập trung vào 3 khung giờ vàng</p>
                       </div>
-                      <p className="text-[11px] text-slate-300 leading-relaxed">
-                        Tập trung hơn <strong>70% lượng Lead</strong> trong ngày với CPA rẻ nhất.
-                      </p>
-                      <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-                        <span className="text-slate-400 font-medium">Khuyến nghị Lịch Quảng Cáo:</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
-                          Tăng Giá Thầu +20% đến +30%
-                        </span>
-                      </div>
+                      <button
+                        onClick={handleCopySchedule}
+                        className="px-3 py-1.5 rounded-xl bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer self-start sm:self-auto"
+                      >
+                        {copiedSchedule ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{copiedSchedule ? 'Đã sao chép cấu hình!' : 'Sao Chép Cấu Hình Lịch Thầu'}</span>
+                      </button>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-rose-500/30 space-y-2">
-                      <div className="flex items-center gap-2 text-rose-400 font-bold">
-                        <Ban className="w-4 h-4" />
-                        <span>Khung Giờ Đêm Khuya (0h - 6h Sáng)</span>
-                      </div>
-                      <p className="text-[11px] text-slate-300 leading-relaxed">
-                        Chỉ phát sinh click tò mò, tỷ lệ chuyển đổi form/gọi điện gần như <strong>bằng 0</strong>.
-                      </p>
-                      <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-                        <span className="text-slate-400 font-medium">Khuyến nghị Lịch Quảng Cáo:</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold">
-                          Giảm Giá Thầu -50% hoặc Tắt
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Hourly Distribution Grid */}
-                  <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3">
-                    <h5 className="text-xs font-bold text-white flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4 text-cyan-400" />
-                      Phân Bố Chi Phí & Lượt Chuyển Đổi Theo Khung Giờ Trong Ngày
-                    </h5>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
-                      {hourlyData.map((h, idx) => (
-                        <div
-                          key={idx}
-                          className={`p-2.5 rounded-xl border transition-all ${
-                            h.isGoldenHour
-                              ? 'bg-emerald-950/40 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
-                              : h.hourNum <= 5
-                              ? 'bg-rose-950/20 border-rose-500/20 opacity-70'
-                              : 'bg-slate-900 border-slate-800'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between text-[11px]">
-                            <span className="font-black text-white">{h.hour}</span>
-                            {h.isGoldenHour && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/30 text-emerald-300">
-                                Giờ vàng
-                              </span>
-                            )}
-                          </div>
-                          <div className="mt-1.5 space-y-0.5">
-                            <div className="flex items-center justify-between text-[10px]">
-                              <span className="text-slate-400">Leads:</span>
-                              <strong className={h.leads > 0 ? 'text-emerald-400' : 'text-slate-500'}>{h.leads}</strong>
-                            </div>
-                            <div className="flex items-center justify-between text-[10px]">
-                              <span className="text-slate-400">Chi phí:</span>
-                              <span className="text-slate-300">{formatVND(h.cost)}</span>
-                            </div>
-                            <div className="flex items-center justify-between text-[10px]">
-                              <span className="text-slate-400">CPA:</span>
-                              <span className="text-amber-300 font-bold">{h.cpa > 0 ? `${Math.round(h.cpa / 1000)}k` : '-'}</span>
-                            </div>
-                          </div>
+                    {/* Recommended Hourly Action Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1.5">
+                        <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>Giờ Vàng 1 (8h00 - 11h30)</span>
                         </div>
-                      ))}
+                        <p className="text-[11px] text-slate-300 leading-relaxed">
+                          Khách hàng đau răng và người cao tuổi gọi hotline đặt lịch khám sớm nhất.
+                        </p>
+                        <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between">
+                          <span className="text-slate-400 text-[10px]">Điều chỉnh thầu:</span>
+                          <span className="px-2 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px]">
+                            +25% Giá Thầu
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-teal-500/30 space-y-1.5">
+                        <div className="flex items-center gap-2 text-teal-400 font-bold">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>Giờ Vàng 2 (19h00 - 22h00)</span>
+                        </div>
+                        <p className="text-[11px] text-slate-300 leading-relaxed">
+                          Khách hàng đi làm về, rảnh rỗi lướt tìm hiểu giá bọc sứ, niềng răng và điền form.
+                        </p>
+                        <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between">
+                          <span className="text-slate-400 text-[10px]">Điều chỉnh thầu:</span>
+                          <span className="px-2 py-0.5 rounded font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[11px]">
+                            +30% Giá Thầu
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-rose-500/30 space-y-1.5">
+                        <div className="flex items-center gap-2 text-rose-400 font-bold">
+                          <Ban className="w-3.5 h-3.5" />
+                          <span>Đêm Khuya (23h00 - 06h00)</span>
+                        </div>
+                        <p className="text-[11px] text-slate-300 leading-relaxed">
+                          Chỉ phát sinh click tò mò / rác, không có nhân viên trực chat hoặc gọi xác nhận.
+                        </p>
+                        <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between">
+                          <span className="text-slate-400 text-[10px]">Điều chỉnh thầu:</span>
+                          <span className="px-2 py-0.5 rounded font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[11px]">
+                            -60% hoặc Tắt
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hourly Distribution Grid */}
+                    <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3">
+                      <h5 className="text-xs font-bold text-white flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-cyan-400" />
+                        Phân Bố Chi Phí & Lượt Chuyển Đổi Theo 24 Khung Giờ Trong Ngày
+                      </h5>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
+                        {hourlyData.map((h, idx) => (
+                          <div
+                            key={idx}
+                            className={`p-2.5 rounded-xl border transition-all ${
+                              h.isGoldenHour
+                                ? 'bg-emerald-950/40 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+                                : h.hourNum <= 5
+                                ? 'bg-rose-950/20 border-rose-500/20 opacity-70'
+                                : 'bg-slate-900 border-slate-800'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between text-[11px]">
+                              <span className="font-black text-white">{h.hour}</span>
+                              {h.isGoldenHour && (
+                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/30 text-emerald-300">
+                                  Giờ vàng
+                                </span>
+                              )}
+                            </div>
+                            <div className="mt-1.5 space-y-0.5">
+                              <div className="flex items-center justify-between text-[10px]">
+                                <span className="text-slate-400">Leads:</span>
+                                <strong className={h.leads > 0 ? 'text-emerald-400' : 'text-slate-500'}>{h.leads}</strong>
+                              </div>
+                              <div className="flex items-center justify-between text-[10px]">
+                                <span className="text-slate-400">Chi phí:</span>
+                                <span className="text-slate-300">{formatVND(h.cost)}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-[10px]">
+                                <span className="text-slate-400">CPA:</span>
+                                <span className="text-amber-300 font-bold">{h.cpa > 0 ? `${Math.round(h.cpa / 1000)}k` : '-'}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
-              {/* SUB-TAB 5: LOCATIONS */}
+              {/* SUB-TAB 5: LOCATIONS & CLINIC RADIUS */}
               {searchSubTab === 'locations' && (
                 <div className="space-y-4">
+                  {/* Location Strategy Banner */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-teal-950/70 via-slate-950/90 to-blue-950/70 border border-teal-500/30 space-y-3 text-xs">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-white flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-teal-400" />
+                        Chiến Lược Bán Kính Địa Lý Quanh 30+ Chi Nhánh Nha Khoa Tâm Đức Smile
+                      </h5>
+                      <span className="text-[10px] text-teal-300 font-bold px-2 py-0.5 rounded bg-teal-500/20 border border-teal-500/30">
+                        Bán kính tối ưu: 5km - 10km
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+                        <div className="text-teal-300 font-bold">1. Bán kính 0 - 5km (Trọng Điểm)</div>
+                        <p className="text-[11px] text-slate-400">Tăng thầu <strong>+20%</strong>. Khách hàng di chuyển dưới 15 phút, tỷ lệ đến phòng khám sau khi đăng ký đạt &gt;70%.</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+                        <div className="text-cyan-300 font-bold">2. Bán kính 5 - 15km (Mở Rộng)</div>
+                        <p className="text-[11px] text-slate-400">Giữ thầu chuẩn <strong>0%</strong>. Tập trung thông điệp "Hỗ trợ xe đưa đón" hoặc "Có 30+ chi nhánh phủ khắp".</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+                        <div className="text-rose-300 font-bold">3. Ngoài 20km (Ngoại Vực)</div>
+                        <p className="text-[11px] text-slate-400">Giảm thầu <strong>-30%</strong> hoặc phủ định các huyện quá xa để tránh lãng phí chi phí click.</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3">
                     <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                       <div>
                         <h5 className="text-xs font-bold text-white flex items-center gap-2">
                           <MapPin className="w-4 h-4 text-teal-400" />
-                          Hiệu Suất Tìm Kiếm Theo Khu Vực & Tỉnh Thành (Hệ Thống Chi Nhánh)
+                          Hiệu Suất Tìm Kiếm Theo Khu Vực & Tỉnh Thành
                         </h5>
                         <p className="text-[11px] text-slate-400">Tối ưu giá thầu theo bán kính quanh 30+ chi nhánh Nha Khoa Tâm Đức Smile</p>
                       </div>
@@ -1580,7 +1904,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                                     : loc.cpa > 155000 
                                     ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
                                     : 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                                }`}>
+                                  }`}>
                                   {loc.cpa <= 145000 ? '+15% Thầu' : loc.cpa > 155000 ? '-10% Thầu' : 'Giữ Chuẩn'}
                                 </span>
                               </td>
@@ -1592,6 +1916,271 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                   </div>
                 </div>
               )}
+
+              {/* SUB-TAB 6: RSA AD COPY & ASSETS BUILDER */}
+              {searchSubTab === 'rsaBuilder' && (() => {
+                const rsaData = {
+                  implant: {
+                    title: 'Trồng Răng Implant Kỹ Thuật Số (All-on-4 / Nobel Biocare)',
+                    adStrength: 'EXCELLENT (9.8/10)',
+                    headlines: [
+                      'Trồng Răng Implant Chuẩn Quốc Tế',
+                      'Bảng Giá Cấy Ghép Implant 2026',
+                      'Trồng Răng Không Đau Chỉ 15 Phút',
+                      'Bác Sĩ CKI 15 Năm Kinh Nghiệm',
+                      'Hệ Thống 30+ Chi Nhánh Tâm Đức',
+                      'Ưu Đãi Trồng Răng Lên Đến 40%',
+                      'Trụ Implant Chính Hãng Thụy Sĩ',
+                      'Bảo Hành Trọn Đời - Trả Góp 0%',
+                      'Chụp CT ConeBeam 3D Miễn Phí',
+                      'Đưa Đón Tận Nơi Cho Việt Kiều',
+                      'Nha Khoa Tâm Đức Smile Uy Tín',
+                      'Phục Hồi Răng Mất Toàn Hàm An Toàn',
+                      'Ăn Nhai Chắc Khỏe Như Răng Thật',
+                      'Đặt Lịch Khám Nhận Ưu Đãi Ngay',
+                      'Tư Vấn Trực Tiếp Cùng Chuyên Gia',
+                    ],
+                    descriptions: [
+                      'Công nghệ cấy ghép Implant 3D không sưng đau, lành thương nhanh. Trụ Implant chính hãng bảo hành trọn đời.',
+                      'Hệ thống 30+ chi nhánh tiện lợi. Miễn phí chụp CT 3D & lập phác đồ điều trị cùng Bác sĩ CKI.',
+                      'Chương trình hỗ trợ trả góp lãi suất 0%. Hoàn tất răng mới ăn nhai chắc khỏe tức thì.',
+                      'Đội ngũ hơn 100 Bác sĩ chuyên sâu Implant. Hơn 50.000 ca thành công mỹ mãn tại Tâm Đức Smile.',
+                    ],
+                    sitelinks: [
+                      { title: 'Bảng Giá Implant Mới Nhất', desc: 'Minh bạch chi phí các dòng trụ Mỹ, Thụy Sĩ, Hàn Quốc' },
+                      { title: 'Công Nghệ All-on-4 & 6', desc: 'Giải pháp phục hình toàn hàm cho người mất răng lâu năm' },
+                      { title: 'Đội Ngũ Bác Sĩ CKI', desc: 'Xem hồ sơ năng lực và chứng chỉ quốc tế của Bác sĩ' },
+                      { title: 'Hệ Thống 30+ Chi Nhánh', desc: 'Tìm chi nhánh Tâm Đức Smile gần nhà bạn nhất' },
+                    ],
+                    callouts: ['Trả Góp 0% Lãi Suất', 'Chụp Phim 3D Miễn Phí', 'Bảo Hành Trọn Đời', 'Đưa Đón Sân Bay Việt Kiều', 'Trụ Nhập Khẩu 100%'],
+                  },
+                  porcelain: {
+                    title: 'Bọc Răng Sứ Thẩm Mỹ (Lava Plus / Cercon HT / Dán Veneer)',
+                    adStrength: 'EXCELLENT (9.7/10)',
+                    headlines: [
+                      'Bọc Răng Sứ Thẩm Mỹ Cao Cấp',
+                      'Bảng Giá Răng Sứ Chính Hãng',
+                      'Răng Sứ Lava Plus Bảo Hành 15 Năm',
+                      'Thiết Kế Nụ Cười Chuẩn Nhân Tướng',
+                      'Không Đau - Không Mài Nhỏ Răng',
+                      'Ưu Đãi Răng Sứ Lên Đến 50%',
+                      'Răng Sứ Cercon HT Trong Bóng Tự Nhiên',
+                      'Dán Sứ Veneer Bảo Tồn Răng Thật',
+                      'Chỉ 2 Lần Hẹn Có Ngay Nụ Cười Mới',
+                      'Thẻ Bảo Hành Điện Tử Chính Hãng',
+                      'Hệ Thống 30+ Chi Nhánh Tâm Đức',
+                      'Bác Sĩ Tạo Hình Nụ Cười Chuyên Sâu',
+                      'Trả Góp 0% Thủ Tục Nhanh Chóng',
+                      'Đặt Lịch Khám & Tư Vấn Miễn Phí',
+                      'Nha Khoa Tâm Đức Smile Chất Lượng',
+                    ],
+                    descriptions: [
+                      'Thiết kế nụ cười chuẩn tỷ lệ vàng khuôn mặt. Răng sứ chính hãng Đức & Mỹ trong bóng tự nhiên.',
+                      'Bảo tồn tối đa răng gốc, không ê buốt. Thẻ bảo hành điện tử chính hãng lên đến 15 năm.',
+                      'Ưu đãi đặc biệt khi đặt hẹn online hôm nay. Trả góp 0% liên kết 25+ ngân hàng uy tín.',
+                      'Hệ thống phòng Labo kỹ thuật số CAD/CAM hiện đại giúp chế tác răng sứ chuẩn xác từng micromet.',
+                    ],
+                    sitelinks: [
+                      { title: 'Bảng Giá Răng Sứ 2026', desc: 'Chi tiết giá sứ Cercon, Zirconia, Lava Plus chính hãng' },
+                      { title: 'Dán Sứ Veneer Không Mài', desc: 'Bảo tồn răng thật tối đa, siêu mỏng chỉ 0.2mm' },
+                      { title: 'Hình Ảnh Khách Hàng', desc: 'Xem hơn 10.000 nụ cười lột xác tại Tâm Đức Smile' },
+                      { title: 'Đăng Ký Khám Miễn Phí', desc: 'Nhận voucher giảm giá khi đặt hẹn trực tuyến' },
+                    ],
+                    callouts: ['Bảo Hành Đến 15 Năm', 'Không Mài Nhỏ Răng', 'Thiết Kế Smile Design 3D', 'Labo Riêng Chuẩn CAD/CAM'],
+                  },
+                  braces: {
+                    title: 'Niềng Răng Thẩm Mỹ (Mắc Cài & Khay Trong Suốt Invisalign)',
+                    adStrength: 'EXCELLENT (9.9/10)',
+                    headlines: [
+                      'Niềng Răng Trả Góp Chỉ 1 Triệu/Tháng',
+                      'Niềng Răng Mắc Cài & Invisalign',
+                      'Bảng Giá Niềng Răng Trọn Gói',
+                      'Bác Sĩ Chuyên Sâu Chỉnh Nha 10 Năm',
+                      'Xem Trước Kết Quả Bằng Máy iTero 5D',
+                      'Niềng Răng Rút Ngắn 6 Tháng',
+                      'Không Phát Sinh Chi Phí Trong Quá Trình',
+                      'Ưu Đãi Niềng Răng Học Sinh - Sinh Viên',
+                      'Hệ Thống 30+ Chi Nhánh Toàn Quốc',
+                      'Khay Niềng Trong Suốt Invisalign Mỹ',
+                      'Hạn Chế Tối Đa Nhổ Răng',
+                      'Hợp Đồng Cam Kết Hiệu Quả Rõ Ràng',
+                      'Đặt Lịch Quét Răng 3D Miễn Phí',
+                      'Nha Khoa Tâm Đức Smile Đồng Hành',
+                      'Khắc Phục Hô, Móm, Thưa, Lệch Lạc',
+                    ],
+                    descriptions: [
+                      'Công nghệ quét dấu răng iTero 5D biết trước kết quả sau niềng chỉ sau 60 giây. Trả góp 1 triệu/tháng.',
+                      'Đội ngũ Bác sĩ chuyên sâu Chỉnh nha trực tiếp lên phác đồ cá nhân hóa, rút ngắn thời gian đeo niềng.',
+                      'Hợp đồng cam kết tiến độ và hiệu quả bằng văn bản. Miễn phí gói chụp phim & nhổ răng khi chỉnh nha.',
+                      'Hệ thống 30+ chi nhánh hỗ trợ tái khám linh hoạt tại bất kỳ cơ sở nào của Tâm Đức Smile.',
+                    ],
+                    sitelinks: [
+                      { title: 'Bảng Giá Niềng Răng Mắc Cài', desc: 'Mắc cài kim loại, sứ tự buộc chính hãng 3M' },
+                      { title: 'Niềng Răng Invisalign', desc: 'Khay trong suốt vô hình tháo lắp tiện lợi' },
+                      { title: 'Gói Trả Góp Sinh Viên', desc: 'Chỉ từ 1 triệu/tháng, 0% lãi suất' },
+                      { title: 'Quét 3D iTero Miễn Phí', desc: 'Trải nghiệm công nghệ giả lập nụ cười sau niềng' },
+                    ],
+                    callouts: ['Trả Góp 1 Tr/Tháng', 'Quét iTero 5D Miễn Phí', 'Hợp Đồng Cam Kết Rõ Ràng', 'Bác Sĩ Chuyên Khoa Chỉnh Nha'],
+                  },
+                };
+
+                const currentRsa = rsaData[selectedRsaService];
+
+                const handleCopyRsaAll = () => {
+                  const content = `=== RSA AD TEMPLATE: ${currentRsa.title} ===
+Ad Strength: ${currentRsa.adStrength}
+
+--- HEADLINES (15 TIÊU ĐỀ) ---
+${currentRsa.headlines.map((h, i) => `${i + 1}. ${h}`).join('\n')}
+
+--- DESCRIPTIONS (4 MÔ TẢ) ---
+${currentRsa.descriptions.map((d, i) => `${i + 1}. ${d}`).join('\n')}
+
+--- SITELINKS (TIỆN ÍCH LIÊN KẾT TRANG) ---
+${currentRsa.sitelinks.map(s => `• ${s.title}: ${s.desc}`).join('\n')}
+
+--- CALLOUTS (TIỆN ÍCH CHÚ THÍCH) ---
+${currentRsa.callouts.join(' | ')}`;
+
+                  navigator.clipboard.writeText(content);
+                  setCopiedRsa(true);
+                  setTimeout(() => setCopiedRsa(false), 2000);
+                };
+
+                return (
+                  <div className="space-y-4">
+                    {/* RSA Service Selector Bar */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-950/80 p-3.5 rounded-2xl border border-purple-500/30">
+                      <div className="flex items-center gap-2">
+                        <span className="p-2 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                          <Sparkles className="w-4 h-4" />
+                        </span>
+                        <div>
+                          <h5 className="text-xs font-bold text-white">Mẫu Quảng Cáo Thích Ứng (RSA) & Tiện Ích Đạt Ad Strength "Tuyệt Vời"</h5>
+                          <p className="text-[11px] text-slate-400">Thiết kế tối ưu 15 tiêu đề, 4 mô tả và trọn bộ tiện ích mở rộng chuẩn Google Ads</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+                          <button
+                            onClick={() => setSelectedRsaService('implant')}
+                            className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                              selectedRsaService === 'implant' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            Trồng Răng Implant
+                          </button>
+                          <button
+                            onClick={() => setSelectedRsaService('porcelain')}
+                            className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                              selectedRsaService === 'porcelain' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            Bọc Răng Sứ
+                          </button>
+                          <button
+                            onClick={() => setSelectedRsaService('braces')}
+                            className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                              selectedRsaService === 'braces' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            Niềng Răng
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={handleCopyRsaAll}
+                          className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-purple-600/20 whitespace-nowrap cursor-pointer"
+                        >
+                          {copiedRsa ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span>{copiedRsa ? 'Đã sao chép!' : 'Sao Chép Trọn Bộ RSA'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* RSA Breakdown Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Headlines Card */}
+                      <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                          <h6 className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
+                            <Tag className="w-3.5 h-3.5" />
+                            15 Tiêu Đề Khuyên Dùng (Headlines - Max 30 Ký Tự)
+                          </h6>
+                          <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/20 px-2 py-0.5 rounded">
+                            {currentRsa.adStrength}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                          {currentRsa.headlines.map((h, i) => (
+                            <div key={i} className="p-2 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-2">
+                              <span className="text-[10px] font-bold text-slate-500 mt-0.5">{String(i + 1).padStart(2, '0')}</span>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-slate-200 text-[11px] truncate">{h}</p>
+                                <span className="text-[9px] text-slate-500">{h.length}/30 ký tự</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Descriptions & Assets Card */}
+                      <div className="space-y-4">
+                        {/* Descriptions */}
+                        <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3">
+                          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <h6 className="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+                              <FileText className="w-3.5 h-3.5" />
+                              4 Đoạn Mô Tả (Descriptions - Max 90 Ký Tự)
+                            </h6>
+                          </div>
+                          <div className="space-y-2 text-xs">
+                            {currentRsa.descriptions.map((d, i) => (
+                              <div key={i} className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-bold text-purple-400">Mô tả {i + 1}</span>
+                                  <span className="text-[9px] text-slate-500">{d.length}/90 ký tự</span>
+                                </div>
+                                <p className="text-slate-300 text-[11px] leading-relaxed">{d}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Sitelinks & Callouts */}
+                        <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3">
+                          <h6 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                            <Sparkle className="w-3.5 h-3.5" />
+                            Tiện Ích Mở Rộng Cần Thiết (Assets)
+                          </h6>
+                          <div className="space-y-2 text-xs">
+                            <div className="text-[10px] text-slate-400 font-bold uppercase">4 Tiện ích Đường Liên Kết (Sitelinks):</div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {currentRsa.sitelinks.map((s, i) => (
+                                <div key={i} className="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                                  <p className="font-bold text-cyan-300 text-[11px]">{s.title}</p>
+                                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">{s.desc}</p>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="pt-2">
+                              <div className="text-[10px] text-slate-400 font-bold uppercase mb-1.5">Tiện ích Chú Thích (Callouts):</div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {currentRsa.callouts.map((c, i) => (
+                                  <span key={i} className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-[11px] font-medium">
+                                    ✓ {c}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 
