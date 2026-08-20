@@ -72,6 +72,13 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
       const result = await fetchCampaignsSheet(urlToFetch);
       if (result.campaigns && result.campaigns.length > 0) {
         setCampaigns(result.campaigns);
+        const activeCount = result.campaigns.filter((c) => c.status === 'Đang chạy').length || result.campaigns.length;
+        try {
+          localStorage.setItem('gads_active_campaigns_count', String(activeCount));
+          window.dispatchEvent(new Event('campaigns_updated'));
+        } catch {
+          // ignore
+        }
       }
       if (result.dailyRecords && result.dailyRecords.length > 0) {
         setDailyRecords(result.dailyRecords);
@@ -463,7 +470,11 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
               }`}
             >
               <Calendar className="w-4 h-4" />
-              <span>Chi Tiết Từng Ngày ({filteredDailyRecords.length.toLocaleString('vi-VN')} dòng)</span>
+              <span>
+                {datePreset === 'all' && !startDate && !endDate && selectedMonth === 'all'
+                  ? 'Chi Tiết Từng Dòng'
+                  : `Chi Tiết Từng Ngày (${filteredDailyRecords.length.toLocaleString('vi-VN')} dòng)`}
+              </span>
             </button>
           </div>
 

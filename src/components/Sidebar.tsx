@@ -35,13 +35,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userRole,
 }) => {
   const [currentAiBadge, setCurrentAiBadge] = useState(() => getActiveAIModelBadge());
+  const [campaignsCount, setCampaignsCount] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('gads_active_campaigns_count');
+      return saved ? parseInt(saved, 10) : 59;
+    } catch {
+      return 59;
+    }
+  });
 
   useEffect(() => {
     const handleUpdate = () => {
       setCurrentAiBadge(getActiveAIModelBadge());
+      try {
+        const saved = localStorage.getItem('gads_active_campaigns_count');
+        if (saved) setCampaignsCount(parseInt(saved, 10));
+      } catch {
+        // ignore
+      }
     };
     window.addEventListener('storage', handleUpdate);
-    return () => window.removeEventListener('storage', handleUpdate);
+    window.addEventListener('campaigns_updated', handleUpdate);
+    return () => {
+      window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('campaigns_updated', handleUpdate);
+    };
   }, []);
 
   const navItems: {
@@ -76,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'campaigns',
       label: 'Google Ads',
       icon: Megaphone,
-      badge: '59 Active',
+      badge: `${campaignsCount} Active`,
       badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
     },
     {
