@@ -29,8 +29,12 @@ interface CampaignAi7DayAnalysisProps {
   keywords?: KeywordItem[];
   hourlyData?: HourlyItem[];
   locationData?: LocationItem[];
+  isAdmin?: boolean;
   onApply7DayFilter: () => void;
   onOpenDetailedAiModal: () => void;
+  onEditCampaign?: (campaignName: string) => void;
+  onNavigateToCampaignsTable?: (searchQuery?: string, status?: string) => void;
+  onToggleCampaignStatus?: (campaignName: string) => void;
 }
 
 export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
@@ -40,8 +44,12 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
   keywords: propKeywords,
   hourlyData: propHourlyData,
   locationData: propLocationData,
+  isAdmin = true,
   onApply7DayFilter,
   onOpenDetailedAiModal,
+  onEditCampaign,
+  onNavigateToCampaignsTable,
+  onToggleCampaignStatus,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -54,6 +62,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
   const [selectedRsaService, setSelectedRsaService] = useState<'implant' | 'porcelain' | 'braces'>('implant');
   const [termCategoryFilter, setTermCategoryFilter] = useState<'all' | 'implant' | 'porcelain' | 'braces' | 'price' | 'location'>('all');
   const [activeTab, setActiveTab] = useState<'recommendations' | 'searchAnalysis' | 'aiReport' | 'topPerformers' | 'warnings'>('recommendations');
+  const [warningFilter, setWarningFilter] = useState<'all' | 'zero_lead' | 'high_cpa'>('all');
   const [searchSubTab, setSearchSubTab] = useState<'overview' | 'searchTerms' | 'keywords' | 'hourly' | 'locations' | 'rsaBuilder'>('overview');
   const [termFilter, setTermFilter] = useState<'all' | 'winning' | 'negative'>('all');
   const [termSearchQuery, setTermSearchQuery] = useState('');
@@ -403,7 +412,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
   }, [keywords]);
 
   // Identify Top Performers and Warning campaigns overall
-  const { topPerformers, warningCampaigns } = useMemo(() => {
+  const { topPerformers, warningCampaigns, zeroLeadCampaigns, highCpaCampaigns } = useMemo(() => {
     const activeStats = campaign7DayStats.filter((c) => c.status === 'Đang chạy' || c.spent > 0);
 
     // Top performers: Leads > 0 and CPA <= average CPA or lowest CPA with good lead volume
@@ -413,18 +422,31 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
         if (a.cpa !== b.cpa) return a.cpa - b.cpa;
         return b.leads - a.leads;
       })
-      .slice(0, 4);
+      .slice(0, 8);
 
-    // Warning campaigns: High spent with 0 leads OR CPA significantly higher than avg
-    const avgThreshold = currentMetrics.avgCpa > 0 ? currentMetrics.avgCpa * 1.3 : 300000;
-    const warnings = [...activeStats]
-      .filter((c) => (c.spent > 1000000 && c.leads === 0) || (c.leads > 0 && c.cpa > avgThreshold))
-      .sort((a, b) => b.spent - a.spent)
-      .slice(0, 4);
+    // Warning campaigns:
+    // 1) 0 Lead with heavy spent
+    const zeroLead = [...activeStats]
+      .filter((c) => c.spent > 500000 && c.leads === 0)
+      .sort((a, b) => b.spent - a.spent);
+
+    // 2) CPA significantly higher than avg (>35%)
+    const avgThreshold = currentMetrics.avgCpa > 0 ? currentMetrics.avgCpa * 1.35 : 350000;
+    const highCpa = [...activeStats]
+      .filter((c) => c.leads > 0 && c.cpa > avgThreshold)
+      .sort((a, b) => b.spent - a.spent);
+
+    // Combine all warnings (unique by name)
+    const combinedMap = new Map<string, typeof activeStats[0]>();
+    zeroLead.forEach((c) => combinedMap.set(c.name, c));
+    highCpa.forEach((c) => combinedMap.set(c.name, c));
+    const allWarnings = Array.from(combinedMap.values()).sort((a, b) => b.spent - a.spent);
 
     return {
       topPerformers: top,
-      warningCampaigns: warnings,
+      warningCampaigns: allWarnings,
+      zeroLeadCampaigns: zeroLead,
+      highCpaCampaigns: highCpa,
     };
   }, [campaign7DayStats, currentMetrics.avgCpa]);
 
@@ -438,12 +460,15 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
       actionText?: string;
       actionType?: 'filter' | 'tab' | 'ai';
       targetTab?: 'recommendations' | 'searchAnalysis' | 'warnings' | 'topPerformers';
+      targetWarningFilter?: 'all' | 'zero_lead' | 'high_cpa';
+      targetCampaignName?: string;
       searchSubTab?: 'overview' | 'searchTerms' | 'keywords' | 'hourly' | 'locations';
     }> = [];
 
     // 1. Budget Bleed / 0 Lead alert
-    const zeroLeadHeavySpend = campaign7DayStats.filter(c => c.spent > 1500000 && c.leads === 0);
+    const zeroLeadHeavySpend = campaign7DayStats.filter(c => c.spent > 1000000 && c.leads === 0);
     if (zeroLeadHeavySpend.length > 0) {
+      const firstTarget = zeroLeadHeavySpend[0];
       const names = zeroLeadHeavySpend.map(c => `"${c.name}"`).slice(0, 2).join(', ');
       const totalLost = zeroLeadHeavySpend.reduce((sum, c) => sum + c.spent, 0);
       alerts.push({
@@ -454,10 +479,12 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
         actionText: 'Xem chiến dịch cần xử lý',
         actionType: 'tab',
         targetTab: 'warnings',
+        targetWarningFilter: 'zero_lead',
+        targetCampaignName: firstTarget?.name,
       });
     }
 
-    // 2. High CPA Surge alert (>30% avg)
+    // 2. High CPA Surge alert (>35% avg)
     const cpaSpikeCampaigns = campaign7DayStats.filter(c => c.leads > 0 && c.cpa > (currentMetrics.avgCpa * 1.35) && c.spent > 1000000);
     if (cpaSpikeCampaigns.length > 0) {
       alerts.push({
@@ -468,6 +495,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
         actionText: 'Kiểm tra cảnh báo',
         actionType: 'tab',
         targetTab: 'warnings',
+        targetWarningFilter: 'high_cpa',
       });
     }
 
@@ -832,25 +860,46 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                         </div>
 
                         {alert.actionText && (
-                          <div className="pl-7 pt-1 flex items-center justify-between border-t border-slate-800/60">
+                          <div className="pl-7 pt-2 flex items-center justify-between border-t border-slate-800/60 flex-wrap gap-2">
                             <span className="text-[10px] text-slate-400 font-medium">Hành động đề xuất:</span>
-                            <button
-                              onClick={() => {
-                                if (alert.targetTab) {
-                                  setActiveTab(alert.targetTab);
-                                  if (alert.searchSubTab) {
-                                    setSearchSubTab(alert.searchSubTab);
+                            <div className="flex items-center gap-2">
+                              {isAdmin && alert.id === 'zero_lead_drain' && alert.targetCampaignName && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (onEditCampaign) {
+                                      onEditCampaign(alert.targetCampaignName!);
+                                    } else {
+                                      setActiveTab('warnings');
+                                      setWarningFilter('zero_lead');
+                                    }
+                                  }}
+                                  className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 transition-colors"
+                                >
+                                  ✏️ Chỉnh sửa ngay
+                                </button>
+                              )}
+                              <button
+                                onClick={() => {
+                                  if (alert.targetTab) {
+                                    setActiveTab(alert.targetTab);
+                                    if (alert.targetWarningFilter) {
+                                      setWarningFilter(alert.targetWarningFilter);
+                                    }
+                                    if (alert.searchSubTab) {
+                                      setSearchSubTab(alert.searchSubTab);
+                                    }
                                   }
-                                }
-                              }}
-                              className={`text-[11px] font-bold flex items-center gap-1 hover:underline ${
-                                alert.level === 'critical' ? 'text-rose-400' :
-                                alert.level === 'warning' ? 'text-amber-400' :
-                                alert.level === 'success' ? 'text-emerald-400' : 'text-cyan-400'
-                              }`}
-                            >
-                              {alert.actionText} <ArrowRight className="w-3 h-3" />
-                            </button>
+                                }}
+                                className={`text-[11px] font-bold flex items-center gap-1 hover:underline cursor-pointer ${
+                                  alert.level === 'critical' ? 'text-rose-400 hover:text-rose-300' :
+                                  alert.level === 'warning' ? 'text-amber-400 hover:text-amber-300' :
+                                  alert.level === 'success' ? 'text-emerald-400 hover:text-emerald-300' : 'text-cyan-400 hover:text-cyan-300'
+                                }`}
+                              >
+                                {alert.actionText} <ArrowRight className="w-3 h-3" />
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -2431,96 +2480,178 @@ ${currentRsa.callouts.join(' | ')}`;
           )}
 
           {/* TAB 3: WARNING CAMPAIGNS */}
-          {activeTab === 'warnings' && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400 border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="p-1.5 rounded-lg bg-rose-500/20 text-rose-400">
-                    <AlertTriangle className="w-4 h-4" />
-                  </span>
-                  <div>
-                    <h4 className="font-bold text-white text-sm">Danh Sách Cảnh Báo Chiến Dịch Cần Tối Ưu Khẩn Cấp</h4>
-                    <p className="text-[11px] text-slate-400">Đang tiêu ngân sách lớn nhưng CPA vượt ngưỡng an toàn hoặc chưa ghi nhận chuyển đổi trong 7 ngày</p>
+          {activeTab === 'warnings' && (() => {
+            const displayedWarnings = 
+              warningFilter === 'zero_lead' ? zeroLeadCampaigns :
+              warningFilter === 'high_cpa' ? highCpaCampaigns :
+              warningCampaigns;
+
+            return (
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs text-slate-400 border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded-lg bg-rose-500/20 text-rose-400">
+                      <AlertTriangle className="w-4 h-4" />
+                    </span>
+                    <div>
+                      <h4 className="font-bold text-white text-sm">Danh Sách Cảnh Báo Chiến Dịch Cần Tối Ưu Khẩn Cấp</h4>
+                      <p className="text-[11px] text-slate-400">Đang tiêu ngân sách lớn nhưng CPA vượt ngưỡng an toàn hoặc chưa ghi nhận chuyển đổi trong 7 ngày</p>
+                    </div>
+                  </div>
+
+                  {/* Filter Sub-Tabs */}
+                  <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0 overflow-x-auto">
+                    <button
+                      type="button"
+                      onClick={() => setWarningFilter('all')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+                        warningFilter === 'all'
+                          ? 'bg-slate-800 text-white shadow'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      Tất cả ({warningCampaigns.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setWarningFilter('zero_lead')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1 ${
+                        warningFilter === 'zero_lead'
+                          ? 'bg-rose-600 text-white shadow ring-1 ring-rose-400'
+                          : 'text-rose-400 hover:bg-rose-950/40'
+                      }`}
+                    >
+                      <span>🚨 Rò rỉ: 0 Lead</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-950 text-rose-300 font-bold border border-rose-800">
+                        {zeroLeadCampaigns.length}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setWarningFilter('high_cpa')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1 ${
+                        warningFilter === 'high_cpa'
+                          ? 'bg-amber-600 text-white shadow ring-1 ring-amber-400'
+                          : 'text-amber-400 hover:bg-amber-950/40'
+                      }`}
+                    >
+                      <span>⚠️ CPA Quá Cao</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-950 text-amber-300 font-bold border border-amber-800">
+                        {highCpaCampaigns.length}
+                      </span>
+                    </button>
                   </div>
                 </div>
-                <span className="text-amber-400 font-bold px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 shrink-0">
-                  Khuyến nghị: Hạ trần giá thầu / Thêm phủ định / Tách Ad Group
-                </span>
+
+                {displayedWarnings.length === 0 ? (
+                  <div className="p-8 text-center rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2">
+                    <div className="w-10 h-10 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-sm font-bold text-white">Không Có Chiến Dịch Nào Trong Nhóm Này</h4>
+                    <p className="text-xs text-slate-400">Các chiến dịch đang hoạt động tốt hoặc vui lòng chuyển sang nhóm cảnh báo khác.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {displayedWarnings.map((c, idx) => {
+                      const isZeroLead = c.leads === 0 && c.spent > 0;
+                      const isVeryHighCpa = c.cpa > (currentMetrics.avgCpa * 1.35);
+                      const isLowCtr = parseFloat(c.ctr) < 2.0;
+
+                      return (
+                        <div key={idx} className="p-4 rounded-2xl bg-slate-950/90 border border-rose-500/40 hover:border-rose-500/70 transition-all space-y-3 shadow-lg shadow-rose-950/20 flex flex-col justify-between">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="space-y-0.5 min-w-0">
+                                <span className="text-xs font-bold text-white truncate block" title={c.name}>{c.name}</span>
+                                <span className="text-[10px] text-slate-400 font-medium">{c.type}</span>
+                              </div>
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border shrink-0 ${
+                                isZeroLead 
+                                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
+                                  : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                              }`}>
+                                {isZeroLead ? '🚨 Rò Rỉ: 0 Lead' : '⚠️ CPA Quá Cao'}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-2 text-xs pt-2 border-t border-slate-800/80">
+                              <div>
+                                <span className="text-[10px] text-slate-500">Chi phí 7 ngày:</span>
+                                <p className="font-bold text-slate-200">{formatVND(c.spent)}</p>
+                              </div>
+                              <div>
+                                <span className="text-[10px] text-slate-500">Chuyển đổi:</span>
+                                <p className={`font-bold ${c.leads > 0 ? 'text-amber-400' : 'text-rose-400'}`}>
+                                  {c.leads} leads
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-[10px] text-slate-500">CPA thực tế:</span>
+                                <p className="font-bold text-rose-300">
+                                  {c.cpa > 0 ? `${c.cpa.toLocaleString('vi-VN')} đ` : 'Chưa có lead'}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Diagnostic Root Cause & Recommendation */}
+                            <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] space-y-1.5">
+                              <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
+                                <Zap className="w-3 h-3 text-amber-400" />
+                                <span>Chẩn đoán & Giải pháp:</span>
+                              </div>
+                              <p className="text-slate-400 leading-relaxed text-[11px]">
+                                {isZeroLead 
+                                  ? 'Chiến dịch tiêu tiền nhưng không phát sinh lead. Hãy kiểm tra URL trang đích, form đăng ký, và hạ Max CPC hoặc tạm dừng.'
+                                  : isVeryHighCpa
+                                  ? `CPA đang cao (+${Math.round(((c.cpa - currentMetrics.avgCpa) / currentMetrics.avgCpa) * 100)}% so với trung bình). Nên giảm giá thầu trần Max CPC xuống 20% và phủ định cụm từ tìm kiếm rác.`
+                                  : isLowCtr
+                                  ? 'Tỷ lệ CTR thấp (<2%). Cần viết lại tiêu đề RSA thu hút hơn và bổ sung Sitelinks.'
+                                  : 'Khuyên bạn thu hẹp bán kính vị trí và chỉ giữ lại các cụm từ tìm kiếm chính xác [Exact].'}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Quick Action & Edit Controls */}
+                          <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-1.5">
+                              {isAdmin && (
+                                <button
+                                  type="button"
+                                  onClick={() => onEditCampaign?.(c.name)}
+                                  className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-all flex items-center gap-1 cursor-pointer"
+                                >
+                                  <span>✏️ Chỉnh sửa</span>
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => onNavigateToCampaignsTable?.(c.name)}
+                                className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all flex items-center gap-1 cursor-pointer"
+                                title="Tìm và xem chiến dịch này trên Bảng danh sách"
+                              >
+                                <Search className="w-3 h-3 text-cyan-400" />
+                                <span>Bảng chi tiết</span>
+                              </button>
+                            </div>
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                onClick={() => onToggleCampaignStatus?.(c.name)}
+                                className="text-[11px] font-bold text-slate-400 hover:text-rose-400 px-2 py-1 rounded bg-slate-900 border border-slate-800 hover:border-rose-500/40 transition-colors"
+                              >
+                                Tạm dừng / Bật
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-
-              {warningCampaigns.length === 0 ? (
-                <div className="p-8 text-center rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2">
-                  <div className="w-10 h-10 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-sm font-bold text-white">Tuyệt Vời! Không Có Chiến Dịch Nào Bị Cảnh Báo</h4>
-                  <p className="text-xs text-slate-400">Tất cả các chiến dịch đang hoạt động trong 7 ngày qua đều duy trì CPA trong ngưỡng an toàn.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  {warningCampaigns.map((c, idx) => {
-                    const isZeroLead = c.leads === 0 && c.spent > 0;
-                    const isVeryHighCpa = c.cpa > (currentMetrics.avgCpa * 1.4);
-                    const isLowCtr = parseFloat(c.ctr) < 2.0;
-
-                    return (
-                      <div key={idx} className="p-4 rounded-2xl bg-slate-950/90 border border-rose-500/40 hover:border-rose-500/70 transition-all space-y-3 shadow-lg shadow-rose-950/20">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="space-y-0.5 min-w-0">
-                            <span className="text-xs font-bold text-white truncate block">{c.name}</span>
-                            <span className="text-[10px] text-slate-400 font-medium">{c.type}</span>
-                          </div>
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border shrink-0 ${
-                            isZeroLead 
-                              ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
-                              : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                          }`}>
-                            {isZeroLead ? '🚨 Rò Rỉ: 0 Lead' : '⚠️ CPA Quá Cao'}
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-2 text-xs pt-2 border-t border-slate-800/80">
-                          <div>
-                            <span className="text-[10px] text-slate-500">Chi phí 7 ngày:</span>
-                            <p className="font-bold text-slate-200">{formatVND(c.spent)}</p>
-                          </div>
-                          <div>
-                            <span className="text-[10px] text-slate-500">Chuyển đổi:</span>
-                            <p className={`font-bold ${c.leads > 0 ? 'text-amber-400' : 'text-rose-400'}`}>
-                              {c.leads} leads
-                            </p>
-                          </div>
-                          <div>
-                            <span className="text-[10px] text-slate-500">CPA thực tế:</span>
-                            <p className="font-bold text-rose-300">
-                              {c.cpa > 0 ? `${c.cpa.toLocaleString('vi-VN')} đ` : 'Chưa có lead'}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Diagnostic Root Cause & Recommendation */}
-                        <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] space-y-1.5">
-                          <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
-                            <Zap className="w-3 h-3 text-amber-400" />
-                            <span>Chẩn đoán nguyên nhân & Giải pháp:</span>
-                          </div>
-                          <p className="text-slate-400 leading-relaxed text-[11px]">
-                            {isZeroLead 
-                              ? 'Chiến dịch tiêu tiền nhưng không phát sinh lead. Hãy kiểm tra ngay lại link trang đích (URL), biểu mẫu đăng ký có bị lỗi submit không, và bổ sung ngay từ khóa phủ định.'
-                              : isVeryHighCpa
-                              ? `CPA đang cao hơn trung bình ngành (+${Math.round(((c.cpa - currentMetrics.avgCpa) / currentMetrics.avgCpa) * 100)}%). Nên giảm giá thầu trần Max CPC xuống 20% và tắt khung giờ ban đêm.`
-                              : isLowCtr
-                              ? 'Tỷ lệ CTR thấp (<2%). Cần viết lại tiêu đề RSA thu hút hơn và thêm tiện ích mở rộng (Sitelinks, Callouts).'
-                              : 'Khuyên bạn thu hẹp bán kính vị trí và chỉ giữ lại các cụm từ tìm kiếm chính xác [Exact].'}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+            );
+          })()}
 
           {/* TAB 4: DEEP AI REPORT */}
           {activeTab === 'aiReport' && (

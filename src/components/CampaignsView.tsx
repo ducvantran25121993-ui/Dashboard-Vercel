@@ -4,7 +4,7 @@ import {
   Zap, ShieldCheck, RefreshCw, Filter, Search, ExternalLink, Link2, 
   Sparkles, Check, AlertCircle, ArrowUpRight, BarChart3, Eye, MousePointerClick,
   Calendar, Table, LineChart, ChevronLeft, ChevronRight, ChevronDown, Download, CalendarRange,
-  Percent, CircleDot, ArrowUpDown
+  Percent, CircleDot, ArrowUpDown, Sliders, Edit3, Save, X, SlidersHorizontal
 } from 'lucide-react';
 import { DisplayUnit } from '../types';
 import { GoogleAdsConnectModal } from './GoogleAdsConnectModal';
@@ -33,6 +33,21 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [aiFocusCampaign, setAiFocusCampaign] = useState<CampaignItem | null>(null);
+  
+  // Campaign Quick Edit Modal State
+  const [editingCampaign, setEditingCampaign] = useState<CampaignItem | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    status: 'Đang chạy',
+    budget: '1.000.000 đ',
+    maxCpc: '25.000 đ',
+    targetCpa: '250.000 đ',
+    biddingStrategy: 'Tối đa hóa lượt chuyển đổi (Target CPA)',
+    negativeKeywords: '',
+    notes: '',
+  });
+  const [editSaveSuccess, setEditSaveSuccess] = useState(false);
+
   const [sheetUrl, setSheetUrl] = useState<string>(() => {
     try {
       return localStorage.getItem('gads_campaigns_sheet_url') || DEFAULT_CAMPAIGNS_SHEET_URL;
@@ -126,6 +141,101 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
     setIsUrlModalOpen(false);
     loadData(trimmed);
   };
+
+  // Open Quick Edit Modal for Campaign (or via name from AI analysis / alerts)
+  const handleOpenEditModal = useCallback((campaignNameOrItem: string | CampaignItem) => {
+    if (!isAdmin) return;
+    let target: CampaignItem | undefined;
+    if (typeof campaignNameOrItem === 'string') {
+      const q = campaignNameOrItem.trim().toLowerCase();
+      target = campaigns.find(c => c.name.toLowerCase() === q) ||
+               campaigns.find(c => c.name.toLowerCase().includes(q) || q.includes(c.name.toLowerCase())) ||
+               campaigns[0];
+    } else {
+      target = campaignNameOrItem;
+    }
+    if (target) {
+      setEditingCampaign(target);
+      setEditForm({
+        status: target.status || 'Đang chạy',
+        budget: target.budget || '1.000.000 đ',
+        maxCpc: target.cpc || '25.000 đ',
+        targetCpa: target.cpa || '250.000 đ',
+        biddingStrategy: 'Tối đa hóa lượt chuyển đổi (Target CPA)',
+        negativeKeywords: '',
+        notes: '',
+      });
+      setEditSaveSuccess(false);
+      setIsEditModalOpen(true);
+    }
+  }, [campaigns, isAdmin]);
+
+  // Save changes to local state & session storage
+  const handleSaveCampaignEdit = () => {
+    if (!isAdmin || !editingCampaign) return;
+    setCampaigns(prev => prev.map(c => {
+      if (c.name === editingCampaign.name) {
+        return {
+          ...c,
+          status: editForm.status,
+          budget: editForm.budget,
+          cpc: editForm.maxCpc,
+          cpa: editForm.targetCpa,
+        };
+      }
+      return c;
+    }));
+    setDailyRecords(prev => prev.map(r => {
+      if (r.campaignName === editingCampaign.name) {
+        return {
+          ...r,
+          status: editForm.status,
+        };
+      }
+      return r;
+    }));
+    setEditSaveSuccess(true);
+    setTimeout(() => {
+      setIsEditModalOpen(false);
+      setEditSaveSuccess(false);
+    }, 1000);
+  };
+
+  // Direct toggle campaign running/paused
+  const handleToggleCampaignStatus = useCallback((campaignName: string) => {
+    if (!isAdmin) return;
+    setCampaigns(prev => prev.map(c => {
+      if (c.name === campaignName) {
+        const nextStatus = c.status === 'Đang chạy' ? 'Tạm dừng' : 'Đang chạy';
+        return { ...c, status: nextStatus };
+      }
+      return c;
+    }));
+    setDailyRecords(prev => prev.map(r => {
+      if (r.campaignName === campaignName) {
+        const nextStatus = r.status === 'Đang chạy' ? 'Tạm dừng' : 'Đang chạy';
+        return { ...r, status: nextStatus };
+      }
+      return r;
+    }));
+  }, [isAdmin]);
+
+  // Direct scroll and filter to Campaigns Table
+  const handleNavigateToTable = useCallback((query?: string, status?: string) => {
+    setViewMode('campaigns');
+    if (query) {
+      setSearchQuery(query);
+    }
+    if (status === 'all' || status === 'enabled' || status === 'paused') {
+      setStatusFilter(status);
+    }
+    setTimeout(() => {
+      const el = document.getElementById('campaigns-table-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
+  }, []);
 
   // Helper to format Date to YYYY-MM-DD
   const toInputDateStr = (d: Date): string => {
@@ -734,11 +844,15 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
         keywords={keywords}
         hourlyData={hourlyData}
         locationData={locationData}
+        isAdmin={isAdmin}
         onApply7DayFilter={() => applyPreset('last7days')}
         onOpenDetailedAiModal={() => {
           setAiFocusCampaign(null);
           setIsAiModalOpen(true);
         }}
+        onEditCampaign={(name) => handleOpenEditModal(name)}
+        onNavigateToCampaignsTable={handleNavigateToTable}
+        onToggleCampaignStatus={handleToggleCampaignStatus}
       />
 
       {/* Filter & Search Toolbar */}
@@ -821,7 +935,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
       {/* GOOGLE ADS CAMPAIGN REPORTING TABLES */}
       {viewMode === 'campaigns' ? (
         /* 1. GOOGLE ADS CAMPAIGNS SUMMARY TABLE */
-        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-6 shadow-xl overflow-hidden space-y-4">
+        <div id="campaigns-table-section" className="rounded-2xl bg-slate-900/90 border border-slate-800 p-6 shadow-xl overflow-hidden space-y-4 scroll-mt-6">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
               <Table className="w-4 h-4 text-cyan-400" />
@@ -848,7 +962,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
                   <th className="py-3.5 px-3 text-right">Lượt Chuyển Đổi</th>
                   <th className="py-3.5 px-3 text-right">Chi Phí / Lượt Chuyển Đổi</th>
                   <th className="py-3.5 px-3 text-right">Tỷ Lệ Chuyển Đổi</th>
-                  <th className="py-3.5 px-3 text-right">AI Phân Tích</th>
+                  <th className="py-3.5 px-3 text-right">Thao Tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
@@ -873,14 +987,30 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
 
                     {/* Trạng thái */}
                     <td className="py-3.5 px-3">
-                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 w-fit ${
-                        camp.status === 'Đang chạy'
-                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                          : 'bg-slate-800 text-slate-400 border border-slate-700'
-                      }`}>
-                        <span className={`w-2 h-2 rounded-full ${camp.status === 'Đang chạy' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
-                        {camp.status}
-                      </span>
+                      {isAdmin ? (
+                        <button
+                          type="button"
+                          onClick={() => handleToggleCampaignStatus(camp.name)}
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 w-fit cursor-pointer transition-all hover:scale-105 ${
+                            camp.status === 'Đang chạy'
+                              ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25'
+                              : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
+                          }`}
+                          title="Bấm để Đổi trạng thái Bật / Tạm dừng"
+                        >
+                          <span className={`w-2 h-2 rounded-full ${camp.status === 'Đang chạy' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+                          {camp.status}
+                        </button>
+                      ) : (
+                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 w-fit ${
+                          camp.status === 'Đang chạy'
+                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-slate-800 text-slate-400 border border-slate-700'
+                        }`}>
+                          <span className={`w-2 h-2 rounded-full ${camp.status === 'Đang chạy' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+                          {camp.status}
+                        </span>
+                      )}
                     </td>
 
                     {/* Lượt hiển thị */}
@@ -925,19 +1055,33 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
                       {camp.convRate || '0.00%'}
                     </td>
 
-                    {/* AI Audit Action */}
+                    {/* Actions: Edit & AI Audit */}
                     <td className="py-3.5 px-3 text-right">
-                      <button
-                        onClick={() => {
-                          setAiFocusCampaign(camp);
-                          setIsAiModalOpen(true);
-                        }}
-                        className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-white border border-indigo-500/30 inline-flex items-center gap-1 transition-all shadow-sm cursor-pointer"
-                        title="Dùng AI phân tích riêng chiến dịch này"
-                      >
-                        <Sparkles className="w-3 h-3 text-amber-300" />
-                        <span>AI Audit</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditModal(camp)}
+                            className="px-2 py-1 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white border border-slate-700 inline-flex items-center gap-1 transition-all shadow-sm cursor-pointer"
+                            title="Chỉnh sửa ngân sách, giá thầu, trạng thái"
+                          >
+                            <Sliders className="w-3 h-3 text-cyan-400" />
+                            <span>Sửa</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAiFocusCampaign(camp);
+                            setIsAiModalOpen(true);
+                          }}
+                          className="px-2 py-1 rounded-lg text-[11px] font-bold bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-white border border-indigo-500/30 inline-flex items-center gap-1 transition-all shadow-sm cursor-pointer"
+                          title="Dùng AI phân tích riêng chiến dịch này"
+                        >
+                          <Sparkles className="w-3 h-3 text-amber-300" />
+                          <span>AI</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -1215,6 +1359,206 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
         }
         initialFocusCampaign={aiFocusCampaign}
       />
+
+      {/* QUICK CAMPAIGN EDIT & OPTIMIZATION MODAL */}
+      {isEditModalOpen && editingCampaign && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+              <div className="flex items-center gap-2.5">
+                <span className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                  <SlidersHorizontal className="w-5 h-5" />
+                </span>
+                <div>
+                  <h3 className="text-base font-extrabold text-white">Chỉnh Sửa & Tối Ưu Chiến Dịch</h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs font-bold text-cyan-300 truncate max-w-[280px] sm:max-w-md">
+                      {editingCampaign.name}
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                      {editingCampaign.type}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 overflow-y-auto space-y-4 text-xs">
+              {/* Status Switch */}
+              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <label className="font-bold text-slate-200 block text-xs">Trạng thái chiến dịch:</label>
+                  <span className="text-[11px] text-slate-400">Bật hoặc tạm dừng phân phối quảng cáo trên Google</span>
+                </div>
+                <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-700">
+                  <button
+                    type="button"
+                    onClick={() => setEditForm(f => ({ ...f, status: 'Đang chạy' }))}
+                    className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
+                      editForm.status === 'Đang chạy'
+                        ? 'bg-emerald-500 text-slate-950 shadow-md font-black'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    ▶️ Đang chạy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditForm(f => ({ ...f, status: 'Tạm dừng' }))}
+                    className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
+                      editForm.status === 'Tạm dừng'
+                        ? 'bg-rose-500 text-white shadow-md font-black'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    ⏸️ Tạm dừng
+                  </button>
+                </div>
+              </div>
+
+              {/* Budget and Bid Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Daily Budget */}
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                  <label className="font-bold text-slate-200 block">
+                    Ngân sách ngày (Daily Budget):
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.budget}
+                    onChange={(e) => setEditForm(f => ({ ...f, budget: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs focus:border-cyan-500 outline-none"
+                    placeholder="VD: 1.000.000 đ"
+                  />
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    {['500.000 đ', '1.000.000 đ', '1.500.000 đ', '2.000.000 đ'].map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setEditForm(f => ({ ...f, budget: val }))}
+                        className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+                      >
+                        {val}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Max CPC Bid */}
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                  <label className="font-bold text-slate-200 block">
+                    Giá thầu trần tối đa (Max CPC):
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.maxCpc}
+                    onChange={(e) => setEditForm(f => ({ ...f, maxCpc: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs focus:border-cyan-500 outline-none"
+                    placeholder="VD: 25.000 đ"
+                  />
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    {['15.000 đ', '20.000 đ', '25.000 đ', '35.000 đ', '50.000 đ'].map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setEditForm(f => ({ ...f, maxCpc: val }))}
+                        className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+                      >
+                        {val}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Target CPA & Bidding Strategy */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                  <label className="font-bold text-slate-200 block">
+                    CPA mục tiêu (Target CPA):
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.targetCpa}
+                    onChange={(e) => setEditForm(f => ({ ...f, targetCpa: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs focus:border-cyan-500 outline-none"
+                    placeholder="VD: 250.000 đ"
+                  />
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                  <label className="font-bold text-slate-200 block">
+                    Chiến lược giá thầu:
+                  </label>
+                  <select
+                    value={editForm.biddingStrategy}
+                    onChange={(e) => setEditForm(f => ({ ...f, biddingStrategy: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs focus:border-cyan-500 outline-none"
+                  >
+                    <option value="Tối đa hóa lượt chuyển đổi (Target CPA)">Tối đa hóa lượt chuyển đổi (Target CPA)</option>
+                    <option value="Tối đa hóa lượt nhấp (Maximize Clicks)">Tối đa hóa lượt nhấp (Maximize Clicks)</option>
+                    <option value="CPC thủ công (Manual CPC)">CPC thủ công (Manual CPC)</option>
+                    <option value="Tỷ lệ hiển thị mục tiêu (Target Impression Share)">Tỷ lệ hiển thị mục tiêu</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Negative Keywords Input */}
+              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+                <label className="font-bold text-slate-200 block">
+                  Thêm từ khóa phủ định nhanh (Negative Keywords - mỗi từ 1 dòng):
+                </label>
+                <textarea
+                  rows={2}
+                  value={editForm.negativeKeywords}
+                  onChange={(e) => setEditForm(f => ({ ...f, negativeKeywords: e.target.value }))}
+                  placeholder="VD: miễn phí&#10;tuyển dụng&#10;học nghề"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:border-cyan-500 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950/80">
+              <div className="text-xs">
+                {editSaveSuccess ? (
+                  <span className="text-emerald-400 font-bold flex items-center gap-1.5 animate-in fade-in">
+                    <Check className="w-4 h-4" /> Đã lưu thay đổi thành công!
+                  </span>
+                ) : (
+                  <span className="text-slate-500 text-[11px]">Thay đổi áp dụng ngay trên bảng theo dõi</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveCampaignEdit}
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Lưu Thay Đổi</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
