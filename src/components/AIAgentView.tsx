@@ -330,7 +330,7 @@ Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** c�
       // Step C: If server is unavailable or 404, seamlessly answer using Smart Knowledge & Analytics Engine
       if (!replyText) {
         replyText = generateSmartAnalyticsFallback(query, contextData);
-        usedProviderTag = 'Tâm Đức AI Engine (Smart Knowledge)';
+        usedProviderTag = 'AI Engine (Smart Knowledge)';
       }
 
       const assistantMessage: Message = {
@@ -359,7 +359,7 @@ Tôi có thể trò chuyện và giải đáp **TẤT CẢ MỌI CÂU HỎI** c�
         content: fallbackReply,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
         agentTask: 'Phân tích dữ liệu hệ thống thông minh',
-        providerUsed: 'Tâm Đức Analytics Engine',
+        providerUsed: 'AI Analytics Engine',
         suggestions: [
           'Chi tiết hóa bước hành động tiếp theo',
           'Đánh giá chi phí VAT / Doanh thu các tháng',
