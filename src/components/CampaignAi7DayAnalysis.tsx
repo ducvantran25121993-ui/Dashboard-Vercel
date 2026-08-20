@@ -3,7 +3,7 @@ import {
   Sparkles, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, 
   DollarSign, Target, MousePointerClick, Zap, RefreshCw, ChevronDown, 
   ChevronUp, ShieldCheck, ArrowRight, Layers, Sliders, Ban, FileText, 
-  Copy, Check, Calendar, ArrowUpRight
+  Copy, Check, Calendar, ArrowUpRight, Search, Globe, Tag, Sparkle
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { DailyCampaignRecord, CampaignItem, normalizeDate, formatVND } from '../services/campaignsSheetService';
@@ -26,7 +26,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
   const [aiReport, setAiReport] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<'recommendations' | 'aiReport' | 'topPerformers' | 'warnings'>('recommendations');
+  const [activeTab, setActiveTab] = useState<'recommendations' | 'searchAnalysis' | 'aiReport' | 'topPerformers' | 'warnings'>('recommendations');
 
   // Compute 7-day date window (last 7 completed days ending yesterday)
   const dateWindows = useMemo(() => {
@@ -137,15 +137,17 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
       status: string;
     }>();
 
-    // Initialize with active campaigns
+    // Map existing campaign types
+    const typeMap = new Map<string, string>();
     campaigns.forEach((c) => {
+      typeMap.set(c.name, c.type || 'Google Search');
       map.set(c.name, {
         name: c.name,
         spent: 0,
         leads: 0,
         clicks: 0,
         impressions: 0,
-        type: c.type,
+        type: c.type || 'Google Search',
         status: c.status,
       });
     });
@@ -154,13 +156,19 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
       const campName = r.campaignName?.trim();
       if (!campName) return;
 
+      const detectedType = typeMap.get(campName) || (
+        campName.toLowerCase().includes('pmax') || campName.toLowerCase().includes('performance max') ? 'PMax' :
+        campName.toLowerCase().includes('display') ? 'Google Display' :
+        campName.toLowerCase().includes('video') || campName.toLowerCase().includes('youtube') ? 'Video' : 'Google Search'
+      );
+
       const existing = map.get(campName) || {
         name: campName,
         spent: 0,
         leads: 0,
         clicks: 0,
         impressions: 0,
-        type: 'Search',
+        type: detectedType,
         status: 'Đang chạy',
       };
 
@@ -186,7 +194,56 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
     });
   }, [campaigns, current7DaysRecords]);
 
-  // Identify Top Performers and Warning campaigns
+  // Dedicated Google Search Campaigns Stats (7 Days)
+  const searchCampaignsStats = useMemo(() => {
+    // Only include search campaigns that actually have activity (impressions, clicks, or spend > 0) in the 7-day period
+    const searchOnly = campaign7DayStats.filter((c) => {
+      const isSearchType = c.type === 'Google Search' || 
+        c.type === 'Search' || 
+        c.name.toLowerCase().includes('search') ||
+        (!c.type?.includes('Display') && !c.type?.includes('Video') && !c.type?.includes('PMax'));
+      
+      const has7DayActivity = c.spent > 0 || c.clicks > 0 || c.impressions > 0 || c.leads > 0;
+      return isSearchType && has7DayActivity;
+    });
+
+    const totalSpent = searchOnly.reduce((s, c) => s + c.spent, 0);
+    const totalLeads = searchOnly.reduce((s, c) => s + c.leads, 0);
+    const totalClicks = searchOnly.reduce((s, c) => s + c.clicks, 0);
+    const totalImpressions = searchOnly.reduce((s, c) => s + c.impressions, 0);
+    const avgCpa = totalLeads > 0 ? Math.round(totalSpent / totalLeads) : 0;
+    const avgCpc = totalClicks > 0 ? Math.round(totalSpent / totalClicks) : 0;
+    const avgCtr = totalImpressions > 0 ? `${((totalClicks / totalImpressions) * 100).toFixed(2)}%` : '0.00%';
+    const avgConvRate = totalClicks > 0 ? `${((totalLeads / totalClicks) * 100).toFixed(2)}%` : '0.00%';
+
+    // Top Search Winners & Warnings
+    const searchWinners = [...searchOnly]
+      .filter((c) => c.leads > 0)
+      .sort((a, b) => a.cpa - b.cpa)
+      .slice(0, 3);
+
+    const searchNeedsOptimization = [...searchOnly]
+      .filter((c) => (c.spent > 500000 && c.leads === 0) || (c.leads > 0 && c.cpa > (avgCpa * 1.25)))
+      .sort((a, b) => b.spent - a.spent)
+      .slice(0, 3);
+
+    return {
+      list: searchOnly,
+      count: searchOnly.length,
+      totalSpent,
+      totalLeads,
+      totalClicks,
+      totalImpressions,
+      avgCpa,
+      avgCpc,
+      avgCtr,
+      avgConvRate,
+      searchWinners,
+      searchNeedsOptimization,
+    };
+  }, [campaign7DayStats]);
+
+  // Identify Top Performers and Warning campaigns overall
   const { topPerformers, warningCampaigns } = useMemo(() => {
     const activeStats = campaign7DayStats.filter((c) => c.status === 'Đang chạy' || c.spent > 0);
 
@@ -194,7 +251,6 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
     const top = [...activeStats]
       .filter((c) => c.leads > 0)
       .sort((a, b) => {
-        // Sort primarily by lowest CPA, then highest leads
         if (a.cpa !== b.cpa) return a.cpa - b.cpa;
         return b.leads - a.leads;
       })
@@ -239,7 +295,8 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
           previous7DaysMetrics: prevMetrics,
           topCampaigns: topPerformers,
           warningCampaigns,
-          allCampaignsSample: campaign7DayStats.slice(0, 20),
+          allCampaignsSample: campaign7DayStats.slice(0, 25),
+          searchCampaignsMetrics: searchCampaignsStats,
           dateRangeLabel: `7 ngày qua (${dateWindows.currentLabel}) so với (${dateWindows.prevLabel})`,
         }),
       });
@@ -391,7 +448,20 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
               }`}
             >
               <Zap className="w-3.5 h-3.5" />
-              <span>4 Gợi Ý Hành Động Thông Minh</span>
+              <span>Gợi Ý Hành Động Thông Minh</span>
+            </button>
+
+            {/* DEDICATED SEARCH TAB */}
+            <button
+              onClick={() => setActiveTab('searchAnalysis')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'searchAnalysis'
+                  ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20'
+                  : 'text-cyan-400 hover:text-white hover:bg-slate-800 border border-cyan-500/30'
+              }`}
+            >
+              <Search className="w-3.5 h-3.5 text-cyan-300" />
+              <span>🔍 Phân Tích Chuyên Sâu Chiến Dịch Search ({searchCampaignsStats.count})</span>
             </button>
 
             <button
@@ -403,7 +473,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
-              <span>Chiến Dịch Thắng Lớn (Nên Tăng Budget) ({topPerformers.length})</span>
+              <span>Top Thắng Lớn ({topPerformers.length})</span>
             </button>
 
             <button
@@ -415,7 +485,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
               }`}
             >
               <AlertTriangle className="w-3.5 h-3.5 text-amber-300" />
-              <span>Cảnh Báo Lãng Phí / CPA Cao ({warningCampaigns.length})</span>
+              <span>Cảnh Báo CPA Cao ({warningCampaigns.length})</span>
             </button>
 
             <button
@@ -431,93 +501,316 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
             </button>
           </div>
 
-          {/* TAB 1: 4 SMART ACTION RECOMMENDATIONS */}
+          {/* TAB 1: SMART ACTION RECOMMENDATIONS (ENRICHED WITH DEDICATED SEARCH ACTIONS) */}
           {activeTab === 'recommendations' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Card 1: Budget Reallocation */}
-              <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition-all space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                    <Sliders className="w-3 h-3" /> Điều chỉnh Ngân Sách
-                  </span>
-                  <span className="text-[11px] text-emerald-400 font-bold">+20% Khách Hàng Tiềm Năng</span>
+            <div className="space-y-4">
+              {/* Highlight Banner for Search Strategy */}
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-950/60 via-slate-950/80 to-cyan-950/60 border border-blue-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-blue-500/20 text-cyan-300 border border-blue-500/30">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                      Gợi ý Chiến Lược Tìm Kiếm (Google Search 7 Ngày)
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                        {searchCampaignsStats.count} Chiến Dịch Search
+                      </span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400">
+                      CPA trung bình Search: <strong className="text-amber-300">{searchCampaignsStats.avgCpa.toLocaleString('vi-VN')} đ</strong> • CTR: <strong className="text-cyan-300">{searchCampaignsStats.avgCtr}</strong> • Leads: <strong className="text-emerald-400">{searchCampaignsStats.totalLeads}</strong>
+                    </p>
+                  </div>
                 </div>
-                <h4 className="text-sm font-bold text-white">Tăng 15-25% Ngân Sách Cho Nhóm Implant & Sứ Cercon</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Trong 7 ngày qua, nhóm chiến dịch Trồng Răng Implant và Sứ Cercon duy trì CPA ổn định ({currentMetrics.avgCpa.toLocaleString('vi-VN')} đ). Hãy trích 20% ngân sách từ các chiến dịch CPA cao để dồn vào nhóm này nhằm tối đa hóa lead chốt khách.
-                </p>
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 text-[11px]">Thực thi: Media Team</span>
-                  <button
-                    onClick={onApply7DayFilter}
-                    className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 text-[11px]"
-                  >
-                    Xem số liệu 7 ngày <ArrowUpRight className="w-3 h-3" />
-                  </button>
+                <button
+                  onClick={() => setActiveTab('searchAnalysis')}
+                  className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shadow-md shadow-blue-500/20"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  Mở Bảng Phân Tích Search Chi Tiết
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Card 1: Budget Reallocation */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition-all space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                      <Sliders className="w-3 h-3" /> 1. Điều Chỉnh Ngân Sách
+                    </span>
+                    <span className="text-[11px] text-emerald-400 font-bold">+15% đến +25% Lead</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">
+                    {topPerformers.length > 0 
+                      ? `Tăng Ngân Sách Cho ${topPerformers.slice(0, 2).map(c => `"${c.name}"`).join(' & ')}`
+                      : 'Tăng 15-25% Ngân Sách Cho Các Chiến Dịch CPA Thấp'}
+                  </h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    {topPerformers.length > 0 ? (
+                      <>
+                        Trong 7 ngày qua, {topPerformers.slice(0, 2).map(c => `chiến dịch "${c.name}" (CPA: ${c.cpa.toLocaleString('vi-VN')} đ, ${c.leads} leads)`).join(' và ')} đang đạt hiệu quả tốt nhất. Hãy tăng ngân sách từ 15-25% để kéo thêm khách hàng tiềm năng.
+                      </>
+                    ) : (
+                      <>
+                        Rà soát các chiến dịch có CPA ổn định dưới mức trung bình ({currentMetrics.avgCpa.toLocaleString('vi-VN')} đ) để tăng thêm 15-25% ngân sách.
+                      </>
+                    )}
+                  </p>
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 text-[11px]">Media Team</span>
+                    <button
+                      onClick={onApply7DayFilter}
+                      className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 text-[11px]"
+                    >
+                      Xem số liệu 7 ngày <ArrowUpRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card 2: Search Match Types & Keyword Intent (NEW DEDICATED SEARCH CARD) */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-cyan-500/40 transition-all space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1">
+                      <Search className="w-3 h-3" /> 2. Từ Khóa Search (Match Types)
+                    </span>
+                    <span className="text-[11px] text-cyan-400 font-bold">Tăng Đúng Intent 90%</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Chuyển Đối Sánh Cụm Từ "Phrase" & Chính Xác [Exact]</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Tập trung 80% ngân sách tìm kiếm vào cụm từ mang ý định đặt lịch khám: <code className="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"trồng răng implant uy tín"</code>, <code className="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"bọc răng sứ ở đâu tốt"</code>, <code className="text-emerald-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">[giá cấy ghép implant hcm]</code> để chặn click tò mò.
+                  </p>
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 text-[11px]">Tối ưu: Từ khóa Search</span>
+                    <button
+                      onClick={() => setActiveTab('searchAnalysis')}
+                      className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 text-[11px]"
+                    >
+                      Chi tiết Search <ArrowUpRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card 3: Search Impression Share & Bidding */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-blue-500/40 transition-all space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1">
+                      <Target className="w-3 h-3" /> 3. Đấu Thầu & Top 1 Search
+                    </span>
+                    <span className="text-[11px] text-blue-400 font-bold">Chiếm Vị Trí #1</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Target CPA & Tỷ Lệ Hiển Thị Đầu Trang (Abs. Top IS)</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Đặt mục tiêu Target CPA ở mức <strong className="text-amber-300">{Math.round(searchCampaignsStats.avgCpa * 0.9).toLocaleString('vi-VN')} đ</strong> cho các chiến dịch Search đã có trên 25 chuyển đổi để giữ tỷ lệ hiển thị đầu trang trên 75% cho các từ khóa cốt lõi.
+                  </p>
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 text-[11px]">Bidding: Target CPA</span>
+                    <button
+                      onClick={() => setActiveTab('searchAnalysis')}
+                      className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 text-[11px]"
+                    >
+                      Xem chiến dịch <ArrowUpRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card 4: Negative Keywords */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-amber-500/40 transition-all space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                      <Ban className="w-3 h-3" /> 4. Phủ Định Truy Vấn Search Rác
+                    </span>
+                    <span className="text-[11px] text-amber-400 font-bold">Tiết Kiệm ~4 Tr/tuần</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Bổ Sung Danh Sách Phủ Định 7 Ngày Qua Cho Mạng Tìm Kiếm</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Loại bỏ ngay các truy vấn tìm kiếm không mang lại khách: <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"miễn phí"</code>, <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"tự làm tại nhà"</code>, <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"sinh viên thực tập"</code>, <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"giá rẻ 50k"</code>, <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"kinh nghiệm tự bọc"</code>.
+                  </p>
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 text-[11px]">Tăng CTR Search +1.8%</span>
+                    <span className="text-emerald-400 font-semibold text-[11px]">Loại trừ truy vấn rác</span>
+                  </div>
+                </div>
+
+                {/* Card 5: Search RSA Ad Copy */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-purple-500/40 transition-all space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                      <FileText className="w-3 h-3" /> 5. Mẫu RSA & Tiện Ích Mở Rộng
+                    </span>
+                    <span className="text-[11px] text-purple-400 font-bold">Điểm Chất Lượng 9/10</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Nâng Ad Strength Search Lên "Excellent"</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Ghim từ khóa vào Headline 1, chèn thông điệp cam kết ở Headline 2: <strong className="text-purple-300">"Bác sĩ CKI 15 Năm Kinh Nghiệm - Trả Góp 0% - Đưa Đón Sân Bay Việt Kiều"</strong>. Thêm tiện ích Callout và Sitelinks bảng giá minh bạch.
+                  </p>
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 text-[11px]">CTR kỳ vọng: 8-12%</span>
+                    <button
+                      onClick={onOpenDetailedAiModal}
+                      className="text-purple-400 hover:text-purple-300 font-bold flex items-center gap-1 text-[11px]"
+                    >
+                      Hỏi AI viết mẫu <ArrowUpRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card 6: Landing Page & Fast Conversion Hook */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-teal-500/40 transition-all space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> 6. Tối Ưu Tỷ Lệ Chuyển Đổi (CRO)
+                    </span>
+                    <span className="text-[11px] text-teal-400 font-bold">Tăng CR Form +20%</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Đồng Bộ Trang Đích Cho Từng Nhóm Từ Khóa Search</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Từ khóa tìm kiếm về "Bảng giá" phải trỏ thẳng đến bảng giá chi tiết; từ khóa "Trồng răng không đau" phải trỏ đến công nghệ gây tê và video feedback khách hàng thực tế để tăng tỷ lệ để lại số điện thoại ngay từ lần nhấp đầu tiên.
+                  </p>
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 text-[11px]">Trang đích: Nha Khoa</span>
+                    <button
+                      onClick={onOpenDetailedAiModal}
+                      className="text-teal-400 hover:text-teal-300 font-bold flex items-center gap-1 text-[11px]"
+                    >
+                      Tối ưu Form <ArrowUpRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: DEDICATED SEARCH CAMPAIGNS ANALYSIS & RECOMMENDATIONS */}
+          {activeTab === 'searchAnalysis' && (
+            <div className="space-y-5">
+              {/* Top Search KPI Summary */}
+              <div className="p-4 rounded-2xl bg-slate-950/90 border border-cyan-500/30 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                      <Search className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-black text-white flex items-center gap-2">
+                        Tổng Quan Hiệu Suất Chiến Dịch Tìm Kiếm (Google Search 7 Ngày)
+                      </h4>
+                      <p className="text-xs text-slate-400">
+                        Bao gồm {searchCampaignsStats.count} chiến dịch tìm kiếm có phát sinh lượt hiển thị / chi phí
+                      </p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 self-start sm:self-auto">
+                    Chiếm {currentMetrics.totalSpent > 0 ? Math.round((searchCampaignsStats.totalSpent / currentMetrics.totalSpent) * 100) : 0}% Tổng Ngân Sách
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                    <span className="text-[11px] text-slate-400">Chi phí Search 7 ngày</span>
+                    <p className="text-base font-black text-white mt-0.5">{formatVND(searchCampaignsStats.totalSpent)}</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                    <span className="text-[11px] text-slate-400">Lượt Chuyển Đổi (Leads)</span>
+                    <p className="text-base font-black text-emerald-400 mt-0.5">{searchCampaignsStats.totalLeads} leads</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                    <span className="text-[11px] text-slate-400">CPA Trung Bình Search</span>
+                    <p className="text-base font-black text-amber-300 mt-0.5">{searchCampaignsStats.avgCpa.toLocaleString('vi-VN')} đ</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                    <span className="text-[11px] text-slate-400">CTR & CPC Trung Bình</span>
+                    <p className="text-base font-black text-cyan-300 mt-0.5">{searchCampaignsStats.avgCtr} • {searchCampaignsStats.avgCpc.toLocaleString('vi-VN')} đ</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Card 2: Bidding Strategy Optimization */}
-              <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-blue-500/40 transition-all space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1">
-                    <Target className="w-3 h-3" /> Chiến Lược Giá Thầu
-                  </span>
-                  <span className="text-[11px] text-blue-400 font-bold">Giảm 12% CPA</span>
+              {/* 3 Core Search Strategy Pillars */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                {/* Pillar 1: Match Types */}
+                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                  <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold">
+                    <Tag className="w-4 h-4" />
+                    <span>1. Cấu Trúc Đối Sánh Từ Khóa (Match Types)</span>
+                  </div>
+                  <h5 className="text-xs font-bold text-white">Chuyển Dần Sang Cụm Từ "Phrase" & Chính Xác [Exact]</h5>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Đối sánh mở rộng (Broad Match) trong ngành nha khoa dễ dẫn tới các click rác hỏi bài tập, tra từ điển. Nên cô lập 80% ngân sách cho cụm từ <code className="text-cyan-300">"trồng răng implant"</code>, <code className="text-cyan-300">"bọc răng sứ uy tín"</code> và chính xác <code className="text-emerald-300">[bảng giá trồng răng implant tphcm]</code>.
+                  </p>
                 </div>
-                <h4 className="text-sm font-bold text-white">Chuyển Sang Target CPA (tCPA) Cho Chiến Dịch Đủ 30+ Leads</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Các chiến dịch PMax và Search đã có lượng chuyển đổi ổn định 7 ngày qua nên đặt mục tiêu Target CPA ở mức <strong className="text-amber-300">{Math.round(currentMetrics.avgCpa * 0.9).toLocaleString('vi-VN')} đ</strong> để AI của Google tự động lọc tệp tìm kiếm có ý định cao.
-                </p>
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 text-[11px]">Bidding: Smart Bidding</span>
-                  <button
-                    onClick={onOpenDetailedAiModal}
-                    className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 text-[11px]"
-                  >
-                    Hỏi AI về Target CPA <ArrowUpRight className="w-3 h-3" />
-                  </button>
+
+                {/* Pillar 2: Search Impression Share */}
+                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                  <div className="flex items-center gap-2 text-amber-400 text-xs font-bold">
+                    <Globe className="w-4 h-4" />
+                    <span>2. Tỷ Lệ Hiển Thị Đầu Trang (Abs. Top IS)</span>
+                  </div>
+                  <h5 className="text-xs font-bold text-white">Chiếm Vị Trí #1 Cho Từ Khóa Ý Định Cao (High Intent)</h5>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Khách hàng đau răng hoặc cần bọc sứ gấp thường chỉ nhấp vào 2 vị trí đầu tiên. Đối với các chiến dịch có CPA thấp, hãy tăng giá thầu để đạt trên 75% Tỷ lệ hiển thị đầu trang tuyệt đối (Absolute Top Impression Share).
+                  </p>
+                </div>
+
+                {/* Pillar 3: RSA & Quality Score */}
+                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                  <div className="flex items-center gap-2 text-purple-400 text-xs font-bold">
+                    <Sparkle className="w-4 h-4" />
+                    <span>3. Điểm Chất Lượng & Mẫu Quảng Cáo (RSA)</span>
+                  </div>
+                  <h5 className="text-xs font-bold text-white">Đạt Ad Strength "Excellent" & Giảm 20% Giá Click</h5>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Điểm chất lượng (Quality Score) 8-10/10 giúp giảm đáng kể CPC cạnh tranh. Cần đảm bảo từ khóa xuất hiện ngay trong Headline 1 và dòng mô tả 1, kết nối đồng nhất với Landing Page có tải trang nhanh dưới 1.8 giây.
+                  </p>
                 </div>
               </div>
 
-              {/* Card 3: Negative Keywords */}
-              <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-amber-500/40 transition-all space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                    <Ban className="w-3 h-3" /> Phủ Định Từ Khóa
-                  </span>
-                  <span className="text-[11px] text-amber-400 font-bold">Tiết Kiệm ~4.5 Tr/tuần</span>
+              {/* Specific Search Winners & Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Search Winners */}
+                <div className="p-4 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h5 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4" /> Top Chiến Dịch Search Hiệu Quả Nhất 7 Ngày
+                    </h5>
+                    <span className="text-[10px] text-emerald-300 font-bold bg-emerald-500/20 px-2 py-0.5 rounded">Khuyên: Tăng Budget +20%</span>
+                  </div>
+                  <div className="space-y-2">
+                    {searchCampaignsStats.searchWinners.map((c, idx) => (
+                      <div key={idx} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex items-center justify-between">
+                        <div className="truncate max-w-[200px]">
+                          <p className="font-bold text-white truncate">{c.name}</p>
+                          <p className="text-[10px] text-slate-400">CTR: {c.ctr} • CR: {c.convRate}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-emerald-400">{c.leads} leads</p>
+                          <p className="text-[10px] text-amber-300">CPA: {c.cpa.toLocaleString('vi-VN')} đ</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <h4 className="text-sm font-bold text-white">Bổ Sung Danh Sách Từ Khóa Phủ Định Rác 7 Ngày Qua</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Loại bỏ ngay các truy vấn tìm kiếm không mang lại khách thật như: <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"tự trồng răng tại nhà"</code>, <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"miễn phí"</code>, <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"sinh viên thực tập"</code>, <code className="text-rose-300 bg-slate-900 px-1 py-0.5 rounded text-[11px]">"giá rẻ 50k"</code>.
-                </p>
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 text-[11px]">Tác động: Tăng CTR 1.5%</span>
-                  <span className="text-emerald-400 font-semibold text-[11px]">Đã cập nhật danh sách đề xuất</span>
-                </div>
-              </div>
 
-              {/* Card 4: Ad Copy & Landing Page Hook */}
-              <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-purple-500/40 transition-all space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
-                    <FileText className="w-3 h-3" /> Tối Ưu Ad Copy & LP
-                  </span>
-                  <span className="text-[11px] text-purple-400 font-bold">Tăng CR Form +18%</span>
-                </div>
-                <h4 className="text-sm font-bold text-white">Thêm Cam Kết "Không Đau - Trả Góp 0% - Đưa Đón Sân Bay VK"</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Nhóm khách Việt Kiều và người cao tuổi có tỷ lệ click tốt nhưng do dự ở bước để lại số điện thoại. Bổ sung các tiện ích mở rộng cuộc gọi (Call Extensions) và sitelinks "Bác sĩ CKI 15 năm kinh nghiệm" vào tiêu đề 2 và 3.
-                </p>
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 text-[11px]">Target: Khách Việt Kiều & HCM</span>
-                  <button
-                    onClick={onOpenDetailedAiModal}
-                    className="text-purple-400 hover:text-purple-300 font-bold flex items-center gap-1 text-[11px]"
-                  >
-                    Xem mẫu Ad Copy <ArrowUpRight className="w-3 h-3" />
-                  </button>
+                {/* Search Needs Optimization */}
+                <div className="p-4 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h5 className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                      <AlertTriangle className="w-4 h-4" /> Chiến Dịch Search Cần Rà Soát Từ Khóa
+                    </h5>
+                    <span className="text-[10px] text-amber-300 font-bold bg-amber-500/20 px-2 py-0.5 rounded">Khuyên: Thêm Phủ Định</span>
+                  </div>
+                  <div className="space-y-2">
+                    {searchCampaignsStats.searchNeedsOptimization.map((c, idx) => (
+                      <div key={idx} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex items-center justify-between">
+                        <div className="truncate max-w-[200px]">
+                          <p className="font-bold text-white truncate">{c.name}</p>
+                          <p className="text-[10px] text-slate-400">Chi phí: {formatVND(c.spent)}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-rose-400">{c.leads} leads</p>
+                          <p className="text-[10px] text-rose-300">{c.cpa > 0 ? `CPA: ${c.cpa.toLocaleString('vi-VN')} đ` : 'Chưa có lead'}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -606,7 +899,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                   <div className="max-w-md mx-auto space-y-1">
                     <h4 className="text-sm font-bold text-white">Khởi Động Phân Tích Chuyên Sâu Sau 7 Ngày</h4>
                     <p className="text-xs text-slate-400">
-                      Gemini 3.7 Flash sẽ tự động so sánh số liệu từng chiến dịch, đánh giá chỉ số CTR/CPA, tính điểm sức khỏe tài khoản và lập kế hoạch hành động 7 ngày tới.
+                      Gemini 3.7 Flash sẽ tự động so sánh số liệu từng chiến dịch Tìm Kiếm (Search) & PMax, đánh giá chỉ số CTR/CPA, tính điểm sức khỏe tài khoản và lập kế hoạch hành động 7 ngày tới.
                     </p>
                   </div>
                   <button

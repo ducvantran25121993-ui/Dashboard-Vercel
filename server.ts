@@ -422,17 +422,17 @@ app.post('/api/analyze-7days-campaigns', async (req, res) => {
     }
 
     const systemInstruction = `
-Bạn là Giám Đốc Tối Ưu Hóa Hiệu Suất Google Ads Cấp Cao (Chief Performance Marketing Officer) chuyên sâu về ngành Nha Khoa Thẩm Mỹ & Cấy Ghép Implant tại Việt Nam.
-Nhiệm vụ: Phân tích số liệu chu kỳ 7 ngày gần nhất (đã kết thúc ngày hôm qua) so với 7 ngày trước đó, đưa ra đánh giá thực tế và các gợi ý hành động chiến lược cực kỳ chi tiết, cụ thể cho từng chiến dịch để đội ngũ Media Buyer thực thi ngay lập tức.
+Bạn là Giám Đốc Tối Ưu Hóa Hiệu Suất Google Ads Cấp Cao (Chief Performance Marketing Officer) chuyên sâu về Google Search Ads (Tìm Kiếm), PMax và chuyển đổi ngành Nha Khoa Thẩm Mỹ & Cấy Ghép Implant tại Việt Nam.
+Nhiệm vụ: Phân tích số liệu chu kỳ 7 ngày gần nhất (đã kết thúc ngày hôm qua) so với 7 ngày trước đó. ĐẶC BIỆT chú trọng phân tích chuyên sâu các Chiến Dịch Tìm Kiếm (Google Search Campaigns): từ khóa, đối sánh, giá thầu CPC/CPA, tỷ lệ nhấp CTR, truy vấn tìm kiếm rác, và mẫu quảng cáo thích ứng (RSA).
 
 Phong cách phản hồi:
 - Chuyên nghiệp, trực diện, số liệu rõ ràng (không nói chung chung).
-- Sử dụng thuật ngữ chuẩn Google Ads: CPA, CPC, CTR, Conversion Rate, Target CPA, Maximize Conversions, Negative Keywords, Match Types, Ad Copy, Quality Score.
+- Sử dụng thuật ngữ chuẩn Google Search Ads: Search Terms, Exact Match, Phrase Match, Broad Match, Target CPA, Maximize Conversions, Search Impression Share, Absolute Top Impression Share, Negative Keywords, RSA (Responsive Search Ads), Quality Score, Ad Relevance, Landing Page Experience.
 - Định dạng Markdown đẹp mắt, có bullet points, bảng biểu và icon trực quan.
 `;
 
     const userPrompt = `
-BÁO CÁO PHÂN TÍCH HIỆU SUẤT 7 NGÀY GẦN NHẤT & ĐỀ XUẤT TỐI ƯU CHIẾN DỊCH GOOGLE ADS
+BÁO CÁO PHÂN TÍCH HIỆU SUẤT 7 NGÀY GẦN NHẤT & ĐỀ XUẤT TỐI ƯU CHIẾN DỊCH GOOGLE ADS (CHUYÊN SÂU GOOGLE SEARCH)
 Thời gian phân tích: ${dateRangeLabel || '7 ngày gần nhất'}
 
 1. SỐ LIỆU TỔNG QUAN 7 NGÀY GẦN NHẤT:
@@ -449,31 +449,37 @@ ${JSON.stringify(topCampaigns || [], null, 2)}
 3. CHIẾN DỊCH CẢNH BÁO LÃNG PHÍ HOẶC CPA TĂNG CAO TRONG 7 NGÀY:
 ${JSON.stringify(warningCampaigns || [], null, 2)}
 
-4. MẪU CÁC CHIẾN DỊCH TIÊU BIỂU KHÁC:
+4. MẪU CÁC CHIẾN DỊCH TIÊU BIỂU KHÁC (BAO GỒM SEARCH & CÁC LOẠI HÌNH KHÁC):
 ${JSON.stringify(allCampaignsSample || [], null, 2)}
 
 ---
 YÊU CẦU BÁO CÁO:
-Hãy xây dựng bản Báo Cáo & Đề Xuất Tối Ưu Chiến Dịch sau 7 ngày gồm các phần sau:
+Hãy xây dựng bản Báo Cáo & Đề Xuất Tối Ưu Chiến Dịch sau 7 ngày với các phần rõ ràng như sau:
 
 ### 1. 📊 ĐÁNH GIÁ TỔNG QUAN & ĐIỂM SỨC KHỎE TÀI KHOẢN (Health Score / 100)
 - Tóm tắt biến động chính trong 7 ngày qua (Tăng/giảm chi phí, số lượng lead, CPA có bị đội giá hay tối ưu tốt hơn).
-- Nhận định ngắn gọn về xu hướng thị trường nha khoa và sức cạnh tranh từ khóa trong tuần qua.
+- Nhận định ngắn gọn về xu hướng tìm kiếm của khách hàng nha khoa trong tuần qua.
 
-### 2. 🚀 ĐỀ XUẤT SCALE & TĂNG NGÂN SÁCH (Top Chiến Dịch Thắng Lớn)
+### 2. 🔍 PHÂN TÍCH CHUYÊN SÂU & CHIẾN LƯỢC TỐI ƯU CHIẾN DỊCH SEARCH (TÌM KIẾM)
+- **Đánh giá hiệu suất mạng Tìm Kiếm (Search Network)**: Phân tích chỉ số CTR, CPC trung bình và tỷ lệ chuyển đổi của các chiến dịch Search.
+- **Tối ưu Loại Đối Sánh Từ Khóa (Match Types)**: Hướng dẫn cấu trúc từ khóa chính xác [Exact] và cụm từ "Phrase", hạn chế rò rỉ ngân sách do Broad Match.
+- **Tối ưu Tỷ lệ hiển thị đầu trang (Search Impression Share & Absolute Top IS)**: Đề xuất chiến lược nâng thứ hạng tìm kiếm cho các từ khóa "hot" có ý định mua cao (High Intent).
+- **Tối ưu Mẫu Quảng Cáo Thích Ứng (RSA - Responsive Search Ads)**: Đề xuất cải thiện Điểm chất lượng (Ad Strength: Excellent), tối ưu 15 tiêu đề (Headlines) và 4 mô tả (Descriptions) đánh vào tâm lý khách hàng (bác sĩ giỏi, không đau, giá minh bạch, trả góp).
+
+### 3. 🚀 ĐỀ XUẤT SCALE & TĂNG NGÂN SÁCH (Top Chiến Dịch Thắng Lớn)
 - Chỉ rõ 2-3 chiến dịch xuất sắc nhất nên tăng ngân sách bao nhiêu % (ví dụ: +15% đến +25%).
-- Đề xuất mở rộng từ khóa, mở rộng tệp vị trí hoặc tối ưu ngân sách ngày cụ thể.
+- Đề xuất mở rộng ngân sách ngày cụ thể.
 
-### 3. ⚠️ ĐỀ XUẤT XỬ LÝ & CẮT GIẢM CHI PHÍ (Chiến Dịch Kém Hiệu Quả / Ngốn Ngân Sách)
+### 4. ⚠️ ĐỀ XUẤT XỬ LÝ & CẮT GIẢM CHI PHÍ (Chiến Dịch Kém Hiệu Quả / Ngốn Ngân Sách)
 - Chỉ rõ 2-3 chiến dịch đang có CPA quá cao hoặc tiêu nhiều tiền nhưng ít lead.
-- Hành động xử lý ngay: Giảm ngân sách, hạ giá thầu trần (Max CPC), tạm dừng nhóm quảng cáo kém hoặc chuyển chiến lược đấu thầu.
+- Hành động xử lý ngay: Giảm ngân sách, hạ giá thầu trần (Max CPC), tạm dừng từ khóa kém.
 
-### 4. 🎯 DANH SÁCH 10+ TỪ KHÓA PHỦ ĐỊNH (NEGATIVE KEYWORDS) CẦN THÊM NGAY
-- Đề xuất các từ khóa rác / sai intent thường gặp trong ngành nha khoa (Implant, Răng sứ, Niềng răng) cần loại trừ ngay để tránh lãng phí ngân sách tuần tới.
+### 5. 🎯 DANH SÁCH 10+ TỪ KHÓA PHỦ ĐỊNH (NEGATIVE KEYWORDS) CHO CHIẾN DỊCH SEARCH
+- Đề xuất các từ khóa tìm kiếm rác / sai intent thường gặp cần phủ định ngay ở cấp độ Tài Khoản / Chiến dịch Search.
 
-### 5. 🛠️ KẾ HOẠCH HÀNH ĐỘNG CỤ THỂ CHO 7 NGÀY TIẾP THEO (ACTION PLAN)
+### 6. 🛠️ KẾ HOẠCH HÀNH ĐỘNG CỤ THỂ CHO 7 NGÀY TIẾP THEO (ACTION PLAN)
 - Bảng phân bổ lại ngân sách dự kiến.
-- Đề xuất thử nghiệm A/B Testing mẫu quảng cáo (Ad Copy, Sitelinks, Callout Extensions) tập trung vào nỗi sợ đau, bảo hành, bác sĩ chuyên gia và chính sách trả góp 0%.
+- Checklist các việc cần làm ngay trong 24-48 giờ tới.
 `;
 
     const response = await gemini.models.generateContent({
