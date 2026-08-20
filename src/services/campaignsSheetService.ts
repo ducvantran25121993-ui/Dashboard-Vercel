@@ -51,43 +51,197 @@ export interface CampaignFetchResult {
 
 export const DEFAULT_CAMPAIGNS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1w182-MqSp-W1lL3885aglEhbABwhx4bsasblqirJnMg/edit?gid=0#gid=0';
 
-// Generate mock daily historical records from Jan 2026 to August 2026 for simulation if sheet is still empty
+// Helper to normalize date string safely from various Google Ads / Sheets formats
+export function normalizeDate(raw: string | undefined): { dateIso: string; dateFormatted: string; dateObj: Date } {
+  if (!raw || !raw.trim()) {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    return { dateIso: `${yyyy}-${mm}-${dd}`, dateFormatted: `${dd}/${mm}/${yyyy}`, dateObj: now };
+  }
+  const clean = raw.trim();
+
+  // Excel / Google Sheet Serial Date (e.g. 45888)
+  const numeric = parseFloat(clean);
+  if (!isNaN(numeric) && numeric > 40000 && numeric < 60000 && !clean.includes('-') && !clean.includes('/')) {
+    const jsDate = new Date((numeric - 25569) * 86400 * 1000);
+    const yyyy = jsDate.getFullYear();
+    const mm = String(jsDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(jsDate.getDate()).padStart(2, '0');
+    return { dateIso: `${yyyy}-${mm}-${dd}`, dateFormatted: `${dd}/${mm}/${yyyy}`, dateObj: jsDate };
+  }
+
+  // Format YYYY-MM-DD or YYYY/MM/DD
+  if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(clean)) {
+    const parts = clean.split(/[-/]/);
+    const yyyy = parseInt(parts[0], 10);
+    const mm = parseInt(parts[1], 10);
+    const dd = parseInt(parts[2], 10);
+    const dateObj = new Date(yyyy, mm - 1, dd);
+    const dateIso = `${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
+    const dateFormatted = `${String(dd).padStart(2, '0')}/${String(mm).padStart(2, '0')}/${yyyy}`;
+    return { dateIso, dateFormatted, dateObj };
+  }
+
+  // Format DD-MM-YYYY or DD/MM/YYYY
+  if (/^\d{1,2}[-/]\d{1,2}[-/]\d{4}/.test(clean)) {
+    const parts = clean.split(/[-/]/);
+    const dd = parseInt(parts[0], 10);
+    const mm = parseInt(parts[1], 10);
+    const yyyy = parseInt(parts[2], 10);
+    const dateObj = new Date(yyyy, mm - 1, dd);
+    const dateIso = `${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
+    const dateFormatted = `${String(dd).padStart(2, '0')}/${String(mm).padStart(2, '0')}/${yyyy}`;
+    return { dateIso, dateFormatted, dateObj };
+  }
+
+  const fallback = new Date(clean);
+  if (!isNaN(fallback.getTime())) {
+    const yyyy = fallback.getFullYear();
+    const mm = String(fallback.getMonth() + 1).padStart(2, '0');
+    const dd = String(fallback.getDate()).padStart(2, '0');
+    return { dateIso: `${yyyy}-${mm}-${dd}`, dateFormatted: `${dd}/${mm}/${yyyy}`, dateObj: fallback };
+  }
+
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  return { dateIso: `${yyyy}-${mm}-${dd}`, dateFormatted: `${dd}/${mm}/${yyyy}`, dateObj: now };
+}
+
+// 59 Real-world dental Google Ads campaigns for Tam Duc Smile Dental System
+export const DEFAULT_CAMPAIGN_NAMES: string[] = [
+  'Google Search - Trồng Răng Implant Toàn Hàm All-on-4 / All-on-6 (TP.HCM)',
+  'Performance Max - Bọc Răng Sứ Thẩm Mỹ Cao Cấp Cercon & Lava (Miền Tây)',
+  'Google Ads - Khách Hàng Việt Kiều Hồi Hương Làm Răng Trọn Gói',
+  'Youtube Video Ads - Trải Nghiệm Khách Hàng Cấy Ghép Implant Thực Tế',
+  'Google Search - Niềng Răng Trong Suốt Invisalign & Khay Trong',
+  'Google Search - Trồng Răng Implant Đơn Lẻ Straumann Thụy Sĩ',
+  'Performance Max - Dán Sứ Veneer Không Mài Răng Emax Press',
+  'Google Search - Trồng Răng Implant ETK Pháp Giá Tốt',
+  'Google Search - Niềng Răng Mắc Cài Kim Loại & Sứ Tự Buộc',
+  'Google Search - Nhổ Răng Khôn Không Đau Sóng Siêu Âm Piezotome',
+  'Google Search - Tẩy Trắng Răng Laser Whitening Công Nghệ Đức',
+  'Google Search - Điều Trị Tủy Răng & Hàn Trám Răng Thẩm Mỹ',
+  'Performance Max - Chăm Sóc Răng Miệng Định Kỳ & Cạo Vôi Răng',
+  'Google Search - Bọc Răng Sứ Zirconia Đức Chính Hãng',
+  'Google Search - Cấy Ghép Implant Dentium Mỹ Bền Chắc',
+  'Google Search - Cấy Ghép Implant Hiossen Mỹ Chuẩn Y Khoa',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Quận 1 - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Quận 10 - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Quận Bình Thạnh - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Quận Gò Vấp - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Quận Tân Bình - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Cần Thơ - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Mỹ Tho Tiền Giang - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Vũng Tàu - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Đồng Nai Biên Hòa - Tâm Đức Smile',
+  'Google Ads - Nha Khoa Uy Tín Gần Đây Bình Dương - Tâm Đức Smile',
+  'Google Search - Trồng Răng Giả Tháo Lắp Cho Người Cao Tuổi',
+  'Google Search - Cầu Răng Sứ Khắc Phục Mất Răng Nhanh',
+  'Google Search - Cắt Lợi Thẩm Mỹ Điều Trị Cười Hở Lợi',
+  'Google Search - Phục Hình Răng Sứ Toàn Sứ Katana Nhật Bản',
+  'Google Search - Phục Hình Răng Sứ Orodent Cao Cấp',
+  'Google Search - Niềng Răng Cho Trẻ Em & Chỉnh Nha Sớm',
+  'Google Search - Niềng Răng Trả Góp 0% Lãi Suất TPHCM',
+  'Google Search - Implant Trả Góp Linh Hoạt 0% Tâm Đức Smile',
+  'Google Display Network - Nhận Diện Thương Hiệu Hệ Thống Tâm Đức Smile',
+  'Google Display Network - Banner Khuyến Mãi Tháng - Giảm 50% Trồng Răng',
+  'Remarketing - Khách Đã Xem Trang Implant Nhưng Chưa Để Lại SĐT',
+  'Remarketing - Khách Đã Xem Trang Răng Sứ Thẩm Mỹ 30 Ngày Qua',
+  'Remarketing - Khách Tương Tác Video Bác Sĩ Tư Vấn Trên Youtube',
+  'Remarketing - Khách Hàng Cũ Chăm Sóc Tái Khám Răng Định Kỳ',
+  'Google Search - Giá Trồng Răng Implant Bao Nhiêu 1 Trụ 2026',
+  'Google Search - Bảng Giá Bọc Răng Sứ Mới Nhất 2026',
+  'Google Search - Địa Chỉ Trồng Răng Uy Tín Nhất Sài Gòn',
+  'Google Search - Bác Sĩ Cấy Implant Giỏi TPHCM - Tâm Đức Smile',
+  'Google Search - Trồng Răng Implant Không Đau Kỹ Thuật Số',
+  'Google Search - Răng Sứ Thẩm Mỹ Bảo Hành Trọn Đời',
+  'Google Search - Khám Răng Tổng Quát & Chụp Phim CT ConeBeam Miễn Phí',
+  'Performance Max - Combo Răng Đẹp Đón Tết & Mùa Du Lịch',
+  'Performance Max - Đại Lễ Tri Ân Khách Hàng Nha Khoa Tâm Đức Smile',
+  'Youtube Video Ads - Quy Trình Trồng Răng Chuẩn Quốc Tế ISO',
+  'Youtube Video Ads - Cảm Nhận Khách Hàng Niềng Răng Thành Công',
+  'Google Search - Trồng Răng Kháng Tiêu Xương Hàm Nhanh Lành',
+  'Google Search - Mất Hết Răng Làm Sao Ăn Nhai - Giải Pháp All-on-4',
+  'Google Search - Trồng Răng Implant Cho Người Tiểu Đường, Tim Mạch',
+  'Google Search - Tẩy Trắng Răng Đón Sự Kiện Nhanh 45 Phút',
+  'Google Search - Răng Khôn Mọc Lệch Mọc Ngầm Cần Nhổ Gấp',
+  'Google Search - Nha Khoa Khám Ngoài Giờ & Cuối Tuần TPHCM',
+  'Google Search - Bác Sĩ Chuyên Gia Răng Sứ Cần Thơ',
+  'Google Ads - Tổng Đài Tư Vấn Răng Miệng Miễn Phí 1900 8040',
+];
+
+// Generate 59 default campaigns
+export const DEFAULT_CAMPAIGNS: CampaignItem[] = DEFAULT_CAMPAIGN_NAMES.map((name, idx) => {
+  const isSearch = name.includes('Search');
+  const isPMax = name.includes('Performance Max') || name.includes('PMax');
+  const isVideo = name.includes('Youtube') || name.includes('Video');
+  const isDisplay = name.includes('Display');
+  const isRe = name.includes('Remarketing');
+
+  const type = isPMax ? 'PMax' : isVideo ? 'Video' : isDisplay ? 'Google Display' : isRe ? 'Remarketing' : 'Google Search';
+  
+  const baseBudget = idx < 5 ? 35000000 : idx < 15 ? 20000000 : idx < 30 ? 15000000 : 10000000;
+  const spentNum = Math.round(baseBudget * (5.5 + (idx % 4) * 0.8));
+  const leadsNum = Math.max(15, Math.round(spentNum / (150000 + (idx % 5) * 25000)));
+  const clicks = Math.round(leadsNum * (15 + (idx % 6) * 3));
+  const impressions = clicks * (18 + (idx % 7) * 2);
+  const cpaNum = leadsNum > 0 ? Math.round(spentNum / leadsNum) : 0;
+  const cpcNum = clicks > 0 ? Math.round(spentNum / clicks) : 1500;
+
+  return {
+    id: idx + 1,
+    name,
+    status: 'Đang chạy',
+    budget: `${(baseBudget / 1000000).toFixed(0)}.000.000 đ/tháng`,
+    spent: `${spentNum.toLocaleString('vi-VN')} đ`,
+    spentNum,
+    impressions,
+    clicks,
+    leads: `${leadsNum.toLocaleString('vi-VN')}`,
+    leadsNum,
+    cpa: `${cpaNum.toLocaleString('vi-VN')} đ`,
+    roas: `${(6.5 + (idx % 6) * 0.8).toFixed(1)}x`,
+    ctr: `${((clicks / impressions) * 100).toFixed(2)}%`,
+    cpc: `${cpcNum.toLocaleString('vi-VN')} đ`,
+    cpcNum,
+    convRate: `${((leadsNum / clicks) * 100).toFixed(2)}%`,
+    type,
+  };
+});
+
+// Generate mock daily historical records from Jan 2026 to current date for simulation if sheet is empty
 export function generateMockDailyRecords(): DailyCampaignRecord[] {
   const records: DailyCampaignRecord[] = [];
-  const campaignsList = [
-    'Google Search - Trồng Răng Implant Toàn Hàm',
-    'Performance Max - Bọc Răng Sứ Thẩm Mỹ',
-    'Google Ads - Khách Hàng Việt Kiều Hồi Hương',
-    'Youtube Video Ads - Trải Nghiệm Khách Hàng',
-    'Google Search - Niềng Răng Trong Suốt',
-  ];
-
-  const now = new Date(2026, 7, 18); // August 18, 2026
-  const startDate = new Date(2026, 0, 1); // January 1, 2026
+  const now = new Date(); // Dynamic current date
+  const startDate = new Date(now.getFullYear(), 0, 1); // Start from Jan 1 of current year
 
   for (let d = new Date(startDate); d <= now; d.setDate(d.getDate() + 1)) {
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
-    const dateStr = `${yyyy}-${mm}-${dd}`;
+    const dateIso = `${yyyy}-${mm}-${dd}`;
     const dateFormatted = `${dd}/${mm}/${yyyy}`;
 
-    campaignsList.forEach((cName, idx) => {
+    DEFAULT_CAMPAIGN_NAMES.forEach((cName, idx) => {
       // Create natural variance per day
-      const baseCost = idx === 0 ? 1200000 : idx === 1 ? 950000 : idx === 2 ? 700000 : 500000;
-      const factor = 0.7 + (Math.sin(d.getDate() * 1.5 + idx) * 0.3);
-      const spent = Math.round(baseCost * factor);
-      const leads = Math.max(1, Math.round((spent / (idx === 0 ? 210000 : 150000))));
-      const clicks = Math.round(leads * (12 + (idx * 2)));
-      const impressions = clicks * 19;
+      const baseCost = idx < 5 ? 1100000 : idx < 15 ? 750000 : idx < 30 ? 550000 : 380000;
+      const dayFactor = 0.75 + (Math.sin(d.getDate() * 1.3 + idx) * 0.25);
+      const spent = Math.round(baseCost * dayFactor);
+      const targetCpa = idx < 5 ? 210000 : idx < 15 ? 160000 : 135000;
+      const leads = Math.max(1, Math.round(spent / targetCpa));
+      const clicks = Math.round(leads * (14 + (idx % 4)));
+      const impressions = clicks * 20;
       const cpa = leads > 0 ? Math.round(spent / leads) : 0;
       const ctr = `${((clicks / impressions) * 100).toFixed(2)}%`;
       const cpc = clicks > 0 ? Math.round(spent / clicks) : 1500;
-
       const convRate = clicks > 0 ? `${((leads / clicks) * 100).toFixed(2)}%` : '0.00%';
 
       records.push({
-        date: dateStr,
+        date: dateIso,
         dateFormatted,
         campaignName: cName,
         status: 'Đang chạy',
@@ -105,104 +259,6 @@ export function generateMockDailyRecords(): DailyCampaignRecord[] {
 
   return records.reverse(); // Newest first
 }
-
-export const DEFAULT_CAMPAIGNS: CampaignItem[] = [
-  {
-    id: 1,
-    name: 'Google Search - Trồng Răng Implant Toàn Hàm (TP.HCM)',
-    status: 'Đang chạy',
-    budget: '45.000.000 đ/tháng',
-    spent: '275.400.000 đ',
-    spentNum: 275400000,
-    impressions: 2950000,
-    clicks: 154000,
-    leads: '1.340',
-    leadsNum: 1340,
-    cpa: '205.522 đ',
-    roas: '8.2x',
-    ctr: '5.22%',
-    cpc: '1.788 đ',
-    cpcNum: 1788,
-    convRate: '0.87%',
-    type: 'Google Search',
-  },
-  {
-    id: 2,
-    name: 'Performance Max - Bọc Răng Sứ Thẩm Mỹ (Miền Tây)',
-    status: 'Đang chạy',
-    budget: '35.000.000 đ/tháng',
-    spent: '218.000.000 đ',
-    spentNum: 218000000,
-    impressions: 2600000,
-    clicks: 142000,
-    leads: '1.510',
-    leadsNum: 1510,
-    cpa: '144.370 đ',
-    roas: '8.8x',
-    ctr: '5.46%',
-    cpc: '1.535 đ',
-    cpcNum: 1535,
-    convRate: '1.06%',
-    type: 'PMax',
-  },
-  {
-    id: 3,
-    name: 'Google Ads - Khách Hàng Việt Kiều Hồi Hương Làm Răng',
-    status: 'Đang chạy',
-    budget: '25.000.000 đ/tháng',
-    spent: '162.500.000 đ',
-    spentNum: 162500000,
-    impressions: 2100000,
-    clicks: 108000,
-    leads: '690',
-    leadsNum: 690,
-    cpa: '235.507 đ',
-    roas: '11.5x',
-    ctr: '5.14%',
-    cpc: '1.504 đ',
-    cpcNum: 1504,
-    convRate: '0.64%',
-    type: 'Search & Display',
-  },
-  {
-    id: 4,
-    name: 'Youtube Video Ads - Trải Nghiệm Khách Hàng Thực Tế',
-    status: 'Đang chạy',
-    budget: '20.000.000 đ/tháng',
-    spent: '135.000.000 đ',
-    spentNum: 135000000,
-    impressions: 3800000,
-    clicks: 162000,
-    leads: '840',
-    leadsNum: 840,
-    cpa: '160.714 đ',
-    roas: '5.8x',
-    ctr: '4.26%',
-    cpc: '833 đ',
-    cpcNum: 833,
-    convRate: '0.52%',
-    type: 'Video',
-  },
-  {
-    id: 5,
-    name: 'Google Search - Niềng Răng Trong Suốt Invisalign',
-    status: 'Đang chạy',
-    budget: '15.000.000 đ/tháng',
-    spent: '94.200.000 đ',
-    spentNum: 94200000,
-    impressions: 1750000,
-    clicks: 104000,
-    leads: '580',
-    leadsNum: 580,
-    cpa: '162.413 đ',
-    roas: '6.4x',
-    ctr: '5.94%',
-    cpc: '905 đ',
-    cpcNum: 905,
-    convRate: '0.56%',
-    type: 'Search',
-  },
-];
 
 // Helper to parse CSV format safely
 function parseCSV(csv: string): string[][] {
@@ -383,7 +439,9 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
     if (!name || name.toLowerCase().includes('total') || name.toLowerCase().includes('tổng')) continue;
 
     const rawDate = (dateCol >= 0 && row[dateCol]) ? row[dateCol].trim() : '';
-    const dateFormatted = rawDate || new Date().toLocaleDateString('vi-VN');
+    const dateNorm = normalizeDate(rawDate);
+    const dateIso = dateNorm.dateIso;
+    const dateFormatted = dateNorm.dateFormatted;
 
     const rawStatus = (statusCol >= 0 && row[statusCol]) ? row[statusCol].trim() : 'Đang chạy';
     const status = rawStatus.toLowerCase().includes('enabled') || rawStatus.toLowerCase().includes('đang') || rawStatus.toLowerCase().includes('active')
@@ -420,7 +478,7 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
     const convRate = clicksNum > 0 ? `${((convNum / clicksNum) * 100).toFixed(2)}%` : '0.00%';
 
     parsedDailyRecords.push({
-      date: rawDate || dateFormatted,
+      date: dateIso,
       dateFormatted,
       campaignName: name,
       status,

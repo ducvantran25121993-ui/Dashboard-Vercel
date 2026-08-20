@@ -16,7 +16,8 @@ import {
   DEFAULT_CAMPAIGNS_SHEET_URL, 
   DEFAULT_CAMPAIGNS, 
   generateMockDailyRecords,
-  formatVND 
+  formatVND,
+  normalizeDate
 } from '../services/campaignsSheetService';
 
 interface CampaignsViewProps {
@@ -109,23 +110,18 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
     loadData(trimmed);
   };
 
+  // Helper to format Date to YYYY-MM-DD
+  const toInputDateStr = (d: Date): string => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   // Helper to normalize date string to Date object
   const parseRecordDate = (rec: DailyCampaignRecord): Date | null => {
-    if (!rec.date && !rec.dateFormatted) return null;
-    const str = rec.date || rec.dateFormatted;
-    if (str.includes('-')) {
-      const parts = str.split('-');
-      if (parts.length === 3) {
-        return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-      }
-    } else if (str.includes('/')) {
-      const parts = str.split('/');
-      if (parts.length === 3) {
-        return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-      }
-    }
-    const d = new Date(str);
-    return isNaN(d.getTime()) ? null : d;
+    const { dateObj } = normalizeDate(rec.date || rec.dateFormatted);
+    return dateObj;
   };
 
   // Apply preset quick filters
@@ -134,47 +130,40 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
     setSelectedMonth('all');
     setCurrentPage(1);
 
-    const now = new Date(2026, 7, 18); // Defaulting based on current app timeframe
-
-    const toInputStr = (d: Date) => {
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const dd = String(d.getDate()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd}`;
-    };
+    const now = new Date();
 
     if (preset === 'all') {
       setStartDate('');
       setEndDate('');
     } else if (preset === 'today') {
-      const s = toInputStr(now);
+      const s = toInputDateStr(now);
       setStartDate(s);
       setEndDate(s);
     } else if (preset === 'yesterday') {
       const yd = new Date(now);
       yd.setDate(yd.getDate() - 1);
-      const s = toInputStr(yd);
+      const s = toInputDateStr(yd);
       setStartDate(s);
       setEndDate(s);
     } else if (preset === 'last7days') {
       const d7 = new Date(now);
-      d7.setDate(d7.getDate() - 7);
-      setStartDate(toInputStr(d7));
-      setEndDate(toInputStr(now));
+      d7.setDate(d7.getDate() - 6);
+      setStartDate(toInputDateStr(d7));
+      setEndDate(toInputDateStr(now));
     } else if (preset === 'last30days') {
       const d30 = new Date(now);
-      d30.setDate(d30.getDate() - 30);
-      setStartDate(toInputStr(d30));
-      setEndDate(toInputStr(now));
+      d30.setDate(d30.getDate() - 29);
+      setStartDate(toInputDateStr(d30));
+      setEndDate(toInputDateStr(now));
     } else if (preset === 'thisMonth') {
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      setStartDate(toInputStr(firstDay));
-      setEndDate(toInputStr(now));
+      setStartDate(toInputDateStr(firstDay));
+      setEndDate(toInputDateStr(now));
     } else if (preset === 'lastMonth') {
       const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
-      setStartDate(toInputStr(firstDay));
-      setEndDate(toInputStr(lastDay));
+      setStartDate(toInputDateStr(firstDay));
+      setEndDate(toInputDateStr(lastDay));
     }
   };
 
@@ -182,9 +171,9 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
   const availableMonthsList = useMemo(() => {
     const monthSet = new Set<number>();
     dailyRecords.forEach((rec) => {
-      const d = parseRecordDate(rec);
-      if (d) {
-        const m = d.getMonth() + 1;
+      const { dateObj } = normalizeDate(rec.date || rec.dateFormatted);
+      if (dateObj) {
+        const m = dateObj.getMonth() + 1;
         monthSet.add(m);
       }
     });
@@ -203,26 +192,21 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
 
       if (!matchesSearch) return false;
 
-      const recDate = parseRecordDate(rec);
+      const { dateIso, dateObj } = normalizeDate(rec.date || rec.dateFormatted);
 
       // Month pill filtering
       if (selectedMonth !== 'all') {
-        if (!recDate) return false;
-        const m = recDate.getMonth() + 1;
+        const m = dateObj.getMonth() + 1;
         if (m !== parseInt(selectedMonth, 10)) return false;
       }
 
-      // Start Date & End Date filtering
-      if (startDate && recDate) {
-        const start = new Date(startDate);
-        start.setHours(0, 0, 0, 0);
-        if (recDate < start) return false;
+      // Start Date & End Date filtering via direct ISO string comparisons (zero timezone drift)
+      if (startDate) {
+        if (dateIso < startDate) return false;
       }
 
-      if (endDate && recDate) {
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        if (recDate > end) return false;
+      if (endDate) {
+        if (dateIso > endDate) return false;
       }
 
       return true;
@@ -500,19 +484,22 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
               { id: 'last30days', label: '30 Ngày Qua' },
               { id: 'thisMonth', label: 'Tháng Này' },
               { id: 'lastMonth', label: 'Tháng Trước' },
-            ].map((p) => (
-              <button
-                key={p.id}
-                onClick={() => applyPreset(p.id as DatePreset)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                  datePreset === p.id && !startDate && !endDate && selectedMonth === 'all'
-                    ? 'bg-indigo-600 text-white font-bold shadow ring-1 ring-indigo-400'
-                    : 'bg-slate-800/90 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700/70'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
+            ].map((p) => {
+              const isActive = (datePreset === p.id && selectedMonth === 'all') || (p.id === 'all' && datePreset === 'all' && !startDate && !endDate && selectedMonth === 'all');
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => applyPreset(p.id as DatePreset)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                    isActive
+                      ? 'bg-indigo-600 text-white font-bold shadow ring-1 ring-indigo-400'
+                      : 'bg-slate-800/90 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700/70'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
