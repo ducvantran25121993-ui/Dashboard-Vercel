@@ -66,6 +66,8 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
   const [searchSubTab, setSearchSubTab] = useState<'overview' | 'searchTerms' | 'keywords' | 'hourly' | 'locations' | 'rsaBuilder'>('overview');
   const [termFilter, setTermFilter] = useState<'all' | 'winning' | 'negative'>('all');
   const [termSearchQuery, setTermSearchQuery] = useState('');
+  const [kwFilter, setKwFilter] = useState<'lowQs' | 'all' | 'good' | 'avg'>('lowQs');
+  const [kwSearchQuery, setKwSearchQuery] = useState('');
 
   const searchTerms = useMemo(() => {
     return (propSearchTerms && propSearchTerms.length > 0) ? propSearchTerms : generateMockSearchTerms();
@@ -907,6 +909,13 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                                     }
                                     if (alert.searchSubTab) {
                                       setSearchSubTab(alert.searchSubTab);
+                                    }
+                                    if (alert.id === 'low_qs') {
+                                      setKwFilter('lowQs');
+                                      setKwSearchQuery('');
+                                    } else if (alert.id === 'negative_keywords') {
+                                      setTermFilter('negative');
+                                      setTermSearchQuery('');
                                     }
                                   }
                                 }}
@@ -1869,105 +1878,265 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                     </div>
                   </div>
 
-                  {/* Quality Score Overview Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400 font-semibold">Điểm Chất Lượng Tốt (8-10/10)</span>
-                        <span className="p-1 rounded-lg bg-emerald-500/20 text-emerald-400"><Award className="w-3.5 h-3.5" /></span>
-                      </div>
-                      <div className="text-xl font-black text-emerald-300">
-                        {keywords.filter(k => Number(k.qualityScore) >= 8).length} / {keywords.length} Từ Khóa
-                      </div>
-                      <p className="text-[11px] text-emerald-400/80">Giúp giảm ~20-30% chi phí giá thầu CPC cạnh tranh</p>
-                    </div>
+                  {/* Quality Score Overview Cards (Interactive Filters) */}
+                  {(() => {
+                    const lowQsList = keywords.filter(k => {
+                      const qs = Number(k.qualityScore);
+                      return !isNaN(qs) && qs > 0 && qs <= 4;
+                    });
+                    const goodQsList = keywords.filter(k => {
+                      const qs = Number(k.qualityScore);
+                      return !isNaN(qs) && qs >= 8;
+                    });
+                    const avgQsList = keywords.filter(k => {
+                      const qs = Number(k.qualityScore);
+                      return !isNaN(qs) && qs >= 5 && qs <= 7;
+                    });
 
-                    <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400 font-semibold">Điểm Trung Bình (5-7/10)</span>
-                        <span className="p-1 rounded-lg bg-amber-500/20 text-amber-400"><Zap className="w-3.5 h-3.5" /></span>
-                      </div>
-                      <div className="text-xl font-black text-amber-300">
-                        {keywords.filter(k => Number(k.qualityScore) >= 5 && Number(k.qualityScore) < 8).length} Từ Khóa
-                      </div>
-                      <p className="text-[11px] text-amber-400/80">Cần nâng cấp tiêu đề RSA & tốc độ trang đích</p>
-                    </div>
+                    const filteredKeywords = keywords.filter(k => {
+                      const qs = Number(k.qualityScore);
+                      if (kwFilter === 'lowQs') {
+                        if (isNaN(qs) || qs <= 0 || qs > 4) return false;
+                      } else if (kwFilter === 'good') {
+                        if (isNaN(qs) || qs < 8) return false;
+                      } else if (kwFilter === 'avg') {
+                        if (isNaN(qs) || qs < 5 || qs > 7) return false;
+                      }
 
-                    <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-rose-500/30 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400 font-semibold">Cần Tối Ưu Gấp (1-4/10)</span>
-                        <span className="p-1 rounded-lg bg-rose-500/20 text-rose-400"><AlertTriangle className="w-3.5 h-3.5" /></span>
-                      </div>
-                      <div className="text-xl font-black text-rose-300">
-                        {keywords.filter(k => Number(k.qualityScore) < 5).length} Từ Khóa
-                      </div>
-                      <p className="text-[11px] text-rose-400/80">Bị đội giá thầu cao; nên tách ad group hoặc thay URL</p>
-                    </div>
-                  </div>
+                      if (kwSearchQuery.trim()) {
+                        const q = kwSearchQuery.toLowerCase().trim();
+                        const matchKw = (k.keyword || '').toLowerCase().includes(q);
+                        const matchCamp = (k.campaign || '').toLowerCase().includes(q);
+                        const matchAdg = (k.adGroup || '').toLowerCase().includes(q);
+                        if (!matchKw && !matchCamp && !matchAdg) return false;
+                      }
+                      return true;
+                    });
 
-                  {/* Keywords Table */}
-                  <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-xl">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead>
-                        <tr className="bg-slate-900/90 border-b border-slate-800 text-slate-400">
-                          <th className="py-3 px-3.5 font-semibold">Từ Khóa (Keyword)</th>
-                          <th className="py-3 px-3 font-semibold">Nhóm & Chiến Dịch</th>
-                          <th className="py-3 px-2.5 font-semibold text-center">Quality Score</th>
-                          <th className="py-3 px-3 font-semibold">Trang Đích (Landing Exp)</th>
-                          <th className="py-3 px-3 font-semibold">Độ Liên Quan Mẫu QC</th>
-                          <th className="py-3 px-3 font-semibold text-right">Chi Phí</th>
-                          <th className="py-3 px-3 font-semibold text-right">Leads</th>
-                          <th className="py-3 px-3 font-semibold text-right">CPA</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800/60">
-                        {keywords.map((k) => (
-                          <tr key={k.id} className="hover:bg-slate-900/50 transition-colors">
-                            <td className="py-3 px-3.5 font-bold text-white">
-                              <span className="font-mono text-cyan-300">{k.keyword}</span>
-                              <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400">
-                                {k.matchType}
+                    return (
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                          {/* Good QS Card */}
+                          <button
+                            type="button"
+                            onClick={() => setKwFilter('good')}
+                            className={`p-3.5 rounded-2xl text-left transition-all cursor-pointer ${
+                              kwFilter === 'good'
+                                ? 'bg-emerald-950/70 border-2 border-emerald-500 shadow-lg shadow-emerald-950/50 ring-1 ring-emerald-400/50'
+                                : 'bg-slate-950/80 border border-emerald-500/30 hover:border-emerald-500/60 hover:bg-slate-900/60'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-slate-400 font-semibold">Điểm Chất Lượng Tốt (8-10/10)</span>
+                              <span className="p-1 rounded-lg bg-emerald-500/20 text-emerald-400"><Award className="w-3.5 h-3.5" /></span>
+                            </div>
+                            <div className="text-xl font-black text-emerald-300 mt-1">
+                              {goodQsList.length} / {keywords.length} Từ Khóa
+                            </div>
+                            <p className="text-[11px] text-emerald-400/80 mt-1">Giúp giảm ~20-30% chi phí giá thầu CPC cạnh tranh</p>
+                          </button>
+
+                          {/* Average QS Card */}
+                          <button
+                            type="button"
+                            onClick={() => setKwFilter('avg')}
+                            className={`p-3.5 rounded-2xl text-left transition-all cursor-pointer ${
+                              kwFilter === 'avg'
+                                ? 'bg-amber-950/70 border-2 border-amber-500 shadow-lg shadow-amber-950/50 ring-1 ring-amber-400/50'
+                                : 'bg-slate-950/80 border border-amber-500/30 hover:border-amber-500/60 hover:bg-slate-900/60'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-slate-400 font-semibold">Điểm Trung Bình (5-7/10)</span>
+                              <span className="p-1 rounded-lg bg-amber-500/20 text-amber-400"><Zap className="w-3.5 h-3.5" /></span>
+                            </div>
+                            <div className="text-xl font-black text-amber-300 mt-1">
+                              {avgQsList.length} Từ Khóa
+                            </div>
+                            <p className="text-[11px] text-amber-400/80 mt-1">Cần nâng cấp tiêu đề RSA & tốc độ trang đích</p>
+                          </button>
+
+                          {/* Low QS Card */}
+                          <button
+                            type="button"
+                            onClick={() => setKwFilter('lowQs')}
+                            className={`p-3.5 rounded-2xl text-left transition-all cursor-pointer ${
+                              kwFilter === 'lowQs'
+                                ? 'bg-rose-950/70 border-2 border-rose-500 shadow-lg shadow-rose-950/50 ring-1 ring-rose-400/50'
+                                : 'bg-slate-950/80 border border-rose-500/30 hover:border-rose-500/60 hover:bg-slate-900/60'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-slate-400 font-semibold flex items-center gap-1">
+                                <span>Cần Tối Ưu Gấp (1-4/10)</span>
+                                {kwFilter === 'lowQs' && <span className="px-1.5 py-0.2 rounded bg-rose-500 text-white font-bold text-[9px]">Đang lọc</span>}
                               </span>
-                            </td>
-                            <td className="py-3 px-3 text-slate-400 max-w-xs truncate">
-                              <div className="font-medium text-slate-300 truncate">{k.adGroup}</div>
-                              <div className="text-[10px] text-slate-500 truncate">{k.campaign}</div>
-                            </td>
-                            <td className="py-3 px-2.5 text-center">
-                              <span className={`px-2.5 py-0.5 rounded-full text-xs font-black border ${
-                                Number(k.qualityScore) >= 8 
-                                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' 
-                                  : Number(k.qualityScore) >= 5 
-                                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
-                                  : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                              }`}>
-                                {k.qualityScore}/10
-                              </span>
-                            </td>
-                            <td className="py-3 px-3 text-slate-300">
-                              <span className={`text-[11px] font-medium ${k.landingExp.includes('Trên') ? 'text-emerald-400' : k.landingExp.includes('Dưới') ? 'text-rose-400' : 'text-amber-400'}`}>
-                                {k.landingExp}
-                              </span>
-                            </td>
-                            <td className="py-3 px-3 text-slate-300">
-                              <span className={`text-[11px] font-medium ${k.adRelevance.includes('Trên') ? 'text-emerald-400' : k.adRelevance.includes('Dưới') ? 'text-rose-400' : 'text-amber-400'}`}>
-                                {k.adRelevance}
-                              </span>
-                            </td>
-                            <td className="py-3 px-3 text-right font-medium text-slate-300">
-                              {formatVND(k.cost)}
-                            </td>
-                            <td className="py-3 px-3 text-right font-bold text-emerald-400">
-                              {k.leads}
-                            </td>
-                            <td className="py-3 px-3 text-right font-bold text-amber-300">
-                              {k.cpa > 0 ? `${k.cpa.toLocaleString('vi-VN')} đ` : '-'}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                              <span className="p-1 rounded-lg bg-rose-500/20 text-rose-400"><AlertTriangle className="w-3.5 h-3.5" /></span>
+                            </div>
+                            <div className="text-xl font-black text-rose-300 mt-1">
+                              {lowQsList.length} Từ Khóa
+                            </div>
+                            <p className="text-[11px] text-rose-400/80 mt-1">Bị đội giá thầu cao; nên tách ad group hoặc thay URL</p>
+                          </button>
+                        </div>
+
+                        {/* Search & Filter Controls Bar */}
+                        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 bg-slate-950/70 p-2.5 rounded-2xl border border-slate-800">
+                          {/* Search Input */}
+                          <div className="relative flex-1 min-w-[200px]">
+                            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                            <input
+                              type="text"
+                              value={kwSearchQuery}
+                              onChange={(e) => setKwSearchQuery(e.target.value)}
+                              placeholder="Tìm từ khóa, nhóm quảng cáo, chiến dịch..."
+                              className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                            />
+                            {kwSearchQuery && (
+                              <button
+                                onClick={() => setKwSearchQuery('')}
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Quick Filter Buttons */}
+                          <div className="flex items-center gap-1.5 overflow-x-auto text-xs">
+                            <button
+                              type="button"
+                              onClick={() => setKwFilter('lowQs')}
+                              className={`px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-1 cursor-pointer ${
+                                kwFilter === 'lowQs'
+                                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
+                                  : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 border border-rose-500/30'
+                              }`}
+                            >
+                              <AlertTriangle className="w-3 h-3" />
+                              <span>Điểm thấp ≤4/10 ({lowQsList.length})</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setKwFilter('all')}
+                              className={`px-3 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
+                                kwFilter === 'all'
+                                  ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-600/30'
+                                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                              }`}
+                            >
+                              Tất cả ({keywords.length})
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setKwFilter('good')}
+                              className={`px-3 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
+                                kwFilter === 'good'
+                                  ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/30'
+                                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                              }`}
+                            >
+                              Điểm tốt 8-10 ({goodQsList.length})
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setKwFilter('avg')}
+                              className={`px-3 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
+                                kwFilter === 'avg'
+                                  ? 'bg-amber-600 text-white font-bold shadow-md shadow-amber-600/30'
+                                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                              }`}
+                            >
+                              Trung bình 5-7 ({avgQsList.length})
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Keywords Table */}
+                        <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-xl">
+                          <table className="w-full text-left text-xs border-collapse">
+                            <thead>
+                              <tr className="bg-slate-900/90 border-b border-slate-800 text-slate-400">
+                                <th className="py-3 px-3.5 font-semibold">Từ Khóa (Keyword)</th>
+                                <th className="py-3 px-3 font-semibold">Nhóm & Chiến Dịch</th>
+                                <th className="py-3 px-2.5 font-semibold text-center">Quality Score</th>
+                                <th className="py-3 px-3 font-semibold">Trang Đích (Landing Exp)</th>
+                                <th className="py-3 px-3 font-semibold">Độ Liên Quan Mẫu QC</th>
+                                <th className="py-3 px-3 font-semibold text-right">Chi Phí</th>
+                                <th className="py-3 px-3 font-semibold text-right">Leads</th>
+                                <th className="py-3 px-3 font-semibold text-right">CPA</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-800/60">
+                              {filteredKeywords.length === 0 ? (
+                                <tr>
+                                  <td colSpan={8} className="py-8 text-center text-slate-500">
+                                    <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-slate-600" />
+                                    <p className="font-medium">Không tìm thấy từ khóa nào phù hợp với bộ lọc hiện tại</p>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setKwFilter('all'); setKwSearchQuery(''); }}
+                                      className="mt-2 text-cyan-400 hover:underline font-bold text-xs"
+                                    >
+                                      Xem tất cả ({keywords.length}) từ khóa
+                                    </button>
+                                  </td>
+                                </tr>
+                              ) : (
+                                filteredKeywords.map((k) => (
+                                  <tr key={k.id} className="hover:bg-slate-900/50 transition-colors">
+                                    <td className="py-3 px-3.5 font-bold text-white">
+                                      <span className="font-mono text-cyan-300">{k.keyword}</span>
+                                      <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400">
+                                        {k.matchType}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-3 text-slate-400 max-w-xs truncate">
+                                      <div className="font-medium text-slate-300 truncate">{k.adGroup}</div>
+                                      <div className="text-[10px] text-slate-500 truncate">{k.campaign}</div>
+                                    </td>
+                                    <td className="py-3 px-2.5 text-center">
+                                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-black border ${
+                                        Number(k.qualityScore) >= 8 
+                                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' 
+                                          : Number(k.qualityScore) >= 5 
+                                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
+                                          : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                                      }`}>
+                                        {k.qualityScore}/10
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-3 text-slate-300">
+                                      <span className={`text-[11px] font-medium ${k.landingExp.includes('Trên') ? 'text-emerald-400' : k.landingExp.includes('Dưới') ? 'text-rose-400' : 'text-amber-400'}`}>
+                                        {k.landingExp}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-3 text-slate-300">
+                                      <span className={`text-[11px] font-medium ${k.adRelevance.includes('Trên') ? 'text-emerald-400' : k.adRelevance.includes('Dưới') ? 'text-rose-400' : 'text-amber-400'}`}>
+                                        {k.adRelevance}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-3 text-right font-medium text-slate-300">
+                                      {formatVND(k.cost)}
+                                    </td>
+                                    <td className="py-3 px-3 text-right font-bold text-emerald-400">
+                                      {k.leads}
+                                    </td>
+                                    <td className="py-3 px-3 text-right font-bold text-amber-300">
+                                      {k.cpa > 0 ? `${k.cpa.toLocaleString('vi-VN')} đ` : '-'}
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               )}
 
