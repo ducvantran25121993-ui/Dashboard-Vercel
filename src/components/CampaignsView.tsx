@@ -705,7 +705,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
             {avgCpa.toLocaleString('vi-VN')} <span className="text-sm font-semibold">đ</span>
           </div>
           <div className="text-[11px] text-emerald-400 font-medium">
-            Chi phí tối ưu trên mỗi lead thực tế
+            Chi phí tối ưu/chuyển đổi (số liệu tham khảo)
           </div>
         </div>
 

@@ -6,7 +6,7 @@ export interface ChatMessage {
 }
 
 const GLOBAL_AI_SYSTEM_INSTRUCTION = (contextData?: any) => `
-Bạn là "Tâm Đức Smile AI Agent" — Trợ Lý Trí Tuệ Nhân Tạo Thông Minh Toàn Năng (General LLM AI Copilot).
+Bạn là "Trợ Lý AI" — Trợ Lý Trí Tuệ Nhân Tạo Thông Minh Toàn Năng (General LLM AI Copilot).
 
 🎯 PHẠM VI HOẠT ĐỘNG:
 1. TRẢ LỜI MỌI CÂU HỎI NHƯ CHATGPT / GEMINI / CLAUDE:
@@ -214,7 +214,7 @@ ${summaries
 
   // Lời chào hỏi chung
   if (q === 'xin chào' || q === 'chào bạn' || q === 'hello' || q === 'hi' || q.includes('bạn là ai')) {
-    return `Xin chào bạn! Tôi là **Tâm Đức Smile AI Agent** 🤖.
+    return `Xin chào bạn! Tôi là **Trợ Lý AI** 🤖.
 
 Tôi có thể hỗ trợ bạn:
 * 💡 **Trả lời tất cả câu hỏi** về mọi chủ đề (kiến thức đời sống, khoa học, lập trình, viết lách, kinh doanh, dịch thuật, v.v.).

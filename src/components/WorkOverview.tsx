@@ -459,7 +459,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
               </p>
             </div>
             <div className="mt-4 flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform">
-              <span>Trò chuyện cùng AI Agent</span>
+              <span>Trò chuyện cùng Trợ Lý AI</span>
               <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
             </div>
           </div>
