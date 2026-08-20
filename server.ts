@@ -399,6 +399,109 @@ Dữ liệu chiến dịch:
   }
 });
 
+// API endpoint for 7-Day Automated Campaign Performance & AI Recommendations
+app.post('/api/analyze-7days-campaigns', async (req, res) => {
+  try {
+    const { 
+      current7DaysMetrics, 
+      previous7DaysMetrics, 
+      topCampaigns, 
+      warningCampaigns, 
+      allCampaignsSample,
+      dateRangeLabel 
+    } = req.body;
+
+    let gemini: GoogleGenAI;
+    try {
+      gemini = getGeminiClient();
+    } catch (err: any) {
+      return res.status(500).json({
+        error: 'Chưa cấu hình API Key Gemini hoặc API Key không hợp lệ.',
+        details: err.message,
+      });
+    }
+
+    const systemInstruction = `
+Bạn là Giám Đốc Tối Ưu Hóa Hiệu Suất Google Ads Cấp Cao (Chief Performance Marketing Officer) chuyên sâu về ngành Nha Khoa Thẩm Mỹ & Cấy Ghép Implant tại Việt Nam.
+Nhiệm vụ: Phân tích số liệu chu kỳ 7 ngày gần nhất (đã kết thúc ngày hôm qua) so với 7 ngày trước đó, đưa ra đánh giá thực tế và các gợi ý hành động chiến lược cực kỳ chi tiết, cụ thể cho từng chiến dịch để đội ngũ Media Buyer thực thi ngay lập tức.
+
+Phong cách phản hồi:
+- Chuyên nghiệp, trực diện, số liệu rõ ràng (không nói chung chung).
+- Sử dụng thuật ngữ chuẩn Google Ads: CPA, CPC, CTR, Conversion Rate, Target CPA, Maximize Conversions, Negative Keywords, Match Types, Ad Copy, Quality Score.
+- Định dạng Markdown đẹp mắt, có bullet points, bảng biểu và icon trực quan.
+`;
+
+    const userPrompt = `
+BÁO CÁO PHÂN TÍCH HIỆU SUẤT 7 NGÀY GẦN NHẤT & ĐỀ XUẤT TỐI ƯU CHIẾN DỊCH GOOGLE ADS
+Thời gian phân tích: ${dateRangeLabel || '7 ngày gần nhất'}
+
+1. SỐ LIỆU TỔNG QUAN 7 NGÀY GẦN NHẤT:
+- Tổng chi phí 7 ngày: ${current7DaysMetrics?.totalSpent ? current7DaysMetrics.totalSpent.toLocaleString('vi-VN') + ' đ' : 'N/A'} (So với 7 ngày trước: ${previous7DaysMetrics?.totalSpent ? previous7DaysMetrics.totalSpent.toLocaleString('vi-VN') + ' đ' : 'N/A'})
+- Tổng lượt chuyển đổi (Leads): ${current7DaysMetrics?.totalConversions ? current7DaysMetrics.totalConversions.toLocaleString('vi-VN') : 'N/A'} (7 ngày trước: ${previous7DaysMetrics?.totalConversions ? previous7DaysMetrics.totalConversions.toLocaleString('vi-VN') : 'N/A'})
+- Chi phí trên mỗi chuyển đổi (CPA): ${current7DaysMetrics?.avgCpa ? current7DaysMetrics.avgCpa.toLocaleString('vi-VN') + ' đ' : 'N/A'} (7 ngày trước: ${previous7DaysMetrics?.avgCpa ? previous7DaysMetrics.avgCpa.toLocaleString('vi-VN') + ' đ' : 'N/A'})
+- Lượt nhấp (Clicks): ${current7DaysMetrics?.totalClicks ? current7DaysMetrics.totalClicks.toLocaleString('vi-VN') : 'N/A'}
+- Tỷ lệ nhấp (CTR): ${current7DaysMetrics?.avgCtr || 'N/A'}
+- Giá mỗi nhấp chuột (CPC): ${current7DaysMetrics?.avgCpc ? current7DaysMetrics.avgCpc.toLocaleString('vi-VN') + ' đ' : 'N/A'}
+
+2. TOP CHIẾN DỊCH HIỆU QUẢ CAO TRONG 7 NGÀY (CPA TỐT, NHIỀU LEAD):
+${JSON.stringify(topCampaigns || [], null, 2)}
+
+3. CHIẾN DỊCH CẢNH BÁO LÃNG PHÍ HOẶC CPA TĂNG CAO TRONG 7 NGÀY:
+${JSON.stringify(warningCampaigns || [], null, 2)}
+
+4. MẪU CÁC CHIẾN DỊCH TIÊU BIỂU KHÁC:
+${JSON.stringify(allCampaignsSample || [], null, 2)}
+
+---
+YÊU CẦU BÁO CÁO:
+Hãy xây dựng bản Báo Cáo & Đề Xuất Tối Ưu Chiến Dịch sau 7 ngày gồm các phần sau:
+
+### 1. 📊 ĐÁNH GIÁ TỔNG QUAN & ĐIỂM SỨC KHỎE TÀI KHOẢN (Health Score / 100)
+- Tóm tắt biến động chính trong 7 ngày qua (Tăng/giảm chi phí, số lượng lead, CPA có bị đội giá hay tối ưu tốt hơn).
+- Nhận định ngắn gọn về xu hướng thị trường nha khoa và sức cạnh tranh từ khóa trong tuần qua.
+
+### 2. 🚀 ĐỀ XUẤT SCALE & TĂNG NGÂN SÁCH (Top Chiến Dịch Thắng Lớn)
+- Chỉ rõ 2-3 chiến dịch xuất sắc nhất nên tăng ngân sách bao nhiêu % (ví dụ: +15% đến +25%).
+- Đề xuất mở rộng từ khóa, mở rộng tệp vị trí hoặc tối ưu ngân sách ngày cụ thể.
+
+### 3. ⚠️ ĐỀ XUẤT XỬ LÝ & CẮT GIẢM CHI PHÍ (Chiến Dịch Kém Hiệu Quả / Ngốn Ngân Sách)
+- Chỉ rõ 2-3 chiến dịch đang có CPA quá cao hoặc tiêu nhiều tiền nhưng ít lead.
+- Hành động xử lý ngay: Giảm ngân sách, hạ giá thầu trần (Max CPC), tạm dừng nhóm quảng cáo kém hoặc chuyển chiến lược đấu thầu.
+
+### 4. 🎯 DANH SÁCH 10+ TỪ KHÓA PHỦ ĐỊNH (NEGATIVE KEYWORDS) CẦN THÊM NGAY
+- Đề xuất các từ khóa rác / sai intent thường gặp trong ngành nha khoa (Implant, Răng sứ, Niềng răng) cần loại trừ ngay để tránh lãng phí ngân sách tuần tới.
+
+### 5. 🛠️ KẾ HOẠCH HÀNH ĐỘNG CỤ THỂ CHO 7 NGÀY TIẾP THEO (ACTION PLAN)
+- Bảng phân bổ lại ngân sách dự kiến.
+- Đề xuất thử nghiệm A/B Testing mẫu quảng cáo (Ad Copy, Sitelinks, Callout Extensions) tập trung vào nỗi sợ đau, bảo hành, bác sĩ chuyên gia và chính sách trả góp 0%.
+`;
+
+    const response = await gemini.models.generateContent({
+      model: 'gemini-3.7-flash',
+      contents: [
+        { role: 'user', parts: [{ text: userPrompt }] }
+      ],
+      config: {
+        systemInstruction,
+        temperature: 0.7,
+      },
+    });
+
+    const reply = response.text || 'Không có phản hồi phân tích 7 ngày từ AI.';
+    return res.json({ 
+      success: true, 
+      analysis: reply,
+      dateRange: dateRangeLabel || '7 ngày gần nhất'
+    });
+  } catch (error: any) {
+    console.error('Error in 7-days campaign analysis:', error);
+    return res.status(500).json({
+      error: 'Không thể phân tích chiến dịch 7 ngày bằng AI lúc này.',
+      details: error.message,
+    });
+  }
+});
+
 // Vite middleware in dev or static serving in prod
 async function start() {
   if (process.env.NODE_ENV !== 'production') {

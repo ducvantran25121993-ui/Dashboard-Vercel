@@ -9,6 +9,7 @@ import {
 import { DisplayUnit } from '../types';
 import { GoogleAdsConnectModal } from './GoogleAdsConnectModal';
 import { CampaignAiAnalystModal } from './CampaignAiAnalystModal';
+import { CampaignAi7DayAnalysis } from './CampaignAi7DayAnalysis';
 import { 
   fetchCampaignsSheet, 
   CampaignItem, 
@@ -690,6 +691,17 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
           </div>
         </div>
       </div>
+
+      {/* 7-DAY AI AUTOMATIC ANALYSIS & RECOMMENDATIONS ENGINE */}
+      <CampaignAi7DayAnalysis
+        dailyRecords={dailyRecords}
+        campaigns={campaigns}
+        onApply7DayFilter={() => applyPreset('last7days')}
+        onOpenDetailedAiModal={() => {
+          setAiFocusCampaign(null);
+          setIsAiModalOpen(true);
+        }}
+      />
 
       {/* Filter & Search Toolbar */}
       <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">

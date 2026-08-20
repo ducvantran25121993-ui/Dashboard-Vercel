@@ -185,6 +185,7 @@ export const CampaignAiAnalystModal: React.FC<CampaignAiAnalystModalProps> = ({
   };
 
   const quickPrompts = [
+    'Phân tích tự động 7 ngày qua & gợi ý tối ưu ngân sách cho các chiến dịch',
     'Chiến dịch nào đang có CPA tốt nhất & mang lại nhiều chuyển đổi nhất?',
     'Có chiến dịch nào đang lãng phí ngân sách hoặc CPA quá cao cần tắt/giảm giá thầu không?',
     'Đánh giá hiệu quả nhóm chiến dịch Trồng Răng Implant và Bọc Răng Sứ',
