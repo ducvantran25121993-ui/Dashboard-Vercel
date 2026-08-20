@@ -465,16 +465,21 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
       searchSubTab?: 'overview' | 'searchTerms' | 'keywords' | 'hourly' | 'locations';
     }> = [];
 
-    // 1. Budget Bleed / 0 Lead alert
-    const zeroLeadHeavySpend = campaign7DayStats.filter(c => c.spent > 1000000 && c.leads === 0);
-    if (zeroLeadHeavySpend.length > 0) {
-      const firstTarget = zeroLeadHeavySpend[0];
-      const names = zeroLeadHeavySpend.map(c => `"${c.name}"`).slice(0, 2).join(', ');
-      const totalLost = zeroLeadHeavySpend.reduce((sum, c) => sum + c.spent, 0);
+    // 1. Budget Bleed / 0 Lead alert (Dynamically reflects zeroLeadCampaigns)
+    if (zeroLeadCampaigns.length > 0) {
+      const firstTarget = zeroLeadCampaigns[0];
+      const count = zeroLeadCampaigns.length;
+      const totalLost = zeroLeadCampaigns.reduce((sum, c) => sum + c.spent, 0);
+      const names = count <= 2
+        ? zeroLeadCampaigns.map(c => `"${c.name}"`).join(', ')
+        : `${zeroLeadCampaigns.slice(0, 2).map(c => `"${c.name}"`).join(', ')} và ${count - 2} chiến dịch khác`;
+
       alerts.push({
         id: 'zero_lead_drain',
         level: 'critical',
-        title: `Phát hiện ${zeroLeadHeavySpend.length} chiến dịch rò rỉ ngân sách (${formatVND(totalLost)})`,
+        title: count === 1
+          ? `Phát hiện 1 chiến dịch rò rỉ ngân sách (${formatVND(totalLost)})`
+          : `Phát hiện ${count} chiến dịch rò rỉ ngân sách (${formatVND(totalLost)})`,
         description: `Chiến dịch ${names} đã tiêu hơn ${formatVND(totalLost)} trong 7 ngày qua nhưng chưa ghi nhận bất kỳ lượt chuyển đổi nào. Cần hạ bid trần hoặc tạm dừng ngay.`,
         actionText: 'Xem chiến dịch cần xử lý',
         actionType: 'tab',
@@ -484,14 +489,28 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
       });
     }
 
-    // 2. High CPA Surge alert (>35% avg)
-    const cpaSpikeCampaigns = campaign7DayStats.filter(c => c.leads > 0 && c.cpa > (currentMetrics.avgCpa * 1.35) && c.spent > 1000000);
-    if (cpaSpikeCampaigns.length > 0) {
+    // 2. High CPA Surge alert (>35% avg) (Dynamically reflects highCpaCampaigns)
+    if (highCpaCampaigns.length > 0) {
+      const count = highCpaCampaigns.length;
+      const groupSpent = highCpaCampaigns.reduce((s, c) => s + c.spent, 0);
+      const groupLeads = highCpaCampaigns.reduce((s, c) => s + c.leads, 0);
+      const avgGroupCpa = groupLeads > 0 
+        ? Math.round(groupSpent / groupLeads) 
+        : Math.round(highCpaCampaigns.reduce((s, c) => s + c.cpa, 0) / count);
+
+      const namesText = count === 1
+        ? `Chiến dịch "${highCpaCampaigns[0].name}" có CPA thực tế lên tới`
+        : count <= 2
+        ? `Chiến dịch ${highCpaCampaigns.map(c => `"${c.name}"`).join(', ')} có CPA trung bình lên tới`
+        : `CPA trung bình của nhóm ${count} chiến dịch này lên tới`;
+
       alerts.push({
         id: 'cpa_spike',
         level: 'warning',
-        title: `${cpaSpikeCampaigns.length} chiến dịch bị đội CPA cao hơn 35% so với mức trung bình`,
-        description: `CPA trung bình của nhóm này lên tới ${Math.round(cpaSpikeCampaigns.reduce((s, c) => s + c.cpa, 0) / cpaSpikeCampaigns.length).toLocaleString('vi-VN')} đ/lead. Khuyên bạn nên rà soát lại cụm từ tìm kiếm và thu hẹp vị trí bán kính hiển thị.`,
+        title: count === 1
+          ? `Phát hiện 1 chiến dịch bị đội CPA cao hơn 35% so với mức trung bình`
+          : `${count} chiến dịch bị đội CPA cao hơn 35% so với mức trung bình`,
+        description: `${namesText} ${avgGroupCpa.toLocaleString('vi-VN')} đ/lead. Khuyên bạn nên rà soát lại cụm từ tìm kiếm và thu hẹp vị trí bán kính hiển thị.`,
         actionText: 'Kiểm tra cảnh báo',
         actionType: 'tab',
         targetTab: 'warnings',
@@ -559,7 +578,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
     }
 
     return alerts;
-  }, [campaign7DayStats, currentMetrics.avgCpa, searchTerms, keywords, hourlyData, topPerformers]);
+  }, [campaign7DayStats, currentMetrics.avgCpa, searchTerms, keywords, hourlyData, topPerformers, zeroLeadCampaigns, highCpaCampaigns]);
 
   // Delta calculations
   const spendDiffPct = prevMetrics.totalSpent > 0 
