@@ -3,7 +3,7 @@ import {
   Megaphone, Play, Pause, TrendingUp, DollarSign, Target, CheckCircle, 
   Zap, ShieldCheck, RefreshCw, Filter, Search, ExternalLink, Link2, 
   Sparkles, Check, AlertCircle, ArrowUpRight, BarChart3, Eye, MousePointerClick,
-  Calendar, Table, LineChart, ChevronLeft, ChevronRight, Download, CalendarRange,
+  Calendar, Table, LineChart, ChevronLeft, ChevronRight, ChevronDown, Download, CalendarRange,
   Percent, CircleDot, ArrowUpDown
 } from 'lucide-react';
 import { DisplayUnit } from '../types';
@@ -195,21 +195,36 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
     }
   };
 
-  // Extract all available months from daily records dynamically
+  // Extract all available months from daily records dynamically (auto-detects months 1..12 and years)
   const availableMonthsList = useMemo(() => {
-    const monthSet = new Set<number>();
+    const map = new Map<string, { month: number; year: number; label: string }>();
+    
     dailyRecords.forEach((rec) => {
       const { dateObj } = normalizeDate(rec.date || rec.dateFormatted);
       if (dateObj) {
         const m = dateObj.getMonth() + 1;
-        monthSet.add(m);
+        const y = dateObj.getFullYear() || new Date().getFullYear();
+        const key = `${y}-${m}`;
+        if (!map.has(key)) {
+          map.set(key, { month: m, year: y, label: `Tháng ${m}/${y}` });
+        }
       }
     });
 
-    if (monthSet.size === 0) {
-      return [8, 7, 6, 5, 4, 3, 2, 1];
+    if (map.size === 0) {
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth() + 1;
+      const fallbackList: Array<{ month: number; year: number; label: string }> = [];
+      for (let m = currentMonth; m >= 1; m--) {
+        fallbackList.push({ month: m, year: currentYear, label: `Tháng ${m}/${currentYear}` });
+      }
+      return fallbackList;
     }
-    return Array.from(monthSet).sort((a, b) => b - a);
+
+    return Array.from(map.values()).sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year;
+      return b.month - a.month;
+    });
   }, [dailyRecords]);
 
   // Filter daily records by custom date range, preset, month, and search query
@@ -612,30 +627,33 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
             )}
           </div>
 
-          {/* Quick Month Selector */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs text-slate-400 font-semibold mr-1">
-              Lọc theo tháng:
-            </span>
-            {availableMonthsList.map((m) => (
-              <button
-                key={m}
-                onClick={() => {
-                  setSelectedMonth(String(m));
+          {/* Dropdown Lọc Theo Tháng */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="relative inline-flex items-center">
+              <Calendar className="w-4 h-4 text-cyan-400 absolute left-3 pointer-events-none z-10" />
+              <select
+                id="select-month-filter"
+                value={selectedMonth}
+                onChange={(e) => {
+                  setSelectedMonth(e.target.value);
                   setDatePreset('custom');
                   setStartDate('');
                   setEndDate('');
                   setCurrentPage(1);
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                  selectedMonth === String(m)
-                    ? 'bg-indigo-600 text-white font-bold border border-indigo-400 shadow ring-1 ring-indigo-400'
-                    : 'bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/60'
-                }`}
+                className="appearance-none bg-slate-950 text-xs font-bold text-slate-200 pl-9 pr-8 py-2 rounded-xl border border-slate-800 hover:border-indigo-500/50 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 cursor-pointer shadow-inner transition-all"
               >
-                Tháng {m}
-              </button>
-            ))}
+                <option value="all" className="bg-slate-900 text-slate-300 py-1.5 font-medium">
+                  Tất cả các tháng
+                </option>
+                {availableMonthsList.map((item) => (
+                  <option key={`${item.year}-${item.month}`} value={String(item.month)} className="bg-slate-900 text-slate-100 py-1.5 font-bold">
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 pointer-events-none z-10" />
+            </div>
           </div>
         </div>
       </div>

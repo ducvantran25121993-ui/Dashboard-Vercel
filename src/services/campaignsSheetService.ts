@@ -821,7 +821,7 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
       isLive: false,
       sourceUrl: url,
       rowCount: DEFAULT_CAMPAIGNS.length,
-      availableMonths: ['Tất cả (T1 - T8)', 'Tháng 8/2026', 'Tháng 7/2026', 'Tháng 6/2026', 'Tháng 5/2026', 'Tháng 4/2026', 'Tháng 3/2026', 'Tháng 2/2026', 'Tháng 1/2026'],
+      availableMonths: ['Tất cả các tháng', 'Tháng 8/2026', 'Tháng 7/2026', 'Tháng 6/2026', 'Tháng 5/2026', 'Tháng 4/2026', 'Tháng 3/2026', 'Tháng 2/2026', 'Tháng 1/2026'],
     };
   }
 
@@ -844,7 +844,7 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
       isLive: true,
       sourceUrl: url,
       rowCount: 0,
-      availableMonths: ['Tất cả (T1 - T8)', 'Tháng 8/2026', 'Tháng 7/2026', 'Tháng 6/2026', 'Tháng 5/2026', 'Tháng 4/2026', 'Tháng 3/2026', 'Tháng 2/2026', 'Tháng 1/2026'],
+      availableMonths: ['Tất cả các tháng', 'Tháng 8/2026', 'Tháng 7/2026', 'Tháng 6/2026', 'Tháng 5/2026', 'Tháng 4/2026', 'Tháng 3/2026', 'Tháng 2/2026', 'Tháng 1/2026'],
     };
   }
 
@@ -996,6 +996,30 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
   const avgCpa = totalLeads > 0 ? Math.round(totalSpent / totalLeads) : 0;
   const avgRoas = 8.1;
 
+  // Dynamically extract unique months from parsed daily records
+  const monthMap = new Map<string, { month: number; year: number; label: string }>();
+  dailyToUse.forEach((r) => {
+    if (r.date) {
+      const parts = r.date.split('-');
+      if (parts.length >= 2) {
+        const y = parseInt(parts[0], 10) || new Date().getFullYear();
+        const m = parseInt(parts[1], 10) || (new Date().getMonth() + 1);
+        const key = `${y}-${m}`;
+        if (!monthMap.has(key)) {
+          monthMap.set(key, { month: m, year: y, label: `Tháng ${m}/${y}` });
+        }
+      }
+    }
+  });
+
+  const sortedMonths = Array.from(monthMap.values())
+    .sort((a, b) => (b.year !== a.year ? b.year - a.year : b.month - a.month))
+    .map(x => x.label);
+
+  const dynamicMonths = sortedMonths.length > 0
+    ? ['Tất cả các tháng', ...sortedMonths]
+    : ['Tất cả các tháng', 'Tháng 8/2026', 'Tháng 7/2026', 'Tháng 6/2026', 'Tháng 5/2026', 'Tháng 4/2026', 'Tháng 3/2026', 'Tháng 2/2026', 'Tháng 1/2026'];
+
   return {
     campaigns: campaignsToUse,
     dailyRecords: dailyToUse,
@@ -1013,6 +1037,6 @@ export async function fetchCampaignsSheet(url: string = DEFAULT_CAMPAIGNS_SHEET_
     isLive: true,
     sourceUrl: url,
     rowCount: dailyToUse.length,
-    availableMonths: ['Tất cả (T1 - T8)', 'Tháng 8/2026', 'Tháng 7/2026', 'Tháng 6/2026', 'Tháng 5/2026', 'Tháng 4/2026', 'Tháng 3/2026', 'Tháng 2/2026', 'Tháng 1/2026'],
+    availableMonths: dynamicMonths,
   };
 }
