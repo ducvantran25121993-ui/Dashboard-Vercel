@@ -146,19 +146,30 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
       setStartDate(s);
       setEndDate(s);
     } else if (preset === 'last7days') {
-      const d7 = new Date(now);
-      d7.setDate(d7.getDate() - 6);
-      setStartDate(toInputDateStr(d7));
-      setEndDate(toInputDateStr(now));
+      // Standard Google Ads standard: Last 7 completed days ending yesterday
+      const endD = new Date(now);
+      endD.setDate(endD.getDate() - 1);
+      const startD = new Date(endD);
+      startD.setDate(startD.getDate() - 6);
+      setStartDate(toInputDateStr(startD));
+      setEndDate(toInputDateStr(endD));
     } else if (preset === 'last30days') {
-      const d30 = new Date(now);
-      d30.setDate(d30.getDate() - 29);
-      setStartDate(toInputDateStr(d30));
-      setEndDate(toInputDateStr(now));
+      // Standard Google Ads standard: Last 30 completed days ending yesterday
+      const endD = new Date(now);
+      endD.setDate(endD.getDate() - 1);
+      const startD = new Date(endD);
+      startD.setDate(startD.getDate() - 29);
+      setStartDate(toInputDateStr(startD));
+      setEndDate(toInputDateStr(endD));
     } else if (preset === 'thisMonth') {
+      // From 1st of this month up to yesterday (or today if 1st day of month)
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endD = new Date(now);
+      if (now.getDate() > 1) {
+        endD.setDate(endD.getDate() - 1);
+      }
       setStartDate(toInputDateStr(firstDay));
-      setEndDate(toInputDateStr(now));
+      setEndDate(toInputDateStr(endD));
     } else if (preset === 'lastMonth') {
       const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
@@ -764,7 +775,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ displayUnit, userR
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
               <Table className="w-4 h-4 text-cyan-400" />
-              Báo Cáo Hiệu Suất Chiến Dịch (Chuẩn Google Ads)
+              Hiệu Suất Chiến Dịch Google Ads
             </h3>
             <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
               <span>Đang hiển thị:</span>
