@@ -1065,9 +1065,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
 export const CompetitorWebDiffScanner: React.FC = () => {
   // Modes: 
   // 1. 'google_transparency': Kết Nối Google Ads Transparency Center (Real-Time 100% chính thức)
-  // 2. 'auto_radar': AI Tự Động Tìm & Quét Quảng Cáo
-  // 3. 'url_scanner': Dán Link Web Đối Chiếu CŨ vs MỚI
-  const [activeMode, setActiveMode] = useState<'google_transparency' | 'auto_radar' | 'url_scanner'>('google_transparency');
+  // 2. 'url_scanner': Dán Link Web Đối Chiếu CŨ vs MỚI
+  const [activeMode, setActiveMode] = useState<'google_transparency' | 'url_scanner'>('google_transparency');
 
   // Google Transparency Center State
   const [customDomainInput, setCustomDomainInput] = useState<string>('');
@@ -1315,21 +1314,7 @@ export const CompetitorWebDiffScanner: React.FC = () => {
             </span>
           </button>
 
-          {/* TAB 2: AI SPY RADAR */}
-          <button
-            type="button"
-            onClick={() => setActiveMode('auto_radar')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap ${
-              activeMode === 'auto_radar'
-                ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-lg shadow-cyan-500/30'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Radar className="w-4 h-4" />
-            <span>AI TỰ ĐỘNG TÌM & QUÉT QUẢNG CÁO</span>
-          </button>
-
-          {/* TAB 3: URL DEEP SCANNER */}
+          {/* TAB 2: URL DEEP SCANNER */}
           <button
             type="button"
             onClick={() => setActiveMode('url_scanner')}
