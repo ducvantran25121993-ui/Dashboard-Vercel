@@ -196,6 +196,8 @@ interface DiscoveredAd {
   competitorName: string;
   domain: string;
   adPlatform: string;
+  category: 'implant' | 'ortho' | 'porcelain' | 'general';
+  campaignTitle: string;
   targetKeyword: string;
   adCopy: {
     headline: string;
@@ -219,10 +221,13 @@ interface DiscoveredAd {
 }
 
 const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
+  // --- NHA KHOA KIM (NHIỀU CHIẾN DỊCH QUẢNG CÁO ĐA DẠNG) ---
   {
     competitorName: 'Nha Khoa Kim',
     domain: 'nhakhoakim.com',
     adPlatform: 'Google Search Ads, GDN & YouTube Ads',
+    category: 'implant',
+    campaignTitle: 'Chiến dịch Implant Đơn Lẻ - Trợ Giá Trụ Dentium 11.9Tr',
     targetKeyword: 'trồng răng implant giá bao nhiêu',
     adCopy: {
       headline: 'Trồng Răng Implant Chuẩn Y Khoa - Trợ Giá Trụ Chỉ Từ 11.9Tr',
@@ -233,7 +238,7 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     },
     detectedPromo: 'Hạ giá trực tiếp trụ Dentium từ 14.5Tr xuống 11.9Tr + Tặng Abutment chính hãng',
     oldPromo: '14.500.000 đ / Trụ (Không tặng kèm phụ kiện Abutment)',
-    changeType: 'Giảm giá sốc',
+    changeType: 'Giảm giá sốc trụ Dentium',
     threatLevel: 'Rất cao',
     competitorWeakness: 'Chi phí phát sinh phụ kiện mão sứ và ít phòng khám phủ sóng tại các tỉnh Miền Tây sâu.',
     counterAdTemplate: {
@@ -247,7 +252,7 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
         type: 'image',
         title: 'Banner GDN - Trồng Răng Implant Trợ Giá 11.9Tr',
         previewUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80',
-        badge: 'Google Display (300x250 & 728x90)',
+        badge: 'Google Display (1200x628 & 300x250)',
         dimensions: '1200 x 628 px',
         headlineOverlay: 'Trồng Răng Implant Chuẩn Quốc Tế - Trợ Giá Trụ 11.9Tr',
         descriptionText: 'Miễn phí chụp phim CT ConeBeam 3D trị giá 1.500.000đ khi đặt hẹn online.'
@@ -260,6 +265,291 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
         videoDuration: '0:35',
         headlineOverlay: 'Phục Hồi Nụ Cười Tuổi 50+ Sau 48h Cùng Bác Sĩ Kim Dental',
         descriptionText: 'Xem quy trình cấy ghép Implant an toàn, vô trùng tuyệt đối tại phòng mổ áp lực dương.'
+      },
+      {
+        type: 'image',
+        title: 'Banner Display Vuông - Trụ Straumann Thụy Sĩ Bảo Hành Trọn Đời',
+        previewUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&auto=format&fit=crop&q=80',
+        badge: 'Google Display Banner Vuông',
+        dimensions: '1080 x 1080 px',
+        headlineOverlay: 'Trụ Thụy Sĩ Cao Cấp - Tích Hợp Xương Thần Tốc 3 Tuần',
+        descriptionText: 'Tặng voucher 3.000.000đ khi đăng ký nhóm 2 người.'
+      }
+    ]
+  },
+  {
+    competitorName: 'Nha Khoa Kim',
+    domain: 'nhakhoakim.com',
+    adPlatform: 'Google Search & PMax Ads (Video Focus)',
+    category: 'implant',
+    campaignTitle: 'Chiến dịch Trồng Răng Toàn Hàm All-on-4 / All-on-6 Cho Người Cao Tuổi',
+    targetKeyword: 'trồng răng toàn hàm all on 4 giá bao nhiêu',
+    adCopy: {
+      headline: 'Trồng Răng Toàn Hàm All-on-4 Nha Khoa Kim - Tặng Hàm Tạm 15Tr',
+      description: 'Khôi phục ăn nhai tức thì 100%. Phù hợp người mất răng lâu năm, tiêu xương nặng. Bác sĩ CKI trên 15 năm kinh nghiệm.',
+      displayedUrl: 'https://nhakhoakim.com/trong-rang-toan-ham',
+      sitelinks: ['Gói Toàn Hàm All-on-4', 'Gói All-on-6 Cao Cấp', 'Trả Góp 0% Lãi Suất', 'Video Bệnh Nhân Thực Tế'],
+      callouts: ['Phòng Mổ Áp Lực Dương', 'Ăn Nhai Trong 48 Giờ', 'Bảo Hành 15 Năm']
+    },
+    detectedPromo: 'Trợ giá trực tiếp 20 Triệu/hàm + Tặng hàm tạm tức thì trị giá 15 Triệu',
+    oldPromo: 'Trợ giá 10 Triệu/hàm',
+    changeType: 'Gia tăng mức trợ giá gói Toàn hàm',
+    threatLevel: 'Rất cao',
+    competitorWeakness: 'Giá thành trọn gói All-on-4 của Kim vẫn ở mức cao (>120Tr) và không có chính sách xe đưa đón khách tỉnh.',
+    counterAdTemplate: {
+      headline: 'Trồng Răng Toàn Hàm All-on-4 Tâm Đức Smile - Trợ Giá Đến 35 Triệu',
+      description: 'Hơn 10.000 ca thành công. 17 chi nhánh TP.HCM & Miền Tây. Xe đón tận nhà + Miễn phí chỗ ở chu đáo.',
+      sitelinks: ['Bảng Giá Toàn Hàm', 'Xe Đưa Đón Miễn Phí', 'Xem 10.000 Ca Thực Tế', '17 Chi Nhánh Gần Bạn'],
+      biddingAdvice: 'Đẩy mạnh từ khóa "trồng răng toàn hàm" kết hợp mở rộng nhóm từ khóa khách tỉnh.'
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner GDN - Trồng Răng Toàn Hàm Khôi Phục Ăn Nhai 100%',
+        previewUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80',
+        badge: 'Google Display Network (1200x628)',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Ăn Nhai Trọn Vẹn Tuổi Xế Chiều Cùng All-on-4 Chuẩn Y Khoa',
+        descriptionText: 'Trợ giá đến 20.000.000đ khi đăng ký qua hotline hôm nay.'
+      },
+      {
+        type: 'video',
+        title: 'Video YouTube Shorts - Cảm Nhận Khách Hàng 68 Tuổi Làm Răng All-on-4',
+        previewUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&auto=format&fit=crop&q=80',
+        badge: 'YouTube Shorts & Reels Ads',
+        videoDuration: '0:55',
+        headlineOverlay: 'Chú Bảy (Bến Tre): Sau 10 Năm Mới Ăn Được Thịt Gà Ngon Lành',
+        descriptionText: 'Chia sẻ chân thật quá trình cấy ghép 4 trụ nhẹ nhàng tại Nha Khoa Kim.'
+      }
+    ]
+  },
+  {
+    competitorName: 'Nha Khoa Kim',
+    domain: 'nhakhoakim.com',
+    adPlatform: 'Google Search & YouTube Chỉnh Nha',
+    category: 'ortho',
+    campaignTitle: 'Chiến dịch Niềng Răng Sinh Viên & Trả Góp 1 Triệu/Tháng',
+    targetKeyword: 'niềng răng trả góp sinh viên hcm',
+    adCopy: {
+      headline: 'Niềng Răng Trả Góp 1Tr/Tháng Nha Khoa Kim - Miễn Phí Scan 3D',
+      description: 'Lễ hội chỉnh nha học sinh sinh viên. Mắc cài kim loại tự buộc công nghệ Mỹ. Xem trước mô phỏng kết quả sau niềng.',
+      displayedUrl: 'https://nhakhoakim.com/nieng-rang-tra-gop',
+      sitelinks: ['Bảng Giá Mắc Cài Kim Loại', 'Mắc Cài Sứ Thẩm Mỹ', 'Trả Góp 0% Lãi', 'Đặt Lịch Khám 0đ'],
+      callouts: ['Hợp Đồng Chỉnh Nha', 'Không Phát Sinh Chi Phí', 'Hệ Thống Phòng Khám Rộng Khắp']
+    },
+    detectedPromo: 'Trả góp 1Tr/tháng 0% lãi suất + Tặng máy tăm nước cao cấp 1.8Tr',
+    oldPromo: 'Trả góp 1.5Tr/tháng không tặng máy tăm nước',
+    changeType: 'Hạ mức trả góp tối thiểu',
+    threatLevel: 'Cao',
+    competitorWeakness: 'Chi phí nhổ răng chỉnh nha và cắm minivis thường bị tính thêm ngoài gói.',
+    counterAdTemplate: {
+      headline: 'Niềng Răng Tâm Đức Smile - Trả Góp 800k/Tháng Trọn Gói A-Z',
+      description: 'Bác sĩ chuyên khoa chỉnh nha trên 10 năm kinh nghiệm. Miễn phí cắm minivis và chụp phim 3D 1.5Tr.',
+      sitelinks: ['Trả Góp 800k/Tháng', 'Bảng Giá Trọn Gói', 'Xem Review Ca Khó', 'Tư Vấn Miễn Phí'],
+      biddingAdvice: 'Đấu giá mạnh từ khóa "niềng răng trả góp sinh viên" và ghim điểm 800k/tháng.'
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner GDN - Lễ Hội Niềng Răng Trả Góp 1 Triệu',
+        previewUrl: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600&auto=format&fit=crop&q=80',
+        badge: 'Google Display Ads (1080x1080)',
+        dimensions: '1080 x 1080 px',
+        headlineOverlay: 'Tự Tin Nụ Cười Rạng Rỡ - Niềng Răng Chỉ 1Tr/Tháng',
+        descriptionText: 'Tặng ngay máy tăm nước trị giá 1.800.000đ khi gắn mắc cài.'
+      },
+      {
+        type: 'video',
+        title: 'Video TikTok/YouTube Shorts - Nhật Ký 18 Tháng Niềng Răng Lột Xác',
+        previewUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Shorts Ads (9:16)',
+        videoDuration: '0:30',
+        headlineOverlay: 'Hành Trình Tạm Biệt Răng Khấp Khểnh - Tự Tin Nụ Cười Chuẩn V-line',
+        descriptionText: 'Khách hàng chia sẻ trải nghiệm niềng răng êm ái cùng bác sĩ Kim Dental.'
+      }
+    ]
+  },
+  {
+    competitorName: 'Nha Khoa Kim',
+    domain: 'nhakhoakim.com',
+    adPlatform: 'Google Search & Display Cao Cấp',
+    category: 'ortho',
+    campaignTitle: 'Chiến dịch Niềng Răng Trong Suốt Invisalign - Scan 3D Itero 5D',
+    targetKeyword: 'niềng răng trong suốt invisalign kim dental',
+    adCopy: {
+      headline: 'Niềng Răng Trong Suốt Invisalign Nha Khoa Kim - Trợ Giá 15 Triệu',
+      description: 'Khay niềng vô hình nhập khẩu 100% Hoa Kỳ. Máy scan 3D Itero 5D thấy ngay kết quả sau 60 giây. Bác sĩ Top Provider.',
+      displayedUrl: 'https://nhakhoakim.com/invisalign-cao-cap',
+      sitelinks: ['Gói Invisalign Toàn Diện', 'Gói Invisalign Răng Nhẹ', 'Công Nghệ Scan Itero 5D', 'Đặt Lịch Quét 3D 0đ'],
+      callouts: ['Khay Niềng Nhập Khẩu Mỹ', 'Tháo Lắp Tiện Lợi', 'Không Đau Không Xước Môi']
+    },
+    detectedPromo: 'Tặng gói chụp phim & scan 3D Itero 5D trị giá 3Tr + Voucher giảm trực tiếp 15Tr',
+    oldPromo: 'Giảm 10Tr gói Invisalign',
+    changeType: 'Nâng cấp quà tặng công nghệ scan',
+    threatLevel: 'Trung bình',
+    competitorWeakness: 'Chi phí Invisalign rất cao (từ 80Tr-120Tr), khó cạnh tranh với gói trả góp linh hoạt của Tâm Đức.',
+    counterAdTemplate: {
+      headline: 'Niềng Răng Trong Suốt Tâm Đức Smile - Trả Góp 2Tr/Tháng Tiện Lợi',
+      description: 'Công nghệ scan 3D Itero tiên tiến. Bác sĩ CKI trực tiếp lên phác đồ ClinCheck. Tặng gói tẩy trắng răng 2.5Tr.',
+      sitelinks: ['Bảng Giá Invisalign', 'Trả Góp 2Tr/Tháng', 'Khám & Scan 3D 0đ', '17 Chi Nhánh'],
+      biddingAdvice: 'Đánh vào tệp khách hàng văn phòng, người đi làm chú trọng tính thẩm mỹ vô hình.'
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner GDN - Niềng Răng Trong Suốt Invisalign Trợ Giá 15Tr',
+        previewUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80',
+        badge: 'Google Display Banner (1200x628)',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Niềng Răng Trong Suốt Vô Hình - Đẹp Từng Góc Nhìn Cùng Invisalign',
+        descriptionText: 'Miễn phí scan 3D mô phỏng hàm răng tương lai trong 60 giây.'
+      },
+      {
+        type: 'video',
+        title: 'Video Giới Thiệu Máy Quét Dấu Răng 3D Itero Element 5D',
+        previewUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Công Nghệ 3D',
+        videoDuration: '0:45',
+        headlineOverlay: 'Không Cần Lấy Dấu Bằng Thạch Cao Cổ Điển - Quét Quang Học 3D Cực Êm',
+        descriptionText: 'Độ chính xác chuẩn xác từng micron, xem trước lộ trình dịch chuyển răng.'
+      }
+    ]
+  },
+  {
+    competitorName: 'Nha Khoa Kim',
+    domain: 'nhakhoakim.com',
+    adPlatform: 'Google Search & PMax Ads (Thẩm Mỹ Răng Sứ)',
+    category: 'porcelain',
+    campaignTitle: 'Chiến dịch Bọc Răng Sứ Thẩm Mỹ & Dán Sứ Veneer - Giảm 30%',
+    targetKeyword: 'bọc răng sứ thẩm mỹ nha khoa kim giá bao nhiêu',
+    adCopy: {
+      headline: 'Đại Tiệc Răng Sứ Nha Khoa Kim - Giảm 30% Răng Toàn Sứ Đức',
+      description: 'Dáng răng tỉ lệ vàng theo nhân trắc học. Bảo hành chính hãng 15 năm. Không mài nhỏ răng thật, không viêm lợi.',
+      displayedUrl: 'https://nhakhoakim.com/rang-su-chinh-hang',
+      sitelinks: ['Bảng Giá Răng Sứ Đức', 'Dán Sứ Veneer Không Mài', 'Thẻ Bảo Hành IDPI', 'Đặt Hẹn Nhận Giảm 30%'],
+      callouts: ['Labo Răng Sứ Riêng', 'Chính Hãng 100%', 'Bảo Tồn Răng Thật']
+    },
+    detectedPromo: 'Giảm 30% tất cả dòng sứ Zirconia, Cercon HT và Dán sứ Veneer Emax',
+    oldPromo: 'Giảm 20% dòng sứ Zirconia',
+    changeType: 'Tăng mức chiết khấu răng sứ toàn hàm',
+    threatLevel: 'Cao',
+    competitorWeakness: 'Đơn giá răng sứ cao hơn thị trường 20-30%, chi phí làm 16-20 răng khá đắt.',
+    counterAdTemplate: {
+      headline: 'Răng Toàn Sứ Chính Hãng Đức Tâm Đức Smile - Giá Chỉ Từ 1.8Tr/Răng',
+      description: 'Bảo hành IDPI toàn cầu. Labo chế tác răng sứ CAD/CAM tự động tại chỗ. Miễn phí thiết kế nụ cười DSD.',
+      sitelinks: ['Bảng Giá Răng Sứ 1.8Tr', 'Thẻ Bảo Hành IDPI', 'Xem 5000+ Ca Thực Tế', '17 Chi Nhánh'],
+      biddingAdvice: 'Đánh mạnh vào cam kết "Phôi Sứ Chính Hãng Đức - Giá Tận Gốc Không Qua Trung Gian".'
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner GDN - Bọc Răng Sứ Thẩm Mỹ Tỉ Lệ Vàng Giảm 30%',
+        previewUrl: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600&auto=format&fit=crop&q=80',
+        badge: 'Display Network (1080x1350)',
+        dimensions: '1080 x 1350 px',
+        headlineOverlay: 'Nụ Cười Sang Trọng Chuẩn Tỉ Lệ Vàng - Ưu Đãi 30% Răng Toàn Sứ',
+        descriptionText: 'Thiết kế dáng răng phong thủy theo khuôn mặt của từng khách hàng.'
+      },
+      {
+        type: 'video',
+        title: 'Video Livestream Trực Tiếp Labo Chế Tác Răng Sứ CAD/CAM',
+        previewUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Livestream Ads',
+        videoDuration: '0:40',
+        headlineOverlay: 'Khám Phá Công Nghệ Tiện Răng Sứ Tự Động Chuẩn Xác Từng Nanomet',
+        descriptionText: 'Màu sắc răng sứ trong bóng tự nhiên như răng thật, độ cứng gấp 5 lần răng thật.'
+      }
+    ]
+  },
+  {
+    competitorName: 'Nha Khoa Kim',
+    domain: 'nhakhoakim.com',
+    adPlatform: 'Google Search & Display Tổng Quát',
+    category: 'general',
+    campaignTitle: 'Chiến dịch Nhổ Răng Khôn Sóng Siêu Âm Piezotome Không Đau Chỉ 999K',
+    targetKeyword: 'nhổ răng khôn không đau giá bao nhiêu',
+    adCopy: {
+      headline: 'Nhổ Răng Khôn Sóng Siêu Âm Piezotome - Nha Khoa Kim Chỉ Từ 999K',
+      description: 'Thực hiện 15 phút không đau, không sưng má, mau lành thương. Bác sĩ chuyên khoa giàu kinh nghiệm xử lý ca khó mọc ngầm.',
+      displayedUrl: 'https://nhakhoakim.com/nho-rang-khon',
+      sitelinks: ['Bảng Giá Nhổ Răng Khôn', 'Công Nghệ Sóng Siêu Âm', 'Đặt Lịch Không Chờ Đợi', 'Review Khách Hàng'],
+      callouts: ['Chụp Phim 3D Miễn Phí', 'Không Đau Không Sưng', 'Về Nhà Ăn Nhẹ Ngay']
+    },
+    detectedPromo: 'Giá mồi nhổ răng khôn 999K cho răng hàm trên mọc thẳng',
+    oldPromo: 'Giá nhổ răng khôn từ 1.500.000 đ',
+    changeType: 'Tung gói giá mồi kéo traffic tổng quát',
+    threatLevel: 'Trung bình',
+    competitorWeakness: 'Giá 999K chỉ áp dụng ca cực dễ, răng ngầm/răng lệch bị đẩy lên 2.5Tr - 4Tr.',
+    counterAdTemplate: {
+      headline: 'Nhổ Răng Khôn Không Đau Tâm Đức Smile - Máy Piezotome Trọn Gói Minh Bạch',
+      description: 'Chụp CT ConeBeam 3D khảo sát dây thần kinh miễn phí. Đội ngũ Bác sĩ CKI giàu kinh nghiệm. Không đau không sưng.',
+      sitelinks: ['Bảng Giá Minh Bạch', 'Đăng Ký Khám 0đ', 'Xem Review Thực Tế', '17 Chi Nhánh'],
+      biddingAdvice: 'Đấu thầu từ khóa nhổ răng khôn khu vực gần các trường Đại học lớn.'
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner GDN - Nhổ Răng Khôn Siêu Âm Piezotome 999K',
+        previewUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80',
+        badge: 'Display Network Banner (300x600 & 1200x628)',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Nhẹ Nhàng Nhổ Răng Khôn Với Công Nghệ Siêu Âm Piezotome',
+        descriptionText: 'Bảo tồn tối đa mô mềm, không rạch mổ nhiều, hồi phục siêu tốc.'
+      },
+      {
+        type: 'video',
+        title: 'Video 3D Mô Phỏng Nhổ Răng Khôn Mọc Lệch 90 Độ',
+        previewUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Animation Y Khoa',
+        videoDuration: '0:30',
+        headlineOverlay: 'Vì Sao Cần Nhổ Răng Khôn Sớm Để Tránh Hỏng Răng Số 7 Bên Cạnh?',
+        descriptionText: 'Bác sĩ giải thích rõ ràng và minh bạch quy trình nhổ an toàn.'
+      }
+    ]
+  },
+  {
+    competitorName: 'Nha Khoa Kim',
+    domain: 'nhakhoakim.com',
+    adPlatform: 'Google Search & PMax Làm Đẹp',
+    category: 'general',
+    campaignTitle: 'Chiến dịch Tẩy Trắng Răng Laser Whitening Cấp Tốc - Sáng Bật 3 Tông',
+    targetKeyword: 'tẩy trắng răng giá bao nhiêu nha khoa kim',
+    adCopy: {
+      headline: 'Tẩy Trắng Răng Laser Whitening Cấp Tốc - Bật 3 Tông Trong 45 Phút',
+      description: 'Công nghệ Laser nhập khẩu từ Mỹ. Không ê buốt, không hại men răng. Ưu đãi chỉ còn 1.200.000đ khi đặt lịch online.',
+      displayedUrl: 'https://nhakhoakim.com/tay-trang-rang',
+      sitelinks: ['Gói Tẩy Trắng Laser', 'Tẩy Trắng Tại Nhà', 'Đánh Giá Của Khách Hàng', 'Đặt Lịch Ngay'],
+      callouts: ['Không Ê Buốt', 'Thuốc Tẩy Chính Hãng', 'Bật Tông Tức Thì']
+    },
+    detectedPromo: 'Giảm 50% tẩy trắng răng Laser chỉ còn 1.2Tr (Giá gốc 2.4Tr)',
+    oldPromo: 'Giảm 30% gói tẩy trắng',
+    changeType: 'Giảm giá 50% thu hút khách trẻ',
+    threatLevel: 'Trung bình',
+    competitorWeakness: 'Chỉ là dịch vụ phễu phụ trợ, không phải mũi nhọn doanh thu.',
+    counterAdTemplate: {
+      headline: 'Tẩy Trắng Răng Laser Flash Tâm Đức Smile - Sáng Bóng Không Ê Buốt Chỉ 999K',
+      description: 'Công nghệ Laser lạnh thế hệ mới. Bác sĩ trực tiếp thực hiện trong 30 phút. Tặng gói cạo vôi răng miễn phí.',
+      sitelinks: ['Ưu Đãi 999K', 'Tặng Cạo Vôi Răng', 'Đặt Hẹn Khám 0đ', '17 Chi Nhánh'],
+      biddingAdvice: 'Đặt giá thầu vừa phải cho các từ khóa tẩy trắng răng làm phễu tiếp cận khách hàng.'
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner GDN - Tẩy Trắng Răng Laser Bật 3 Tông',
+        previewUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&auto=format&fit=crop&q=80',
+        badge: 'Google Display (1200x628)',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Nụ Cười Trắng Sáng Tự Tin Trong 45 Phút Cùng Laser Whitening',
+        descriptionText: 'Giảm ngay 50% chỉ còn 1.200.000đ khi đăng ký trực tuyến.'
+      },
+      {
+        type: 'video',
+        title: 'Video Before / After Tẩy Trắng Răng Thực Tế',
+        previewUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80',
+        badge: 'Shorts & TikTok Video',
+        videoDuration: '0:20',
+        headlineOverlay: 'Hàm Răng Ố Vàng Hóa Trắng Sáng Rực Rỡ Sau 1 Liệu Trình 45 Phút',
+        descriptionText: 'Khách hàng vô cùng phấn khởi trước diện mạo mới.'
       }
     ]
   },
@@ -267,6 +557,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa Paris',
     domain: 'nhakhoaparis.vn',
     adPlatform: 'Google Search & Performance Max',
+    category: 'ortho',
+    campaignTitle: 'Lễ Hội Niềng Răng Paris - Đồng Giá 18 Triệu Trọn Gói',
     targetKeyword: 'niềng răng trả góp học sinh',
     adCopy: {
       headline: 'Siêu Lễ Hội Niềng Răng Paris - Đồng Giá 18 Triệu Trọn Gói',
@@ -311,6 +603,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Dr. Care Implant',
     domain: 'drcareimplant.com',
     adPlatform: 'Google Search Ads & Facebook Ads',
+    category: 'implant',
+    campaignTitle: 'Trồng Răng Toàn Hàm All-on-4 Không Đau Cho Người Trung Niên',
     targetKeyword: 'trồng răng toàn hàm all on 4',
     adCopy: {
       headline: 'Trồng Răng All-on-4 Không Đau Cho Người Trung Niên - Dr. Care',
@@ -355,6 +649,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa Việt Hàn 04',
     domain: 'nhakhoaviethan04.com',
     adPlatform: 'Google Search Ads & Performance Max',
+    category: 'implant',
+    campaignTitle: 'Trồng Răng Implant Việt Hàn 04 - Trợ Giá Trụ Chỉ Từ 7.5 Triệu',
     targetKeyword: 'trồng răng implant giá rẻ tphcm',
     adCopy: {
       headline: 'Trồng Răng Implant Việt Hàn 04 - Trợ Giá Trụ Chỉ Từ 7.5 Triệu',
@@ -399,6 +695,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa Sài Gòn B.H',
     domain: 'nhakhoasaigon.vn',
     adPlatform: 'Google Search Ads & Display',
+    category: 'implant',
+    campaignTitle: 'Hệ Thống Sài Gòn B.H - Giảm 20% Cấy Ghép Implant Đồng Nai & HCM',
     targetKeyword: 'nha khoa uy tín biên hòa đồng nai',
     adCopy: {
       headline: 'Hệ Thống Nha Khoa Sài Gòn B.H - Chuyên Sâu Implant & Niềng Răng',
@@ -443,6 +741,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa Trồng Răng Sài Gòn',
     domain: 'nhakhoatrongrang.com',
     adPlatform: 'Google Search Ads Top 1',
+    category: 'implant',
+    campaignTitle: 'Trung Tâm Trồng Răng Sài Gòn - Trồng Răng Không Đau Chỉ 13.5Tr',
     targetKeyword: 'trồng răng implant giá bao nhiêu tiền',
     adCopy: {
       headline: 'Trung Tâm Trồng Răng Sài Gòn - Trồng Răng Không Đau Chỉ 13.5Tr',
@@ -487,6 +787,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa Sài Gòn Implant',
     domain: 'saigonimplant.com',
     adPlatform: 'Google Search Ads',
+    category: 'implant',
+    campaignTitle: 'Sài Gòn Implant - Chuyên Gia Cấy Ghép All-on-6 Giảm 25 Triệu',
     targetKeyword: 'cấy ghép implant toàn hàm all on 6',
     adCopy: {
       headline: 'Sài Gòn Implant - Chuyên Gia Cấy Ghép Răng Công Nghệ Mới',
@@ -531,6 +833,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa Shark',
     domain: 'nhakhoashark.vn',
     adPlatform: 'Google Search & PMax',
+    category: 'porcelain',
+    campaignTitle: 'Đại Tiệc Răng Sứ Shark Dental - Bọc Răng Sứ Chỉ Từ 899k/Răng',
     targetKeyword: 'bọc răng sứ giá rẻ tphcm',
     adCopy: {
       headline: 'Đại Tiệc Răng Sứ Shark Dental - Bọc Răng Sứ Chỉ Từ 899k/Răng',
@@ -575,6 +879,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa Parkway',
     domain: 'parkway.com.vn',
     adPlatform: 'Google Search & YouTube Ads',
+    category: 'ortho',
+    campaignTitle: 'Hệ Thống Chỉnh Nha Parkway - Niềng Răng Trong Suốt Invisalign Top 1',
     targetKeyword: 'niềng răng invisalign giá bao nhiêu',
     adCopy: {
       headline: 'Hệ Thống Chỉnh Nha Parkway - Niềng Răng Trong Suốt Invisalign Top 1',
@@ -619,6 +925,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa I-Dent',
     domain: 'nhakhoaident.com',
     adPlatform: 'Google Search Ads (Target Kiều Bào & Trong Nước)',
+    category: 'implant',
+    campaignTitle: 'Nha Khoa I-Dent - Chuyên Sâu Trồng Răng Implant Cho Kiều Bào',
     targetKeyword: 'trồng răng implant cho việt kiều',
     adCopy: {
       headline: 'Nha Khoa I-Dent - Chuyên Sâu Trồng Răng Implant Cho Kiều Bào',
@@ -663,6 +971,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Nha Khoa Đông Nam',
     domain: 'nhakhoadongnam.com',
     adPlatform: 'Google Search Ads',
+    category: 'implant',
+    campaignTitle: 'Nha Khoa Đông Nam - Cấy Ghép Răng Implant Giảm Giá 20%',
     targetKeyword: 'chi phí cấy ghép implant nha khoa đông nam',
     adCopy: {
       headline: 'Nha Khoa Đông Nam - Cấy Ghép Răng Implant Giảm Giá 20%',
@@ -707,6 +1017,8 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
     competitorName: 'Tâm Đức Smile (Của Bạn)',
     domain: 'nhakhoatamducsmile.com',
     adPlatform: 'Google Search RSA & PMax (17 Chi Nhánh)',
+    category: 'implant',
+    campaignTitle: 'Hệ Thống Tâm Đức Smile - Trồng Răng Implant Trọn Gói 9.9Tr',
     targetKeyword: 'trồng răng implant nha khoa tâm đức smile',
     adCopy: {
       headline: 'Hệ Thống Nha Khoa Tâm Đức Smile - 17 Chi Nhánh TP.HCM & Miền Tây',
@@ -760,6 +1072,7 @@ export const CompetitorWebDiffScanner: React.FC = () => {
   const [customDomainInput, setCustomDomainInput] = useState<string>('');
   const [selectedAdvertiser, setSelectedAdvertiser] = useState<VerifiedAdvertiser>(VERIFIED_DENTAL_ADVERTISERS[0]);
   const [transparencySearchFilter, setTransparencySearchFilter] = useState<string>('');
+  const [transparencyActiveCampaignIdx, setTransparencyActiveCampaignIdx] = useState<number>(0);
   const [pastedAdFromGoogle, setPastedAdFromGoogle] = useState<string>('');
   const [analyzingPastedAd, setAnalyzingPastedAd] = useState<boolean>(false);
   const [pastedAdAnalysisResult, setPastedAdAnalysisResult] = useState<any | null>(null);
@@ -769,6 +1082,8 @@ export const CompetitorWebDiffScanner: React.FC = () => {
   const [selectedService, setSelectedService] = useState<string>('Trồng Răng Implant');
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>('Tất cả đối thủ lớn');
   const [selectedLocation, setSelectedLocation] = useState<string>('TP.HCM & Miền Tây Nam Bộ');
+  const [radarCategoryFilter, setRadarCategoryFilter] = useState<string>('all');
+  const [radarFormatFilter, setRadarFormatFilter] = useState<string>('all');
   const [isAutoHunting, setIsAutoHunting] = useState<boolean>(false);
   const [autoHuntSummary, setAutoHuntSummary] = useState<string | null>(null);
   const [copiedAdIndex, setCopiedAdIndex] = useState<number | null>(null);
@@ -1221,37 +1536,98 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                   </span>
                 </div>
 
-                {/* LIVE GOOGLE SEARCH AD DISPLAY IMMEDIATELY FOR SELECTED DENTAL CLINIC */}
+                {/* LIVE GOOGLE ADS & CAMPAIGNS DISPLAY FOR SELECTED DENTAL CLINIC */}
                 {(() => {
-                  const matchedAd = discoveredAds.find(ad => 
+                  const matchedAds = discoveredAds.filter(ad => 
                     ad.competitorName.toLowerCase().includes(selectedAdvertiser.name.toLowerCase()) ||
                     selectedAdvertiser.name.toLowerCase().includes(ad.competitorName.toLowerCase()) ||
                     selectedAdvertiser.domain.includes(ad.domain) ||
                     ad.domain.includes(selectedAdvertiser.domain)
                   );
 
-                  if (!matchedAd) return null;
+                  if (matchedAds.length === 0) return null;
+
+                  const currentAdIndex = Math.min(transparencyActiveCampaignIdx || 0, matchedAds.length - 1);
+                  const matchedAd = matchedAds[currentAdIndex] || matchedAds[0];
 
                   return (
                     <div className="space-y-4 pt-2">
-                      {/* Section Title */}
-                      <div className="flex items-center justify-between">
+                      {/* Section Title & Campaign Counter */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-800/60">
                         <div className="flex items-center gap-2">
                           <Eye className="w-4 h-4 text-emerald-400" />
                           <h4 className="text-xs font-black uppercase tracking-wider text-emerald-300">
-                            MẪU QUẢNG CÁO ĐANG CHẠY THỰC TẾ TRÊN GOOGLE ({selectedAdvertiser.name})
+                            {selectedAdvertiser.name} — {matchedAds.length} Chiến Dịch Đang Chạy Thực Tế
                           </h4>
                         </div>
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border font-mono ${
-                          matchedAd.threatLevel === 'Rất cao' 
-                            ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse'
-                            : matchedAd.threatLevel === 'Cao'
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                            : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                        }`}>
-                          Độ Nguy Hiểm: {matchedAd.threatLevel}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border font-mono ${
+                            matchedAd.threatLevel === 'Rất cao' 
+                              ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse'
+                              : matchedAd.threatLevel === 'Cao'
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                              : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                          }`}>
+                            Độ Nguy Hiểm: {matchedAd.threatLevel}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedCompetitor(selectedAdvertiser.name);
+                              setActiveMode('auto_radar');
+                            }}
+                            className="px-2.5 py-1 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 text-[11px] font-bold border border-cyan-500/40 flex items-center gap-1 cursor-pointer transition-all"
+                          >
+                            <span>Xem tất cả {matchedAds.length} mẫu trong Tab Radar</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
+
+                      {/* Multi-Campaign Selector Tabs (If multiple campaigns found) */}
+                      {matchedAds.length > 1 && (
+                        <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+                          <div className="text-[11px] font-bold text-slate-400 flex items-center justify-between">
+                            <span className="flex items-center gap-1.5 text-emerald-400">
+                              <Layers className="w-3.5 h-3.5" /> Chọn chiến dịch để xem chi tiết ({matchedAds.length} chiến dịch):
+                            </span>
+                            <span className="text-[10px] text-slate-500 font-mono">Click tab để đổi</span>
+                          </div>
+                          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+                            {matchedAds.map((adItem, cIdx) => {
+                              const isActive = currentAdIndex === cIdx;
+                              return (
+                                <button
+                                  key={cIdx}
+                                  type="button"
+                                  onClick={() => setTransparencyActiveCampaignIdx(cIdx)}
+                                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                                    isActive
+                                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/30 ring-1 ring-emerald-300/40'
+                                      : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                                  }`}
+                                >
+                                  <span>#{cIdx + 1}</span>
+                                  <span className="max-w-[200px] truncate">{adItem.campaignTitle || adItem.adCopy.headline}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Campaign Title Banner */}
+                      {matchedAd.campaignTitle && (
+                        <div className="px-3.5 py-2 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between text-xs">
+                          <span className="font-bold text-emerald-300 flex items-center gap-1.5">
+                            <Megaphone className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Chiến dịch: <strong>{matchedAd.campaignTitle}</strong></span>
+                          </span>
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-900/60 text-emerald-200 font-mono">
+                            {matchedAd.adPlatform}
+                          </span>
+                        </div>
+                      )}
 
                       {/* Google Search Live Ad Mockup */}
                       <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 shadow-xl space-y-2.5">
@@ -1466,14 +1842,14 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => {
-                            setSelectedCompetitor(matchedAd.competitorName);
+                            setSelectedCompetitor(selectedAdvertiser.name);
                             setActiveMode('auto_radar');
                           }}
-                          className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white font-bold text-xs border border-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer transition-all"
+                          className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-black text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
                         >
-                          <Radar className="w-3.5 h-3.5 text-cyan-400" />
-                          <span>Mở Toàn Bộ Mẫu Quảng Cáo Trong Tab AI Spy Radar</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          <Radar className="w-4 h-4 text-cyan-200" />
+                          <span>Mở Xem Toàn Bộ {matchedAds.length} Mẫu Quảng Cáo Trong Tab AI Radar</span>
+                          <ArrowRight className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -1734,38 +2110,113 @@ export const CompetitorWebDiffScanner: React.FC = () => {
           {/* DISCOVERED ADS LIST */}
           <div className="space-y-4">
             {(() => {
-              const filteredDiscoveredAds = selectedCompetitor === 'Tất cả đối thủ lớn'
+              // 1. Filter by Competitor
+              const competitorFiltered = selectedCompetitor === 'Tất cả đối thủ lớn'
                 ? discoveredAds
                 : discoveredAds.filter(ad => 
                     ad.competitorName.toLowerCase().includes(selectedCompetitor.toLowerCase()) ||
                     selectedCompetitor.toLowerCase().includes(ad.competitorName.toLowerCase())
                   );
               
-              const displayList = filteredDiscoveredAds.length > 0 ? filteredDiscoveredAds : discoveredAds;
+              // 2. Filter by Category
+              const categoryFiltered = radarCategoryFilter === 'all'
+                ? competitorFiltered
+                : competitorFiltered.filter(ad => 
+                    (ad.category && ad.category.toLowerCase().includes(radarCategoryFilter.toLowerCase())) ||
+                    (ad.targetKeyword && ad.targetKeyword.toLowerCase().includes(radarCategoryFilter.toLowerCase())) ||
+                    (ad.campaignTitle && ad.campaignTitle.toLowerCase().includes(radarCategoryFilter.toLowerCase()))
+                  );
+
+              // 3. Filter by Format
+              const formatFiltered = radarFormatFilter === 'all'
+                ? categoryFiltered
+                : radarFormatFilter === 'search'
+                ? categoryFiltered.filter(ad => ad.adPlatform.includes('Search'))
+                : radarFormatFilter === 'media'
+                ? categoryFiltered.filter(ad => ad.mediaAds && ad.mediaAds.some(m => m.type === 'image'))
+                : radarFormatFilter === 'video'
+                ? categoryFiltered.filter(ad => ad.mediaAds && ad.mediaAds.some(m => m.type === 'video'))
+                : categoryFiltered;
+
+              const displayList = formatFiltered;
 
               return (
                 <>
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                        <Megaphone className="w-4 h-4 text-cyan-400" />
-                        <span>
-                          {selectedCompetitor !== 'Tất cả đối thủ lớn' 
-                            ? `Tất Cả Mẫu Quảng Cáo Của: ${selectedCompetitor} (${displayList.length})`
-                            : `Tất Cả Mẫu Quảng Cáo Đang Chạy (${displayList.length})`}
-                        </span>
-                      </h4>
-                      {selectedCompetitor !== 'Tất cả đối thủ lớn' && (
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCompetitor('Tất cả đối thủ lớn')}
-                          className="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-[10px] text-cyan-300 border border-slate-700 cursor-pointer"
-                        >
-                          Hiển thị tất cả đối thủ ✕
-                        </button>
-                      )}
+                  {/* Category & Format Filter Header */}
+                  <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                          <Megaphone className="w-4 h-4 text-cyan-400" />
+                          <span>
+                            {selectedCompetitor !== 'Tất cả đối thủ lớn' 
+                              ? `Toàn Bộ Chiến Dịch Của ${selectedCompetitor} (${competitorFiltered.length} mẫu)`
+                              : `Tất Cả Mẫu Quảng Cáo Đang Chạy (${discoveredAds.length} mẫu)`}
+                          </span>
+                        </h4>
+                        {selectedCompetitor !== 'Tất cả đối thủ lớn' && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCompetitor('Tất cả đối thủ lớn')}
+                            className="px-2.5 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-[10px] text-cyan-300 border border-slate-700 cursor-pointer font-bold transition-colors"
+                          >
+                            Hiển thị tất cả đối thủ ✕
+                          </button>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-slate-400 font-mono">
+                        Hiển thị {displayList.length} / {competitorFiltered.length} chiến dịch
+                      </span>
                     </div>
-                    <span className="text-[11px] text-slate-500 font-mono">Đồng bộ tự động từ Radar & Transparency</span>
+
+                    {/* Category Filter Pills */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+                      <span className="text-[11px] font-bold text-slate-400 shrink-0">Dịch vụ:</span>
+                      {[
+                        { id: 'all', label: `Tất cả (${competitorFiltered.length})` },
+                        { id: 'implant', label: `Trồng Răng Implant (${competitorFiltered.filter(a => (a.category||'').toLowerCase().includes('implant') || a.targetKeyword.toLowerCase().includes('implant')).length})` },
+                        { id: 'nieng', label: `Niềng Răng (${competitorFiltered.filter(a => (a.category||'').toLowerCase().includes('niềng') || a.targetKeyword.toLowerCase().includes('niềng')).length})` },
+                        { id: 'su', label: `Răng Sứ (${competitorFiltered.filter(a => (a.category||'').toLowerCase().includes('sứ') || a.targetKeyword.toLowerCase().includes('sứ')).length})` },
+                        { id: 'khon', label: `Nhổ Răng & Tẩy Trắng (${competitorFiltered.filter(a => (a.category||'').toLowerCase().includes('nhổ') || (a.category||'').toLowerCase().includes('tẩy') || a.targetKeyword.toLowerCase().includes('răng khôn')).length})` },
+                      ].map(cat => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => setRadarCategoryFilter(cat.id)}
+                          className={`px-3 py-1 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                            radarCategoryFilter === cat.id
+                              ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30'
+                              : 'bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800'
+                          }`}
+                        >
+                          {cat.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Format Filter Pills */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin pt-1 border-t border-slate-900">
+                      <span className="text-[11px] font-bold text-slate-400 shrink-0">Định dạng QC:</span>
+                      {[
+                        { id: 'all', label: 'Tất cả định dạng' },
+                        { id: 'search', label: 'Google Search Ads' },
+                        { id: 'media', label: 'Banner GDN / PMax' },
+                        { id: 'video', label: 'Video YouTube / Social' },
+                      ].map(fmt => (
+                        <button
+                          key={fmt.id}
+                          type="button"
+                          onClick={() => setRadarFormatFilter(fmt.id)}
+                          className={`px-2.5 py-0.5 rounded-lg text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                            radarFormatFilter === fmt.id
+                              ? 'bg-indigo-600 text-white font-bold'
+                              : 'bg-slate-900/60 hover:bg-slate-800 text-slate-400'
+                          }`}
+                        >
+                          {fmt.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 gap-5">
@@ -1790,7 +2241,7 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                               <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
                                 <span className="text-cyan-400 font-semibold">{ad.adPlatform}</span>
                                 <span>•</span>
-                                <span>Từ khóa mục tiêu: <strong className="text-slate-200">"{ad.targetKeyword}"</strong></span>
+                                <span>Từ khóa: <strong className="text-slate-200">"{ad.targetKeyword}"</strong></span>
                               </div>
                             </div>
                           </div>
@@ -1808,6 +2259,19 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                             </span>
                           </div>
                         </div>
+
+                        {/* Campaign Name & Focus Category Bar */}
+                        {ad.campaignTitle && (
+                          <div className="px-3.5 py-2 rounded-xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between text-xs">
+                            <span className="font-bold text-cyan-300 flex items-center gap-1.5">
+                              <Megaphone className="w-3.5 h-3.5 text-cyan-400" />
+                              <span>Chiến dịch: <strong>{ad.campaignTitle}</strong></span>
+                            </span>
+                            <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-900/60 text-cyan-200 font-mono">
+                              Phân nhóm: {ad.category || 'Nha khoa chuyên sâu'}
+                            </span>
+                          </div>
+                        )}
 
                   {/* 1. MẪU QUẢNG CÁO GOOGLE ADS ĐỐI THỦ ĐANG CHẠY (MOCKUP LIVE SEARCH AD) */}
                   <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
