@@ -22,7 +22,8 @@ import {
   ChevronDown,
   Layers,
   Megaphone,
-  AlertTriangle
+  AlertTriangle,
+  AlertCircle
 } from 'lucide-react';
 import { 
   TRANSPARENCY_DOMAINS_DATA, 
@@ -39,9 +40,12 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
 }) => {
   const [currentDomain, setCurrentDomain] = useState<string>('nhakhoakim.com');
   const [searchInput, setSearchInput] = useState<string>('');
+  const [adKeywordSearch, setAdKeywordSearch] = useState<string>('');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'implant' | 'ortho' | 'porcelain' | 'general'>('all');
   const [timeFilter, setTimeFilter] = useState<string>('all_time');
   const [platformFilter, setPlatformFilter] = useState<string>('all_platforms');
   const [formatFilter, setFormatFilter] = useState<string>('all_formats');
+  const [displayLimit, setDisplayLimit] = useState<number>(24);
   const [selectedAdForModal, setSelectedAdForModal] = useState<TransparencyAdItem | null>(null);
   const [copiedAdId, setCopiedAdId] = useState<string | null>(null);
 
@@ -66,8 +70,20 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
     }))
   };
 
+  // Category counts
+  const categoryCounts = {
+    all: activeProfile.ads.length,
+    implant: activeProfile.ads.filter(a => a.category === 'implant').length,
+    ortho: activeProfile.ads.filter(a => a.category === 'ortho').length,
+    porcelain: activeProfile.ads.filter(a => a.category === 'porcelain').length,
+    general: activeProfile.ads.filter(a => a.category === 'general').length
+  };
+
   // Filter ads based on user selections
   const filteredAds = activeProfile.ads.filter(ad => {
+    // Category filter
+    if (categoryFilter !== 'all' && ad.category !== categoryFilter) return false;
+
     // Format filter
     if (formatFilter === 'video' && ad.format !== 'video') return false;
     if (formatFilter === 'text' && ad.format !== 'text') return false;
@@ -78,8 +94,33 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
     if (platformFilter === 'youtube' && !ad.platform.includes('YouTube')) return false;
     if (platformFilter === 'gdn' && !ad.platform.includes('Display') && !ad.platform.includes('PMax')) return false;
 
+    // Keyword search within ad copy
+    if (adKeywordSearch.trim()) {
+      const q = adKeywordSearch.toLowerCase().trim();
+      const matchVisual = ad.visual && (
+        ad.visual.headlineMain.toLowerCase().includes(q) ||
+        (ad.visual.subHeadline && ad.visual.subHeadline.toLowerCase().includes(q)) ||
+        (ad.visual.highlightPill && ad.visual.highlightPill.toLowerCase().includes(q)) ||
+        (ad.visual.topBadgeText && ad.visual.topBadgeText.toLowerCase().includes(q))
+      );
+      const matchSearch = ad.searchAd && (
+        ad.searchAd.headline.toLowerCase().includes(q) ||
+        ad.searchAd.description.toLowerCase().includes(q) ||
+        ad.searchAd.sitelinks.some(s => s.toLowerCase().includes(q))
+      );
+      const matchIntel = ad.intel && (
+        ad.intel.campaignGoal.toLowerCase().includes(q) ||
+        ad.intel.psychologicalHook.toLowerCase().includes(q) ||
+        ad.intel.counterAdTemplate.headline.toLowerCase().includes(q)
+      );
+
+      if (!matchVisual && !matchSearch && !matchIntel) return false;
+    }
+
     return true;
   });
+
+  const visibleAds = filteredAds.slice(0, displayLimit);
 
   const resolveDomain = (input: string): string => {
     const raw = input.toLowerCase().trim();
@@ -97,6 +138,8 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
   const handleDomainChange = (domain: string) => {
     setCurrentDomain(domain);
     setSearchInput(domain);
+    setDisplayLimit(24);
+    setAdKeywordSearch('');
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -104,6 +147,8 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
     if (!searchInput.trim()) return;
     const resolved = resolveDomain(searchInput);
     setCurrentDomain(resolved);
+    setDisplayLimit(24);
+    setAdKeywordSearch('');
   };
 
   const handleCopyCounterAd = (ad: TransparencyAdItem) => {
@@ -214,67 +259,180 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
         </div>
 
         {/* COUNT & DROPDOWN FILTER BAR (EXACT AS SCREENSHOT) */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
-          {/* Ad Count Text */}
-          <div className="text-sm font-medium text-slate-200">
-            Xấp xỉ {activeProfile.approxActiveAds} quảng cáo
+        <div className="space-y-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            {/* Ad Count Text */}
+            <div className="text-sm font-medium text-slate-200 flex items-center gap-2">
+              <span>Xấp xỉ <strong>{activeProfile.approxActiveAds}</strong> quảng cáo</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                Đầy đủ 100% dữ liệu
+              </span>
+            </div>
+
+            {/* 3 Google Transparency Dropdown Selectors */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* 1. Time Filter */}
+              <div className="relative">
+                <select
+                  value={timeFilter}
+                  onChange={e => setTimeFilter(e.target.value)}
+                  aria-label="Lọc theo thời gian"
+                  className="appearance-none bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-sm"
+                >
+                  <option value="all_time">Mọi lúc</option>
+                  <option value="last_30_days">30 ngày qua</option>
+                  <option value="last_7_days">7 ngày qua</option>
+                  <option value="today">Hôm nay</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              {/* 2. Platform Filter */}
+              <div className="relative">
+                <select
+                  value={platformFilter}
+                  onChange={e => setPlatformFilter(e.target.value)}
+                  aria-label="Lọc theo nền tảng quảng cáo"
+                  className="appearance-none bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-sm"
+                >
+                  <option value="all_platforms">Tất cả nền tảng</option>
+                  <option value="search">Google Tìm kiếm (Search)</option>
+                  <option value="youtube">YouTube (Video)</option>
+                  <option value="gdn">Mạng hiển thị Google (GDN)</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              {/* 3. Format Filter */}
+              <div className="relative">
+                <select
+                  value={formatFilter}
+                  onChange={e => setFormatFilter(e.target.value)}
+                  aria-label="Lọc theo định dạng quảng cáo"
+                  className="appearance-none bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-sm"
+                >
+                  <option value="all_formats">Tất cả định dạng</option>
+                  <option value="video">Video ({activeProfile.ads.filter(a => a.format === 'video').length})</option>
+                  <option value="text">Văn bản Search ({activeProfile.ads.filter(a => a.format === 'text').length})</option>
+                  <option value="image">Hình ảnh Banner ({activeProfile.ads.filter(a => a.format === 'image').length})</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
           </div>
 
-          {/* 3 Google Transparency Dropdown Selectors */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* 1. Time Filter */}
-            <div className="relative">
-              <select
-                value={timeFilter}
-                onChange={e => setTimeFilter(e.target.value)}
-                aria-label="Lọc theo thời gian"
-                className="appearance-none bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-sm"
+          {/* DỊCH VỤ / CATEGORY FILTER CHIPS & KEYWORD SEARCH */}
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 p-3 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+            {/* Category tabs */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-thin">
+              <button
+                type="button"
+                onClick={() => { setCategoryFilter('all'); setDisplayLimit(24); }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  categoryFilter === 'all'
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                    : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                }`}
               >
-                <option value="all_time">Mọi lúc</option>
-                <option value="last_30_days">30 ngày qua</option>
-                <option value="last_7_days">7 ngày qua</option>
-                <option value="today">Hôm nay</option>
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                Tất Cả ({categoryCounts.all})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setCategoryFilter('implant'); setDisplayLimit(24); }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  categoryFilter === 'implant'
+                    ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
+                    : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                }`}
+              >
+                Trồng Răng Implant ({categoryCounts.implant})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setCategoryFilter('ortho'); setDisplayLimit(24); }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  categoryFilter === 'ortho'
+                    ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/20'
+                    : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                }`}
+              >
+                Niềng Răng Chỉnh Nha ({categoryCounts.ortho})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setCategoryFilter('porcelain'); setDisplayLimit(24); }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  categoryFilter === 'porcelain'
+                    ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 font-black'
+                    : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                }`}
+              >
+                Răng Sứ & Veneer ({categoryCounts.porcelain})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setCategoryFilter('general'); setDisplayLimit(24); }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  categoryFilter === 'general'
+                    ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
+                    : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                }`}
+              >
+                Khám, Tẩy Trắng & Nhổ Răng Khôn ({categoryCounts.general})
+              </button>
             </div>
 
-            {/* 2. Platform Filter */}
-            <div className="relative">
-              <select
-                value={platformFilter}
-                onChange={e => setPlatformFilter(e.target.value)}
-                aria-label="Lọc theo nền tảng quảng cáo"
-                className="appearance-none bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-sm"
-              >
-                <option value="all_platforms">Tất cả nền tảng</option>
-                <option value="search">Google Tìm kiếm (Search)</option>
-                <option value="youtube">YouTube (Video)</option>
-                <option value="gdn">Mạng hiển thị Google (GDN)</option>
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-
-            {/* 3. Format Filter */}
-            <div className="relative">
-              <select
-                value={formatFilter}
-                onChange={e => setFormatFilter(e.target.value)}
-                aria-label="Lọc theo định dạng quảng cáo"
-                className="appearance-none bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-sm"
-              >
-                <option value="all_formats">Tất cả định dạng</option>
-                <option value="video">Video</option>
-                <option value="text">Văn bản (Google Search)</option>
-                <option value="image">Hình ảnh (Banner)</option>
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {/* In-ad keyword quick filter */}
+            <div className="relative min-w-[240px]">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={adKeywordSearch}
+                onChange={e => { setAdKeywordSearch(e.target.value); setDisplayLimit(24); }}
+                placeholder="Lọc từ khóa (VD: Straumann, Invisalign, Đống Đa...)"
+                className="w-full bg-slate-950 border border-slate-700/80 rounded-xl pl-8 pr-7 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+              />
+              {adKeywordSearch && (
+                <button
+                  type="button"
+                  onClick={() => setAdKeywordSearch('')}
+                  aria-label="Xóa từ khóa lọc"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </div>
 
         {/* 3. 4-COLUMN CARD GRID (PIXEL-PERFECT MATCH TO ADSTRANSPARENCY SCREENSHOT) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredAds.map((ad, idx) => {
+        {visibleAds.length === 0 ? (
+          <div className="p-12 text-center rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+            <AlertCircle className="w-8 h-8 text-amber-400 mx-auto" />
+            <div className="text-sm font-bold text-slate-200">Không tìm thấy mẫu quảng cáo nào phù hợp với bộ lọc</div>
+            <p className="text-xs text-slate-400">Hãy thử đổi định dạng, danh mục hoặc từ khóa tìm kiếm</p>
+            <button
+              type="button"
+              onClick={() => {
+                setCategoryFilter('all');
+                setFormatFilter('all_formats');
+                setPlatformFilter('all_platforms');
+                setTimeFilter('all_time');
+                setAdKeywordSearch('');
+              }}
+              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer"
+            >
+              Đặt Lại Tất Cả Bộ Lọc
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {visibleAds.map((ad, idx) => {
             const isVideo = ad.format === 'video';
             const isText = ad.format === 'text';
             const isImage = ad.format === 'image';
@@ -451,7 +609,62 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
+
+        {/* 4. PAGINATION & LOAD MORE TOOLBAR */}
+        {filteredAds.length > 0 && (
+          <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 shadow-xl">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <div className="text-slate-300 font-medium">
+                Đang hiển thị <strong className="text-emerald-400">{visibleAds.length}</strong> / <strong className="text-white">{filteredAds.length}</strong> mẫu quảng cáo ({((visibleAds.length / filteredAds.length) * 100).toFixed(0)}%)
+              </div>
+
+              <div className="flex items-center gap-2">
+                {displayLimit < filteredAds.length && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setDisplayLimit(prev => Math.min(prev + 24, filteredAds.length))}
+                      className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <span>Tải thêm 24 quảng cáo (+24)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setDisplayLimit(filteredAds.length)}
+                      className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs border border-cyan-500/30 transition-colors cursor-pointer"
+                    >
+                      <span>Hiển thị tất cả ({filteredAds.length} mẫu)</span>
+                    </button>
+                  </>
+                )}
+
+                {displayLimit > 24 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDisplayLimit(24);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white text-xs border border-slate-800 cursor-pointer"
+                  >
+                    Thu gọn về 24 mẫu
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Visual progress bar */}
+            <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full transition-all duration-300"
+                style={{ width: `${(visibleAds.length / filteredAds.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ========================================================================= */}
