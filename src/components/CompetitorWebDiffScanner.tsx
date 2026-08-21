@@ -274,6 +274,222 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       sitelinks: ['Tìm Chi Nhánh Gần Bạn', 'Bảng Giá Trọn Gói', 'Xe Đưa Đón Miễn Phí', 'Đăng Ký Khám 0đ'],
       biddingAdvice: 'Tăng ngân sách chạy phủ toàn bộ các tỉnh Tây Nam Bộ với thông điệp "Khám ngay tại quê nhà - Đẳng cấp quốc tế".'
     }
+  },
+  {
+    competitorName: 'Nha Khoa Việt Hàn 04',
+    domain: 'nhakhoaviethan04.com',
+    adPlatform: 'Google Search Ads & Performance Max',
+    targetKeyword: 'trồng răng implant giá rẻ tphcm',
+    adCopy: {
+      headline: 'Trồng Răng Implant Việt Hàn 04 - Trợ Giá Trụ Chỉ Từ 7.5 Triệu',
+      description: 'Cấy ghép không đau với công nghệ từ Hàn Quốc. Tặng mão răng sứ Titan cao cấp. Bảo hành trọn đời bằng văn bản.',
+      displayedUrl: 'https://nhakhoaviethan04.com/uu-dai-implant',
+      sitelinks: ['Bảng Giá Trụ Hàn Quốc', 'Khuyến Mãi Răng Sứ', 'Đăng Ký Khám 0đ', 'Bác Sĩ CKI Khám'],
+      callouts: ['Trợ Giá 50%', 'Không Đau Không Sưng', 'Hỗ Trợ Trả Góp 0%']
+    },
+    detectedPromo: 'Quảng cáo giá mồi 7.5Tr/trụ (Chưa bao gồm Abutment & vật tư tiêu hao phòng mổ)',
+    oldPromo: 'Giá gốc 12.000.000 đ / Trụ',
+    changeType: 'Hạ giá mồi cạnh tranh',
+    threatLevel: 'Cao',
+    competitorWeakness: 'Giá mồi thấp nhưng phát sinh chi phí phụ kiện khi bệnh nhân đến khám thực tế.',
+    counterAdTemplate: {
+      headline: 'Trồng Răng Implant Tâm Đức Smile - Trọn Gói 9.9Tr Cam Kết Không Phát Sinh 1 Đồng',
+      description: 'Đã bao gồm trụ + Abutment chính hãng + Răng sứ. Hơn 17 chi nhánh chuẩn quốc tế. Miễn phí chụp phim 3D 1.5Tr.',
+      sitelinks: ['Bảng Giá Trọn Gói Minh Bạch', 'Hợp Đồng Cam Kết Không Phát Sinh', 'Xem Review Thực Tế', '17 Chi Nhánh'],
+      biddingAdvice: 'Đánh mạnh thông điệp "Cam Kết Trọn Gói - Không Bẫy Giá Mồi" để vợt khách đang phân vân.'
+    }
+  },
+  {
+    competitorName: 'Nha Khoa Sài Gòn B.H',
+    domain: 'nhakhoasaigon.vn',
+    adPlatform: 'Google Search Ads & Display',
+    targetKeyword: 'nha khoa uy tín biên hòa đồng nai',
+    adCopy: {
+      headline: 'Hệ Thống Nha Khoa Sài Gòn B.H - Chuyên Sâu Implant & Niềng Răng',
+      description: 'Hơn 15 năm uy tín tại Biên Hòa & TP.HCM. Đội ngũ bác sĩ tu nghiệp nước ngoài. Giảm 20% cấy ghép Implant tháng này.',
+      displayedUrl: 'https://nhakhoasaigon.vn/khuyen-mai-thang',
+      sitelinks: ['Bảng Giá Implant', 'Niềng Răng Trả Góp', 'Chi Nhánh Biên Hòa', 'Đặt Hẹn Bác Sĩ'],
+      callouts: ['15 Năm Uy Tín', 'Phòng Phẫu Thuật Vô Trùng', 'Bảo Hành Chính Hãng']
+    },
+    detectedPromo: 'Giảm 20% chi phí cấy ghép Implant + Miễn phí thăm khám CT ConeBeam',
+    oldPromo: 'Giảm 10% gói tổng quát',
+    changeType: 'Gia tăng ngân sách Search khu vực Đông Nam Bộ',
+    threatLevel: 'Cao',
+    competitorWeakness: 'Độ phủ tại các tỉnh Miền Tây Nam Bộ hầu như không có, chỉ tập trung cụm Biên Hòa - TP.HCM.',
+    counterAdTemplate: {
+      headline: 'Nha Khoa Tâm Đức Smile - Hệ Thống 17 Chi Nhánh Phủ Sóng Miền Nam',
+      description: 'Chuyên sâu Implant & Răng sứ. Bác sĩ CKI trực tiếp phẫu thuật. Trả góp 0% lãi suất. Đặt lịch nhận ưu đãi 30%.',
+      sitelinks: ['Hệ Thống 17 Chi Nhánh', 'Bảng Giá Ưu Đãi 30%', 'Đội Ngũ Bác Sĩ CKI', 'Tư Vấn Miễn Phí'],
+      biddingAdvice: 'Chiếm lĩnh từ khóa khu vực lân cận TP.HCM và các trục đường chính miền Nam.'
+    }
+  },
+  {
+    competitorName: 'Nha Khoa Trồng Răng Sài Gòn',
+    domain: 'nhakhoatrongrang.com',
+    adPlatform: 'Google Search Ads Top 1',
+    targetKeyword: 'trồng răng implant giá bao nhiêu tiền',
+    adCopy: {
+      headline: 'Trung Tâm Trồng Răng Sài Gòn - Trồng Răng Không Đau Chỉ 13.5Tr',
+      description: 'Bác sĩ hơn 20 năm chuyên khoa Răng Hàm Mặt. Răng ăn nhai chắc khỏe trọn đời. Tặng mão sứ và công cấy ghép.',
+      displayedUrl: 'https://nhakhoatrongrang.com/trong-rang-implant',
+      sitelinks: ['Bảng Giá Trụ Thụy Điển', 'Quy Trình Chuẩn Y Khoa', 'Khách Hàng Đã Trồng Răng', 'Nhận Báo Giá Zalo'],
+      callouts: ['Chuyên Sâu Trồng Răng', 'Công Nghệ Không Đau', 'Bảo Hành 15 Năm']
+    },
+    detectedPromo: 'Đẩy mạnh từ khóa giá bao nhiêu tiền với ưu đãi tặng mão sứ Cercon trị giá 4.5Tr',
+    oldPromo: 'Tặng mão sứ kim loại thường',
+    changeType: 'Nâng cấp quà tặng răng sứ kèm trụ',
+    threatLevel: 'Rất cao',
+    competitorWeakness: 'Chỉ có 1 cơ sở tại Quận 10 TP.HCM, bất tiện cho khách hàng các tỉnh lân cận di chuyển điều trị nhiều lần.',
+    counterAdTemplate: {
+      headline: 'Trồng Răng Implant Tâm Đức Smile - Khám Gần Nhà Với 17 Chi Nhánh',
+      description: 'Ưu đãi trọn gói chỉ từ 9.9Tr. Tặng mão sứ Zirconia chính hãng. Đưa đón tận nơi cho khách hàng ở xa.',
+      sitelinks: ['Chi Nhánh Gần Nhất', 'Bảng Giá Trọn Gói', 'Bác Sĩ CKI Trực Tiếp', 'Ưu Đãi Hôm Nay'],
+      biddingAdvice: 'Đấu thầu đối kháng từ khóa "nha khoa trồng răng" kết hợp Sitelink hỗ trợ xe đưa đón.'
+    }
+  },
+  {
+    competitorName: 'Nha Khoa Sài Gòn Implant',
+    domain: 'saigonimplant.com',
+    adPlatform: 'Google Search Ads',
+    targetKeyword: 'cấy ghép implant toàn hàm all on 6',
+    adCopy: {
+      headline: 'Sài Gòn Implant - Chuyên Gia Cấy Ghép Răng Công Nghệ Mới',
+      description: 'Giảm ngay 25 Triệu trồng răng toàn hàm All-on-4 / All-on-6. Khôi phục ăn nhai tức thì sau 48h.',
+      displayedUrl: 'https://saigonimplant.com/all-on-6',
+      sitelinks: ['Bảng Giá All on 4/6', 'Trụ Straumann Thụy Sĩ', 'Hình Ảnh Trước Sau', 'Tư Vấn Online'],
+      callouts: ['Ăn Nhai Trong 48h', 'Bảo Hành Trọn Đời', 'Bác Sĩ Trưởng Khoa']
+    },
+    detectedPromo: 'Giảm 25Tr gói toàn hàm + Tặng hàm tạm cao cấp trị giá 10Tr',
+    oldPromo: 'Giảm 15Tr gói toàn hàm',
+    changeType: 'Gia tăng mức giảm giá toàn hàm',
+    threatLevel: 'Cao',
+    competitorWeakness: 'Thương hiệu mới nổi, quy mô cơ sở vật chất chưa thể so sánh với hệ sinh thái 17 chi nhánh của Tâm Đức Smile.',
+    counterAdTemplate: {
+      headline: 'Trồng Răng Toàn Hàm All-on-4/6 Tâm Đức Smile - Trợ Giá Đến 35 Triệu',
+      description: 'Đã thực hiện thành công hơn 10.000 ca cấy ghép toàn hàm. 17 chi nhánh chuẩn quốc tế. Hỗ trợ trả góp 0%.',
+      sitelinks: ['Xem 10.000 Ca Thành Công', 'Ưu Đãi Trợ Giá 35Tr', 'Khám Bác Sĩ CKI 0đ', '17 Chi Nhánh'],
+      biddingAdvice: 'Tăng hiển thị trên nhóm từ khóa "cấy ghép implant toàn hàm" với bằng chứng xã hội 10.000 ca thành công.'
+    }
+  },
+  {
+    competitorName: 'Nha Khoa Shark',
+    domain: 'nhakhoashark.vn',
+    adPlatform: 'Google Search & PMax',
+    targetKeyword: 'bọc răng sứ giá rẻ tphcm',
+    adCopy: {
+      headline: 'Đại Tiệc Răng Sứ Shark Dental - Bọc Răng Sứ Chỉ Từ 899k/Răng',
+      description: 'Dáng răng phong thủy tự nhiên. Bảo hành 10 năm. Tặng gói vệ sinh răng miệng định kỳ miễn phí.',
+      displayedUrl: 'https://nhakhoashark.vn/boc-rang-su',
+      sitelinks: ['Bảng Giá Răng Sứ Zirconia', 'Dán Sứ Veneer', 'Review Khách Hàng'],
+      callouts: ['Bảo Hành 10 Năm', 'Không Mài Nhỏ Răng', 'Bác Sĩ Chuyên Khoa']
+    },
+    detectedPromo: 'Giảm giá sâu răng sứ 899k/răng mồi nhử',
+    oldPromo: 'Răng sứ từ 1.5Tr/răng',
+    changeType: 'Đánh giá rẻ',
+    threatLevel: 'Cao',
+    competitorWeakness: 'Răng sứ giá quá rẻ thường là dòng sứ kim loại dễ đen viền nướu sau 1-2 năm.',
+    counterAdTemplate: {
+      headline: 'Răng Sứ Toàn Sứ Zirconia Tâm Đức Smile - Giá Gốc 1.8Tr Cam Kết Không Đen Viền',
+      description: '100% phôi sứ Đức chính hãng có thẻ bảo hành IDPI truy xuất nguồn gốc. Không mài mòn răng thật.',
+      sitelinks: ['Thẻ Bảo Hành Chính Hãng', 'Bảng Giá Răng Toàn Sứ', 'Hình Ảnh Thực Tế', '17 Chi Nhánh'],
+      biddingAdvice: 'Nhấn mạnh chất lượng "Toàn Sứ Chính Hãng Đức - Bảo Hành IDPI".'
+    }
+  },
+  {
+    competitorName: 'Nha Khoa Parkway',
+    domain: 'parkway.com.vn',
+    adPlatform: 'Google Search & YouTube Ads',
+    targetKeyword: 'niềng răng invisalign giá bao nhiêu',
+    adCopy: {
+      headline: 'Hệ Thống Chỉnh Nha Parkway - Niềng Răng Trong Suốt Invisalign Top 1',
+      description: 'Black Diamond Provider Invisalign tại VN. Trả góp linh hoạt. Xem trước nụ cười tương lai cùng Itero 5D.',
+      displayedUrl: 'https://parkway.com.vn/invisalign',
+      sitelinks: ['Bảng Giá Invisalign', 'Đội Ngũ Bác Sĩ', 'Công Nghệ Itero 5D'],
+      callouts: ['Black Diamond Provider', 'Quét 3D Miễn Phí', 'Hợp Đồng Rõ Ràng']
+    },
+    detectedPromo: 'Tặng gói quét Itero 5D + Giảm 15Tr gói Invisalign Full',
+    oldPromo: 'Giảm 10Tr gói Invisalign',
+    changeType: 'Tăng voucher chỉnh nha cao cấp',
+    threatLevel: 'Trung bình',
+    competitorWeakness: 'Giá thành thuộc phân khúc rất cao, khó tiếp cận nhóm khách hàng phổ thông và học sinh sinh viên.',
+    counterAdTemplate: {
+      headline: 'Niềng Răng Trong Suốt & Mắc Cài Tâm Đức Smile - Trả Góp Chỉ 1Tr/Tháng',
+      description: 'Công nghệ scan 3D hiện đại. Bác sĩ chuyên khoa chỉnh nha theo sát từng tháng. Tặng gói tẩy trắng răng 2.5Tr.',
+      sitelinks: ['Bảng Giá Niềng Răng', 'Trả Góp 1Tr/Tháng', 'Feedback Khách Hàng', 'Đăng Ký Khám 0đ'],
+      biddingAdvice: 'Tập trung nhắm nhóm từ khóa niềng răng trả góp với chi phí hợp lý.'
+    }
+  },
+  {
+    competitorName: 'Nha Khoa I-Dent',
+    domain: 'nhakhoaident.com',
+    adPlatform: 'Google Search Ads (Target Kiều Bào & Trong Nước)',
+    targetKeyword: 'trồng răng implant cho việt kiều',
+    adCopy: {
+      headline: 'Nha Khoa I-Dent - Chuyên Sâu Trồng Răng Implant Cho Kiều Bào',
+      description: 'Hoàn tất trồng răng nhanh chóng trong 7 ngày. Bác sĩ tu nghiệp tại Pháp. Đưa đón sân bay Tân Sơn Nhất miễn phí.',
+      displayedUrl: 'https://nhakhoaident.com/implant-viet-kieu',
+      sitelinks: ['Gói Implant Nhanh 7 Ngày', 'Bảng Giá Trụ Pháp/Thụy Sĩ', 'Ưu Đãi Vé Máy Bay'],
+      callouts: ['Bác Sĩ Tu Nghiệp Pháp', 'Đưa Đón Sân Bay', 'Bảo Hành Toàn Cầu']
+    },
+    detectedPromo: 'Tài trợ 100% chi phí chụp phim CT + Đưa đón sân bay miễn phí cho khách Việt Kiều',
+    oldPromo: 'Hỗ trợ 50% chi phí chụp phim',
+    changeType: 'Gia tăng quyền lợi khách Việt kiều',
+    threatLevel: 'Cao',
+    competitorWeakness: 'Chỉ có 3 cơ sở tại TP.HCM, kiều bào có người thân ở các tỉnh Miền Tây rất bất tiện khi đi lại.',
+    counterAdTemplate: {
+      headline: 'Trồng Răng Implant Kiều Bào Tâm Đức Smile - Tiện Lợi Khám Tại 17 Chi Nhánh',
+      description: 'Hoàn thiện răng cấp tốc trong kỳ nghỉ. 17 chi nhánh tại TP.HCM & các tỉnh Miền Tây. Bảo hành chính hãng toàn cầu.',
+      sitelinks: ['Gói Kiều Bào Trọn Gói', 'Xe Đưa Đón Tận Nơi', 'Bác Sĩ CKI Khám Trực Tiếp', 'Hotline Kiều Bào'],
+      biddingAdvice: 'Nhắm đối tượng kiều bào và thân nhân tại các tỉnh Tây Nam Bộ.'
+    }
+  },
+  {
+    competitorName: 'Nha Khoa Đông Nam',
+    domain: 'nhakhoadongnam.com',
+    adPlatform: 'Google Search Ads',
+    targetKeyword: 'chi phí cấy ghép implant nha khoa đông nam',
+    adCopy: {
+      headline: 'Nha Khoa Đông Nam - Cấy Ghép Răng Implant Giảm Giá 20%',
+      description: 'Miễn phí khám, tư vấn và chụp phim. Trụ Implant nhập khẩu chính hãng. Đội ngũ bác sĩ giàu kinh nghiệm.',
+      displayedUrl: 'https://nhakhoadongnam.com/bang-gia-implant',
+      sitelinks: ['Bảng Giá Khuyến Mãi', 'Quy Trình Cấy Ghép', 'Hình Ảnh Ca Khó'],
+      callouts: ['Miễn Phí Khám Chụp Phim', 'Bảo Hành Chu Đáo', 'Thiết Bị Hiện Đại']
+    },
+    detectedPromo: 'Giảm 20% chi phí trụ Implant và tặng răng sứ đi kèm',
+    oldPromo: 'Giảm 15% trụ Implant',
+    changeType: 'Tăng mức chiết khấu giá',
+    threatLevel: 'Trung bình',
+    competitorWeakness: 'Website và hình ảnh quảng cáo truyền thống, ít đầu tư video và nội dung đa kênh hiện đại.',
+    counterAdTemplate: {
+      headline: 'Trồng Răng Implant Không Đau Tâm Đức Smile - Ưu Đãi Trọn Gói 9.9Tr',
+      description: 'Trang thiết bị hiện đại bậc nhất. 17 chi nhánh phủ sóng toàn miền Nam. Ăn nhai chắc khỏe trọn đời.',
+      sitelinks: ['Bảng Giá Trọn Gói', 'Đăng Ký Khám 0đ', 'Bác Sĩ Chuyên Sâu', '17 Chi Nhánh'],
+      biddingAdvice: 'Cạnh tranh trực tiếp từ khóa tìm kiếm khu vực TP.HCM.'
+    }
+  },
+  {
+    competitorName: 'Tâm Đức Smile (Của Bạn)',
+    domain: 'nhakhoatamducsmile.com',
+    adPlatform: 'Google Search RSA & PMax (17 Chi Nhánh)',
+    targetKeyword: 'trồng răng implant nha khoa tâm đức smile',
+    adCopy: {
+      headline: 'Hệ Thống Nha Khoa Tâm Đức Smile - 17 Chi Nhánh TP.HCM & Miền Tây',
+      description: 'Trồng răng Implant trọn gói chỉ từ 9.9Tr. Răng toàn sứ chính hãng Đức. Đội ngũ Bác sĩ CKI hơn 15 năm kinh nghiệm.',
+      displayedUrl: 'https://nhakhoatamducsmile.com',
+      sitelinks: ['Tìm 17 Chi Nhánh Gần Nhất', 'Bảng Giá Trọn Gói 9.9Tr', 'Ưu Đãi Khách Tỉnh', 'Bác Sĩ CKI Khám Trực Tiếp'],
+      callouts: ['17 Chi Nhánh Hiện Đại', 'Không Phát Sinh Chi Phí', 'Đưa Đón Tận Nơi', 'Bảo Hành Trọn Đời']
+    },
+    detectedPromo: 'Ưu đãi Trồng Răng Implant trọn gói 9.9Tr + Miễn phí chụp phim CT 3D + Xe đưa đón tận nơi',
+    oldPromo: 'Chương trình ưu đãi hiện tại đang phát huy hiệu quả rất cao',
+    changeType: 'Đang dẫn đầu độ phủ và thị phần khách tỉnh',
+    threatLevel: 'Thấp',
+    competitorWeakness: 'Lợi thế vượt trội: 17 chi nhánh tại TP.HCM & Miền Tây, uy tín thương hiệu lớn.',
+    counterAdTemplate: {
+      headline: 'Nha Khoa Tâm Đức Smile - Chất Lượng Quốc Tế - Phục Vụ Tận Tâm',
+      description: 'Giữ vững thị phần số 1 tại TP.HCM và các tỉnh Tây Nam Bộ với hơn 17 chi nhánh hiện đại.',
+      sitelinks: ['Chi Nhánh Gần Bạn', 'Bảng Giá Trọn Gói', 'Xem Review Bệnh Nhân', 'Đặt Hẹn Ngay'],
+      biddingAdvice: 'Duy trì top 1-2 từ khóa thương hiệu và đẩy mạnh các từ khóa địa phương tỉnh.'
+    }
   }
 ];
 
@@ -667,8 +883,11 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                   return (
                     <div
                       key={adv.id}
-                      onClick={() => setSelectedAdvertiser(adv)}
-                      className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
+                      onClick={() => {
+                        setSelectedAdvertiser(adv);
+                        setSelectedCompetitor(adv.name);
+                      }}
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 group ${
                         isSelected
                           ? 'bg-emerald-950/40 border-emerald-500 shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400/40'
                           : 'bg-slate-950/80 border-slate-800 hover:border-slate-700 hover:bg-slate-900/60'
@@ -677,7 +896,9 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-white text-sm">{adv.name}</span>
+                            <span className="font-bold text-white text-sm group-hover:text-emerald-300 transition-colors">
+                              {adv.name}
+                            </span>
                             {isTamDuc && (
                               <span className="text-[10px] px-2 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40">
                                 Của Bạn
@@ -699,8 +920,14 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                       </div>
 
                       <div className="flex items-center justify-between pt-1 border-t border-slate-800/80 text-[11px]">
-                        <span className="text-slate-400">Định dạng: {adv.activeAdFormats.join(', ')}</span>
-                        <ChevronRight className={`w-4 h-4 ${isSelected ? 'text-emerald-400' : 'text-slate-600'}`} />
+                        <span className="text-slate-400 flex items-center gap-1">
+                          <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Click để hiện mẫu quảng cáo ngay</span>
+                        </span>
+                        <div className="flex items-center gap-1 text-emerald-400 font-bold text-[11px]">
+                          <span>Xem QC</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </div>
                       </div>
                     </div>
                   );
@@ -735,6 +962,180 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                     <span>Google Verified</span>
                   </span>
                 </div>
+
+                {/* LIVE GOOGLE SEARCH AD DISPLAY IMMEDIATELY FOR SELECTED DENTAL CLINIC */}
+                {(() => {
+                  const matchedAd = discoveredAds.find(ad => 
+                    ad.competitorName.toLowerCase().includes(selectedAdvertiser.name.toLowerCase()) ||
+                    selectedAdvertiser.name.toLowerCase().includes(ad.competitorName.toLowerCase()) ||
+                    selectedAdvertiser.domain.includes(ad.domain) ||
+                    ad.domain.includes(selectedAdvertiser.domain)
+                  );
+
+                  if (!matchedAd) return null;
+
+                  return (
+                    <div className="space-y-4 pt-2">
+                      {/* Section Title */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Eye className="w-4 h-4 text-emerald-400" />
+                          <h4 className="text-xs font-black uppercase tracking-wider text-emerald-300">
+                            MẪU QUẢNG CÁO ĐANG CHẠY THỰC TẾ TRÊN GOOGLE ({selectedAdvertiser.name})
+                          </h4>
+                        </div>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border font-mono ${
+                          matchedAd.threatLevel === 'Rất cao' 
+                            ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse'
+                            : matchedAd.threatLevel === 'Cao'
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                            : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                        }`}>
+                          Độ Nguy Hiểm: {matchedAd.threatLevel}
+                        </span>
+                      </div>
+
+                      {/* Google Search Live Ad Mockup */}
+                      <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 shadow-xl space-y-2.5">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <div className="flex items-center gap-2">
+                            <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold text-[10px]">
+                              Được tài trợ (Ad)
+                            </span>
+                            <span className="text-slate-400 font-mono text-[11px] truncate">
+                              {matchedAd.adCopy.displayedUrl}
+                            </span>
+                          </div>
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">
+                            Từ khóa: "{matchedAd.targetKeyword}"
+                          </span>
+                        </div>
+
+                        {/* Ad Headline */}
+                        <div className="text-sm sm:text-base font-bold text-sky-400 hover:underline cursor-pointer leading-snug">
+                          {matchedAd.adCopy.headline}
+                        </div>
+
+                        {/* Ad Description */}
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                          {matchedAd.adCopy.description}
+                        </p>
+
+                        {/* Ad Sitelinks */}
+                        {matchedAd.adCopy.sitelinks && matchedAd.adCopy.sitelinks.length > 0 && (
+                          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
+                            {matchedAd.adCopy.sitelinks.map((st, stIdx) => (
+                              <div key={stIdx} className="text-[11px] text-sky-400 hover:text-sky-300 flex items-center gap-1 font-medium truncate">
+                                <span className="text-slate-600">•</span>
+                                <span className="hover:underline">{st}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Callout Badges */}
+                        {matchedAd.adCopy.callouts && (
+                          <div className="flex flex-wrap gap-1.5 pt-1.5">
+                            {matchedAd.adCopy.callouts.map((co, coIdx) => (
+                              <span key={coIdx} className="px-2 py-0.5 rounded bg-slate-950 text-slate-400 text-[10px] border border-slate-800">
+                                ✓ {co}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Promo Change & Weakness Intel */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-500/30 space-y-1 text-xs">
+                          <div className="font-bold text-amber-300 flex items-center gap-1.5 text-[11px]">
+                            <Flame className="w-3.5 h-3.5 text-amber-400" />
+                            <span>Ưu Đãi & Giá Mồi Đang Chạy:</span>
+                          </div>
+                          <p className="text-slate-200 text-[11px] leading-relaxed">
+                            {matchedAd.detectedPromo}
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-500/30 space-y-1 text-xs">
+                          <div className="font-bold text-rose-300 flex items-center gap-1.5 text-[11px]">
+                            <Target className="w-3.5 h-3.5 text-rose-400" />
+                            <span>Tử Huyệt Của Đối Thủ:</span>
+                          </div>
+                          <p className="text-slate-200 text-[11px] leading-relaxed">
+                            {matchedAd.competitorWeakness}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Counter Ad Template for Tâm Đức Smile */}
+                      <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-950/60 via-slate-900 to-slate-950 border-2 border-emerald-500/50 shadow-xl space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Zap className="w-4 h-4 text-emerald-400" />
+                            <h5 className="text-xs font-black uppercase text-emerald-300">
+                              MẪU QUẢNG CÁO PHẢN CÔNG CHO TÂM ĐỨC SMILE
+                            </h5>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleCopyCounterAd(matchedAd, 999)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow cursor-pointer transition-all"
+                          >
+                            {copiedAdIndex === 999 ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-white" />
+                                <span>Đã Copy</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copy Mẫu Này</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Google Ad Template Preview */}
+                        <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+                          <div className="font-bold text-emerald-400 text-sm">
+                            {matchedAd.counterAdTemplate.headline}
+                          </div>
+                          <p className="text-slate-300 text-xs leading-relaxed">
+                            {matchedAd.counterAdTemplate.description}
+                          </p>
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {matchedAd.counterAdTemplate.sitelinks.map((stk, stkIdx) => (
+                              <span key={stkIdx} className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 text-[10px] border border-emerald-500/30 font-medium">
+                                + Sitelink: {stk}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="text-[11px] text-slate-400 flex items-center gap-1.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
+                          <Compass className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                          <span><strong>Chiến lược thầu:</strong> {matchedAd.counterAdTemplate.biddingAdvice}</span>
+                        </div>
+
+                        {/* Quick switch to full AI Radar button */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCompetitor(matchedAd.competitorName);
+                            setActiveMode('auto_radar');
+                          }}
+                          className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white font-bold text-xs border border-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer transition-all"
+                        >
+                          <Radar className="w-3.5 h-3.5 text-cyan-400" />
+                          <span>Mở Toàn Bộ Mẫu Quảng Cáo Trong Tab AI Spy Radar</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* 2 DIRECT ACTION BUTTONS INTO GOOGLE ADS TRANSPARENCY & META AD LIBRARY */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
