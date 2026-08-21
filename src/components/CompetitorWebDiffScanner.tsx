@@ -1142,7 +1142,8 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                       onClick={() => {
                         setSelectedAdvertiser(adv);
                         setSelectedCompetitor(adv.name);
-                        // Tự động chuyển qua xem chi tiết quảng cáo của nha khoa đó
+                        // Chuyển thẳng sang Tab hiển thị tất cả quảng cáo (AI Auto Radar) của nha khoa này
+                        setActiveMode('auto_radar');
                       }}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 group ${
                         isSelected
@@ -1732,54 +1733,81 @@ export const CompetitorWebDiffScanner: React.FC = () => {
 
           {/* DISCOVERED ADS LIST */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <Megaphone className="w-4 h-4 text-cyan-400" />
-                <span>Bài Quảng Cáo Đối Thủ Vừa Phát Hiện ({discoveredAds.length})</span>
-              </h4>
-              <span className="text-[11px] text-slate-500 font-mono">Cập nhật theo mạng lưới tìm kiếm</span>
-            </div>
+            {(() => {
+              const filteredDiscoveredAds = selectedCompetitor === 'Tất cả đối thủ lớn'
+                ? discoveredAds
+                : discoveredAds.filter(ad => 
+                    ad.competitorName.toLowerCase().includes(selectedCompetitor.toLowerCase()) ||
+                    selectedCompetitor.toLowerCase().includes(ad.competitorName.toLowerCase())
+                  );
+              
+              const displayList = filteredDiscoveredAds.length > 0 ? filteredDiscoveredAds : discoveredAds;
 
-            <div className="grid grid-cols-1 gap-5">
-              {discoveredAds.map((ad, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 rounded-3xl bg-slate-950/90 border border-slate-800 hover:border-cyan-500/40 shadow-xl space-y-5 transition-all"
-                >
-                  {/* Top Bar of Ad Card */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                        {ad.competitorName.slice(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-white text-base">{ad.competitorName}</span>
-                          <span className="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-300 font-mono">
-                            {ad.domain}
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-                          <span className="text-cyan-400 font-semibold">{ad.adPlatform}</span>
-                          <span>•</span>
-                          <span>Từ khóa mục tiêu: <strong className="text-slate-200">"{ad.targetKeyword}"</strong></span>
-                        </div>
-                      </div>
-                    </div>
-
+              return (
+                <>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                        ad.threatLevel === 'Rất cao'
-                          ? 'bg-rose-500/10 text-rose-300 border-rose-500/40'
-                          : 'bg-amber-500/10 text-amber-300 border-amber-500/40'
-                      }`}>
-                        Mức độ đe dọa: {ad.threatLevel}
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                        {ad.changeType}
-                      </span>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <Megaphone className="w-4 h-4 text-cyan-400" />
+                        <span>
+                          {selectedCompetitor !== 'Tất cả đối thủ lớn' 
+                            ? `Tất Cả Mẫu Quảng Cáo Của: ${selectedCompetitor} (${displayList.length})`
+                            : `Tất Cả Mẫu Quảng Cáo Đang Chạy (${displayList.length})`}
+                        </span>
+                      </h4>
+                      {selectedCompetitor !== 'Tất cả đối thủ lớn' && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCompetitor('Tất cả đối thủ lớn')}
+                          className="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-[10px] text-cyan-300 border border-slate-700 cursor-pointer"
+                        >
+                          Hiển thị tất cả đối thủ ✕
+                        </button>
+                      )}
                     </div>
+                    <span className="text-[11px] text-slate-500 font-mono">Đồng bộ tự động từ Radar & Transparency</span>
                   </div>
+
+                  <div className="grid grid-cols-1 gap-5">
+                    {displayList.map((ad, idx) => (
+                      <div
+                        key={idx}
+                        className="p-6 rounded-3xl bg-slate-950/90 border border-slate-800 hover:border-cyan-500/40 shadow-xl space-y-5 transition-all"
+                      >
+                        {/* Top Bar of Ad Card */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                              {ad.competitorName.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-white text-base">{ad.competitorName}</span>
+                                <span className="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-300 font-mono">
+                                  {ad.domain}
+                                </span>
+                              </div>
+                              <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
+                                <span className="text-cyan-400 font-semibold">{ad.adPlatform}</span>
+                                <span>•</span>
+                                <span>Từ khóa mục tiêu: <strong className="text-slate-200">"{ad.targetKeyword}"</strong></span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                              ad.threatLevel === 'Rất cao'
+                                ? 'bg-rose-500/10 text-rose-300 border-rose-500/40'
+                                : 'bg-amber-500/10 text-amber-300 border-amber-500/40'
+                            }`}>
+                              Mức độ đe dọa: {ad.threatLevel}
+                            </span>
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                              {ad.changeType}
+                            </span>
+                          </div>
+                        </div>
 
                   {/* 1. MẪU QUẢNG CÁO GOOGLE ADS ĐỐI THỦ ĐANG CHẠY (MOCKUP LIVE SEARCH AD) */}
                   <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
@@ -1975,9 +2003,12 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        );
+      })()}
+    </div>
+  </div>
+)}
 
       {/* ========================================================================= */}
       {/* CHẾ ĐỘ 3: DÁN LINK WEBSITE QUÉT CỤ THỂ (URL DEEP SCANNER)                  */}
