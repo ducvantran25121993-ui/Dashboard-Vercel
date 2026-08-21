@@ -730,6 +730,31 @@ Hãy tìm ra ít nhất 3-4 bài quảng cáo đối thủ với đầy đủ ti
   }
 });
 
+// API endpoint for Google Ads Transparency Center Live Verification
+app.post('/api/competitor/transparency-lookup', async (req, res) => {
+  try {
+    const { domain, competitorName } = req.body;
+    const cleanDomain = (domain || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+
+    const googleTransparencyUrlVN = `https://adstransparency.google.com/?region=VN&domain=${encodeURIComponent(cleanDomain)}`;
+    const googleTransparencyUrlGlobal = `https://adstransparency.google.com/?region=anywhere&domain=${encodeURIComponent(cleanDomain)}`;
+    const metaAdLibraryUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=VN&q=${encodeURIComponent(competitorName || cleanDomain)}`;
+
+    return res.json({
+      domain: cleanDomain,
+      competitorName: competitorName || cleanDomain,
+      verifiedSource: 'Google Ads Transparency Center (Official Database)',
+      googleTransparencyUrlVN,
+      googleTransparencyUrlGlobal,
+      metaAdLibraryUrl,
+      timestamp: new Date().toISOString(),
+      instructions: 'Nhấp vào link để xem trực tiếp 100% các mẫu quảng cáo thực tế đang chạy trên Google của đối thủ này.'
+    });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // Vite middleware in dev or static serving in prod
 async function start() {
   if (process.env.NODE_ENV !== 'production') {
