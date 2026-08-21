@@ -81,6 +81,19 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
     return true;
   });
 
+  const resolveDomain = (input: string): string => {
+    const raw = input.toLowerCase().trim();
+    if (raw.includes('việt hàn') || raw.includes('viethan') || raw.includes('04')) return 'nhakhoaviethan04.com';
+    if (raw.includes('sài gòn bh') || raw.includes('saigonbh') || raw.includes('saigon.vn') || raw.includes('bh')) return 'nhakhoasaigonbh.com';
+    if (raw.includes('trồng răng') || raw.includes('trongrang')) return 'nhakhoatrongrang.com';
+    if (raw.includes('sài gòn implant') || raw.includes('saigonimplant') || raw.includes('saigon implant')) return 'saigonimplant.com';
+    if (raw.includes('kim')) return 'nhakhoakim.com';
+    if (raw.includes('paris')) return 'nhakhoaparis.vn';
+    if (raw.includes('dr care') || raw.includes('drcare')) return 'drcareimplant.com';
+    if (raw.includes('shark')) return 'nhakhoashark.vn';
+    return raw.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+  };
+
   const handleDomainChange = (domain: string) => {
     setCurrentDomain(domain);
     setSearchInput(domain);
@@ -89,8 +102,8 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchInput.trim()) return;
-    const clean = searchInput.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim().toLowerCase();
-    setCurrentDomain(clean);
+    const resolved = resolveDomain(searchInput);
+    setCurrentDomain(resolved);
   };
 
   const handleCopyCounterAd = (ad: TransparencyAdItem) => {
@@ -152,9 +165,12 @@ export const GoogleAdsTransparencyCenter: React.FC<GoogleAdsTransparencyCenterPr
           {[
             { domain: 'nhakhoakim.com', label: 'Nha Khoa Kim (200 mẫu)' },
             { domain: 'nhakhoaparis.vn', label: 'Nha Khoa Paris (145 mẫu)' },
+            { domain: 'nhakhoaviethan04.com', label: 'Nha Khoa Việt Hàn 04 (68 mẫu)' },
+            { domain: 'nhakhoasaigonbh.com', label: 'Nha Khoa Sài Gòn B.H (85 mẫu)' },
+            { domain: 'nhakhoatrongrang.com', label: 'Nha Khoa Trồng Răng (72 mẫu)' },
+            { domain: 'saigonimplant.com', label: 'Sài Gòn Implant (54 mẫu)' },
             { domain: 'drcareimplant.com', label: 'Dr. Care Implant (90 mẫu)' },
             { domain: 'nhakhoashark.vn', label: 'Nha Khoa Shark (110 mẫu)' },
-            { domain: 'tamducsmile.com', label: 'Tâm Đức Smile (165 mẫu)' },
           ].map(b => (
             <button
               key={b.domain}

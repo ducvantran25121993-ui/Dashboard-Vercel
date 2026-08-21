@@ -723,88 +723,387 @@ export const TRANSPARENCY_DOMAINS_DATA: Record<string, TransparencyDomainProfile
     ]
   },
 
-  'tamducsmile.com': {
-    domain: 'nhakhoatamducsmile.com',
-    brandName: 'Nha Khoa Tâm Đức Smile (Của Bạn)',
-    legalEntity: 'CÔNG TY CỔ PHẦN NHA KHOA TÂM ĐỨC SMILE',
-    approxActiveAds: 165,
+  'nhakhoaviethan04.com': {
+    domain: 'nhakhoaviethan04.com',
+    brandName: 'Nha Khoa Việt Hàn 04',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA QUỐC TẾ VIỆT HÀN (HỆ THỐNG VIỆT HÀN 04)',
+    approxActiveAds: 68,
     isVerified: true,
     description: 'Miền này bao gồm kết quả cho nhiều tài khoản nhà quảng cáo có quảng cáo trỏ đến miền này. Bạn có thể lọc theo từng nhà quảng cáo bên dưới.',
-    primaryServices: ['Trồng Răng Implant Kỹ Thuật Số', 'Trồng Răng Toàn Hàm All-on-4', 'Răng Toàn Sứ Thẩm Mỹ', 'Niềng Răng Trả Góp 0%'],
+    primaryServices: ['Trồng Răng Implant Giá Rẻ 5.9Tr', 'Bọc Răng Sứ Thẩm Mỹ 990K', 'Niềng Răng Mắc Cài Trả Góp 0%'],
     ads: [
       {
-        id: 'tamduc-ad-1',
-        advertiserName: 'Tâm Đức Smile',
-        legalEntity: 'CÔNG TY CỔ PHẦN NHA KHOA TÂM ĐỨC SMILE',
-        domain: 'nhakhoatamducsmile.com',
+        id: 'viethan-ad-1',
+        advertiserName: 'Nha Khoa Việt Hàn 04',
+        legalEntity: 'CÔNG TY TNHH NHA KHOA QUỐC TẾ VIỆT HÀN (HỆ THỐNG VIỆT HÀN 04)',
+        domain: 'nhakhoaviethan04.com',
         isVerified: true,
         format: 'video',
         platform: 'YouTube',
-        firstSeen: '01/01/2025',
+        firstSeen: '12/02/2025',
         lastSeen: 'Đang chạy hôm nay',
         category: 'implant',
         visual: {
-          theme: 'navy_gold',
-          brandLogoText: 'TÂM ĐỨC SMILE',
-          topBadgeText: 'HỆ THỐNG 17 CHI NHÁNH',
-          headlineMain: 'TRỒNG RĂNG IMPLANT TRỌN GÓI 9.9TR - KHÔNG PHÁT SINH',
-          subHeadline: 'Bác Sĩ CKI Trực Tiếp Thực Hiện - Miễn Phí Chụp CT 3D & Xe Đưa Đón',
-          highlightPill: 'Trọn Gói 9.9Tr',
+          theme: 'clinic_blue',
+          brandLogoText: 'VIỆT HÀN 04 DENTAL',
+          topBadgeText: 'GIÁ RẺ ĐỘT PHÁ',
+          headlineMain: 'TRỒNG RĂNG IMPLANT VIỆT HÀN 04 - CHỈ 5.9TR/TRỤ TRỌN GÓI',
+          subHeadline: 'Bác Sĩ Chuyên Khoa Tu Nghiệp Hàn Quốc • Trả Góp 0% Lãi Suất',
+          highlightPill: 'Chỉ Từ 5.9Tr/Trụ',
           photoType: 'doctor_guide',
-          duration: '0:45',
+          duration: '0:35',
           imageUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80'
         },
         intel: {
-          campaignGoal: 'Khẳng định vị thế số 1 về cấy ghép Implant trọn gói minh bạch tại miền Nam.',
-          psychologicalHook: 'Mức giá 9.9 triệu trọn gói thực sự kèm bảo hành chính hãng và đưa đón miễn phí.',
-          targetAudience: 'Khách hàng tại TP.HCM, Cần Thơ, Tiền Giang, Cà Mau, Vĩnh Long, Đồng Nai.',
-          estimatedDailySpend: '28.000.000 đ/ngày',
-          competitorWeakness: 'Đang dẫn đầu về số lượng chi nhánh và chính sách giá trọn gói cạnh tranh.',
+          campaignGoal: 'Đánh thẳng vào phân khúc khách hàng nhạy cảm về giá với con số 5.9 triệu để chiếm lĩnh thị phần khu vực ven TP.HCM.',
+          psychologicalHook: 'Mức giá 5.9 triệu tạo cú sốc giá cực mạnh cho người tìm kiếm giải pháp trồng răng tiết kiệm.',
+          targetAudience: 'Người trung niên, người lao động thu nhập phổ thông tại TP.HCM, Bình Dương.',
+          estimatedDailySpend: '18.000.000 đ/ngày',
+          competitorWeakness: 'Giá 5.9 triệu thường là trụ cơ bản chưa kèm khớp nối Abutment hoặc răng sứ, phát sinh thêm khi lên ghế điều trị.',
           counterAdTemplate: {
-            headline: 'Tâm Đức Smile - Đỉnh Cao Công Nghệ Cấy Ghép Răng Implant Miền Nam',
-            description: 'Đội ngũ Bác sĩ CKI trên 15 năm kinh nghiệm. 17 chi nhánh hiện đại. Cam kết bảo hành chính hãng trọn đời.',
-            sitelinks: ['Bảng Giá Trọn Gói', '17 Chi Nhánh', 'Xem Ca Điều Trị', 'Đặt Lịch Nhận Quà'],
-            biddingAdvice: 'Duy trì vị trí Top 1 tìm kiếm cho các từ khóa cốt lõi.',
-            uniqueSellingPoint: 'Hệ thống 17 chi nhánh phủ rộng, bác sĩ CKI trực tiếp làm từ đầu đến cuối.'
+            headline: 'Trồng Răng Implant Trọn Gói 100% Không Phát Sinh - Bác Sĩ CKI Khám Trực Tiếp',
+            description: 'Cam kết minh bạch: Đã bao gồm Trụ + Khớp Abutment + Răng Sứ + Chụp CT ConeBeam 3D. Bảo hành chính hãng.',
+            sitelinks: ['Bảng Giá Trọn Gói Thật', 'So Sánh Chi Phí', 'Đội Ngũ Bác Sĩ CKI', 'Khám & Chụp Phim 0đ'],
+            biddingAdvice: 'Đấu thầu đối kháng từ khóa "implant việt hàn 04", thông điệp đánh vào "Trọn gói minh bạch 100% không chi phí ẩn".',
+            uniqueSellingPoint: 'Trọn gói thực tế không phát sinh phụ phí ghế nha.'
           }
         }
       },
       {
-        id: 'tamduc-ad-2',
-        advertiserName: 'Tâm Đức Smile',
-        legalEntity: 'CÔNG TY CỔ PHẦN NHA KHOA TÂM ĐỨC SMILE',
-        domain: 'nhakhoatamducsmile.com',
+        id: 'viethan-ad-2',
+        advertiserName: 'Nha Khoa Việt Hàn 04',
+        legalEntity: 'CÔNG TY TNHH NHA KHOA QUỐC TẾ VIỆT HÀN (HỆ THỐNG VIỆT HÀN 04)',
+        domain: 'nhakhoaviethan04.com',
         isVerified: true,
         format: 'text',
         platform: 'Google Search',
-        firstSeen: '01/01/2025',
+        firstSeen: '18/01/2025',
         lastSeen: 'Đang chạy hôm nay',
         category: 'implant',
         searchAd: {
-          displayDomain: 'nhakhoatamducsmile.com',
-          path: 'www.nhakhoatamducsmile.com/trong-rang-implant',
-          headline: 'Trồng Răng Implant Tâm Đức Smile - Trọn Gói 9.9Tr 17 Chi Nhánh',
-          description: 'Tặng trọn bộ Abutment & Răng sứ cao cấp. Miễn phí xe đưa đón tận nhà. Bác sĩ CKI trên 15 năm kinh nghiệm. Đặt hẹn ngay hôm nay!',
+          displayDomain: 'nhakhoaviethan04.com',
+          path: 'nhakhoaviethan04.com/cay-ghep-implant-gia-re',
+          headline: 'Trồng Răng Implant Việt Hàn 04 - Trụ Hàn Quốc Chỉ 5.9 Triệu',
+          description: 'Khuyến mãi đặc biệt tháng này: Giảm 50% chi phí trồng răng Implant. Bác sĩ 10 năm kinh nghiệm, ăn nhai chắc khỏe như răng thật. Đặt lịch ngay!',
           sitelinks: [
-            'Bảng Giá Trọn Gói 9.9Tr',
-            '17 Chi Nhánh Gần Bạn',
-            'Bác Sĩ CKI Khám Trực Tiếp',
-            'Ưu Đãi Khách Hàng Tỉnh'
+            'Bảng Giá Ưu Đãi 5.9Tr',
+            'Quy Trình Cấy Ghép 15 Phút',
+            'Trả Góp 0% Lãi Suất',
+            'Đặt Hẹn Nhận Quà 1 Triệu'
           ],
-          callouts: ['17 Chi Nhánh', 'Bảo Hành Trọn Đời', 'Xe Đưa Đón 0đ']
+          callouts: ['Giảm 50% Hôm Nay', 'Trụ Hàn Quốc Chính Hãng', 'Bảo Hành 10 Năm']
         },
         intel: {
-          campaignGoal: 'Đón đầu tất cả khách hàng tìm kiếm nha khoa cấy ghép Implant tại TP.HCM và miền Tây.',
-          psychologicalHook: 'Trọn gói không phát sinh + Đưa đón miễn phí.',
-          targetAudience: 'Người mất răng tại khu vực miền Nam.',
-          estimatedDailySpend: '20.000.000 đ/ngày',
-          competitorWeakness: 'Vị thế dẫn đầu.',
+          campaignGoal: 'Đón đầu các từ khóa Search "trồng răng giá rẻ", "implant giá rẻ tphcm".',
+          psychologicalHook: 'Khuyến mãi 50% tạo cảm giác được hời lớn.',
+          targetAudience: 'Người tìm kiếm giải pháp trồng răng chi phí thấp.',
+          estimatedDailySpend: '12.000.000 đ/ngày',
+          competitorWeakness: 'Độ phủ thương hiệu hẹp hơn các chuỗi lớn, uy tín kiểm định chưa toàn diện.',
           counterAdTemplate: {
-            headline: 'Tâm Đức Smile - Trồng Răng Implant Uy Tín Hàng Đầu',
-            description: '17 chi nhánh chuẩn quốc tế. Hơn 100.000 khách hàng tin chọn.',
-            sitelinks: ['Bảng Giá 2026', 'Chi Nhánh', 'Tư Vấn Miễn Phí'],
-            biddingAdvice: 'Duy trì ngân sách ổn định.',
-            uniqueSellingPoint: 'Thương hiệu uy tín lâu năm.'
+            headline: 'Cấy Ghép Răng Implant Chuẩn Y Khoa - Đầy Đủ Giấy Tờ Kiểm Định Quốc Tế',
+            description: 'Đừng đánh đổi chất lượng lấy giá rẻ! 100% trụ Implant nhập khẩu chính ngạch Thụy Sĩ/Mỹ/Hàn. Bảo hành trọn đời.',
+            sitelinks: ['Cam Kết Không Chi Phí Ẩn', 'Bảng Giá Niêm Yết', 'Bác Sĩ CKI Khám'],
+            biddingAdvice: 'Tăng bid từ khóa ngách địa phương TP.HCM và vùng ven.',
+            uniqueSellingPoint: 'Chất lượng chính hãng, minh bạch và an toàn y khoa tuyệt đối.'
+          }
+        }
+      },
+      {
+        id: 'viethan-ad-3',
+        advertiserName: 'Nha Khoa Việt Hàn 04',
+        legalEntity: 'CÔNG TY TNHH NHA KHOA QUỐC TẾ VIỆT HÀN (HỆ THỐNG VIỆT HÀN 04)',
+        domain: 'nhakhoaviethan04.com',
+        isVerified: true,
+        format: 'image',
+        platform: 'Google Display Network',
+        firstSeen: '25/01/2025',
+        lastSeen: 'Đang chạy hôm nay',
+        category: 'porcelain',
+        visual: {
+          theme: 'invisalign_cyan',
+          brandLogoText: 'NHA KHOA VIỆT HÀN 04',
+          topBadgeText: 'ĐẠI HỘI RĂNG SỨ',
+          headlineMain: 'RĂNG SỨ CERCON & ZIRCONIA ĐỨC - CHỈ 990K/RĂNG',
+          subHeadline: 'Bảo Hành Chính Hãng 15 Năm • Tặng Gói Cạo Vôi & Đánh Bóng',
+          highlightPill: '990K/Răng',
+          photoType: 'porcelain_smile',
+          imageUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80'
+        },
+        intel: {
+          campaignGoal: 'Thu hút khách thẩm mỹ răng sứ trẻ và trung niên bằng mức giá dưới 1 triệu.',
+          psychologicalHook: 'Số tiền 990k khiến khách hàng cảm giác chi phí cực kỳ nhẹ nhàng.',
+          targetAudience: 'Phụ nữ 22 - 45 tuổi.',
+          estimatedDailySpend: '10.000.000 đ/ngày',
+          competitorWeakness: 'Bảo tồn tủy và kỹ thuật mài răng cần được kiểm chứng cẩn thận.',
+          counterAdTemplate: {
+            headline: 'Bọc Răng Sứ Công Nghệ CAD/CAM 3D - Bảo Tồn Răng Thật Tối Đa',
+            description: 'Phôi sứ nguyên khối chính hãng Đức 100%. Không hôi miệng, không đen viền nướu. Thẻ bảo hành điện tử chính hãng.',
+            sitelinks: ['Thẻ Bảo Hành Hãng', 'Hình Ảnh Trước Sau', 'Ưu Đãi Trả Góp 0%'],
+            biddingAdvice: 'Đánh vào tệp GDN Remarketing với cam kết "Không mài nhỏ răng thật".',
+            uniqueSellingPoint: 'Bảo tồn răng thật tối đa với công nghệ phục hình kỹ thuật số.'
+          }
+        }
+      }
+    ]
+  },
+
+  'nhakhoasaigonbh.com': {
+    domain: 'nhakhoasaigonbh.com',
+    brandName: 'Nha Khoa Sài Gòn B.H',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA SÀI GÒN B.H',
+    approxActiveAds: 85,
+    isVerified: true,
+    description: 'Miền này bao gồm kết quả cho nhiều tài khoản nhà quảng cáo có quảng cáo trỏ đến miền này. Bạn có thể lọc theo từng nhà quảng cáo bên dưới.',
+    primaryServices: ['Cấy Ghép Implant Kỹ Thuật Số', 'Chỉnh Nha Niềng Răng Chuyên Sâu', 'Răng Sứ Thẩm Mỹ Cao Cấp'],
+    ads: [
+      {
+        id: 'saigonbh-ad-1',
+        advertiserName: 'Nha Khoa Sài Gòn B.H',
+        legalEntity: 'CÔNG TY TNHH NHA KHOA SÀI GÒN B.H',
+        domain: 'nhakhoasaigonbh.com',
+        isVerified: true,
+        format: 'video',
+        platform: 'YouTube',
+        firstSeen: '05/01/2025',
+        lastSeen: 'Đang chạy hôm nay',
+        category: 'implant',
+        visual: {
+          theme: 'navy_gold',
+          brandLogoText: 'SÀI GÒN B.H DENTAL',
+          topBadgeText: '20 NĂM ĐỒNG HÀNH',
+          headlineMain: '20 NĂM ĐỒNG HÀNH CHĂM SÓC NỤ CƯỜI ĐÔNG NAM BỘ',
+          subHeadline: 'Đội Ngũ Bác Sĩ Tốt Nghiệp ĐH Y Dược TP.HCM • Hệ Thống Cơ Sở Biên Hòa & TP.HCM',
+          highlightPill: 'Uy Tín 20 Năm',
+          photoType: 'harvard_group',
+          duration: '0:45',
+          imageUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80'
+        },
+        intel: {
+          campaignGoal: 'Củng cố vị thế chuỗi nha khoa uy tín lâu năm số 1 tại Đồng Nai (Biên Hòa) và mở rộng sang TP.HCM.',
+          psychologicalHook: '20 năm kinh nghiệm và bằng cấp chính quy ĐH Y Dược tạo sự tín nhiệm cao.',
+          targetAudience: 'Người dân Biên Hòa, Đồng Nai, Bình Dương và TP.HCM.',
+          estimatedDailySpend: '22.000.000 đ/ngày',
+          competitorWeakness: 'Giá dịch vụ ở phân khúc trung cao, ít chương trình khuyến mãi giảm sốc so với đối thủ.',
+          counterAdTemplate: {
+            headline: 'Cấy Ghép Implant Chuyên Sâu - Đội Ngũ Bác Sĩ CKI Hơn 15 Năm Kinh Nghiệm',
+            description: 'Trang thiết bị hiện đại chuẩn Châu Âu. Hỗ trợ xe đưa đón miễn phí tận nhà. Trả góp 0% linh hoạt.',
+            sitelinks: ['Bảng Giá Khuyến Mãi', 'Xe Đưa Đón 0đ', 'Bác Sĩ CKI Khám'],
+            biddingAdvice: 'Target địa lý Đồng Nai, TP.HCM với ưu đãi tặng gói đưa đón và chụp phim CT 3D miễn phí.',
+            uniqueSellingPoint: 'Dịch vụ chăm sóc tận tâm, xe đưa đón tận cửa và giá trọn gói cạnh tranh hơn.'
+          }
+        }
+      },
+      {
+        id: 'saigonbh-ad-2',
+        advertiserName: 'Nha Khoa Sài Gòn B.H',
+        legalEntity: 'CÔNG TY TNHH NHA KHOA SÀI GÒN B.H',
+        domain: 'nhakhoasaigonbh.com',
+        isVerified: true,
+        format: 'text',
+        platform: 'Google Search',
+        firstSeen: '10/01/2025',
+        lastSeen: 'Đang chạy hôm nay',
+        category: 'implant',
+        searchAd: {
+          displayDomain: 'nhakhoasaigonbh.com',
+          path: 'nhakhoasaigonbh.com/trong-rang-implant-bien-hoa',
+          headline: 'Trồng Răng Implant Sài Gòn B.H - Bác Sĩ ĐH Y Dược Trực Tiếp Khám',
+          description: 'Cấy ghép Implant kỹ thuật số không đau, tích hợp xương nhanh. Bảo hành chính hãng trọn đời. Cơ sở hiện đại tại Biên Hòa & TP.HCM.',
+          sitelinks: [
+            'Bảng Giá Trồng Răng 2026',
+            'Đội Ngũ Bác Sĩ Y Dược',
+            'Địa Chỉ Chi Nhánh',
+            'Đặt Lịch Khám Miễn Phí'
+          ],
+          callouts: ['20 Năm Kinh Nghiệm', 'Bảo Hành Trọn Đời', 'Máy Chụp CT ConeBeam']
+        },
+        intel: {
+          campaignGoal: 'Thống lĩnh các lượt tìm kiếm về cấy ghép răng Implant tại khu vực Đồng Nai và lân cận.',
+          psychologicalHook: 'Đội ngũ bác sĩ ĐH Y Dược bảo đảm tay nghề cao.',
+          targetAudience: 'Người mất răng tại Biên Hòa và TP.HCM.',
+          estimatedDailySpend: '16.000.000 đ/ngày',
+          competitorWeakness: 'Ít phủ sóng chi nhánh tại các tỉnh Tây Nam Bộ.',
+          counterAdTemplate: {
+            headline: 'Trồng Răng Implant Trọn Gói Tiết Kiệm - Xe Đưa Đón Khách Tỉnh Miễn Phí',
+            description: '17 chi nhánh phủ khắp miền Nam. Miễn phí chụp CT 3D & xét nghiệm máu. Bác sĩ CKI trên 15 năm kinh nghiệm.',
+            sitelinks: ['Bảng Giá Trọn Gói', 'Hệ Thống 17 Chi Nhánh', 'Hỗ Trợ Khách Tỉnh'],
+            biddingAdvice: 'Đẩy mạnh từ khóa địa phương kèm ưu đãi hỗ trợ đi lại.',
+            uniqueSellingPoint: 'Mạng lưới chi nhánh rộng lớn và chính sách hỗ trợ đi lại vượt trội.'
+          }
+        }
+      }
+    ]
+  },
+
+  'nhakhoatrongrang.com': {
+    domain: 'nhakhoatrongrang.com',
+    brandName: 'Nha Khoa Trồng Răng',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA TRỒNG RĂNG SÀI GÒN',
+    approxActiveAds: 72,
+    isVerified: true,
+    description: 'Miền này bao gồm kết quả cho nhiều tài khoản nhà quảng cáo có quảng cáo trỏ đến miền này. Bạn có thể lọc theo từng nhà quảng cáo bên dưới.',
+    primaryServices: ['Chuyên Khoa Cấy Ghép Răng Implant', 'Trồng Răng Toàn Hàm All-on-4 / All-on-6', 'Trồng Răng Không Đau Bác Sĩ CKI'],
+    ads: [
+      {
+        id: 'trongrang-ad-1',
+        advertiserName: 'Nha Khoa Trồng Răng',
+        legalEntity: 'CÔNG TY TNHH NHA KHOA TRỒNG RĂNG SÀI GÒN',
+        domain: 'nhakhoatrongrang.com',
+        isVerified: true,
+        format: 'text',
+        platform: 'Google Search',
+        firstSeen: '02/01/2025',
+        lastSeen: 'Đang chạy hôm nay',
+        category: 'implant',
+        searchAd: {
+          displayDomain: 'nhakhoatrongrang.com',
+          path: 'nhakhoatrongrang.com/trong-rang-implant-tphcm',
+          headline: 'Nha Khoa Trồng Răng - Chuyên Sâu Cấy Ghép Implant Chuẩn Y Khoa',
+          description: 'Trọn gói Trụ + Khớp Nối Abutment + Răng Sứ. Bác sĩ CKI Răng Hàm Mặt hơn 15 năm kinh nghiệm trực tiếp cấy ghép. Không đau, ăn nhai tức thì!',
+          sitelinks: [
+            'Bảng Giá Trọn Gói Implant',
+            'Trồng Răng All On 4 / All On 6',
+            'Quy Trình Cấy Ghép Chuẩn',
+            'Ưu Đãi Người Lớn Tuổi'
+          ],
+          callouts: ['Chuyên Sâu Implant', 'Bác Sĩ CKI Khám', 'Bảo Hành Trọn Đời', 'Trả Góp 0%']
+        },
+        intel: {
+          campaignGoal: 'Chiếm lĩnh vị trí Top 1-2 Google Search cho các từ khóa exact match: "trồng răng", "trồng răng implant", "trồng răng bao nhiêu tiền".',
+          psychologicalHook: 'Tên thương hiệu "Nha Khoa Trồng Răng" tạo độ liên kết tuyệt đối và độ tin cậy tự nhiên về chuyên môn ngách.',
+          targetAudience: 'Người mất 1 hoặc nhiều răng, người cao tuổi tại TP.HCM.',
+          estimatedDailySpend: '25.000.000 đ/ngày',
+          competitorWeakness: 'Quy mô chỉ 1-2 phòng khám trung tâm, khách hàng ở xa phải di chuyển nhiều.',
+          counterAdTemplate: {
+            headline: 'Hệ Thống Trồng Răng Implant 17 Chi Nhánh - Đưa Đón Tận Nơi Miễn Phí',
+            description: 'Đội ngũ Bác sĩ CKI đầu ngành. Cấy ghép nhẹ nhàng không đau với máng định vị 3D. Tặng trọn bộ Abutment & răng sứ.',
+            sitelinks: ['Chi Nhánh Gần Bạn', 'Bảng Giá Trọn Gói', 'Xem Khách Hàng Thực Tế'],
+            biddingAdvice: 'Chạy đối đầu từ khóa "nha khoa trồng răng", nhấn mạnh sự tiện lợi gần nhà và mạng lưới lớn.',
+            uniqueSellingPoint: 'Chi nhánh gần nhà, có xe đưa đón riêng, giải quyết nỗi ngại di chuyển của người lớn tuổi.'
+          }
+        }
+      },
+      {
+        id: 'trongrang-ad-2',
+        advertiserName: 'Nha Khoa Trồng Răng',
+        legalEntity: 'CÔNG TY TNHH NHA KHOA TRỒNG RĂNG SÀI GÒN',
+        domain: 'nhakhoatrongrang.com',
+        isVerified: true,
+        format: 'video',
+        platform: 'YouTube',
+        firstSeen: '15/01/2025',
+        lastSeen: 'Đang chạy hôm nay',
+        category: 'implant',
+        visual: {
+          theme: 'navy_gold',
+          brandLogoText: 'NHA KHOA TRỒNG RĂNG',
+          topBadgeText: 'CHUYÊN SÂU IMPLANT',
+          headlineMain: 'TRỒNG RĂNG TOÀN HÀM ALL ON 4 / ALL ON 6 - ĂN NHAI TỨC THÌ',
+          subHeadline: 'Giải Pháp Tối Ưu Cho Người Mất Toàn Bộ Răng • Tiết Kiệm Chi Phí Tối Đa',
+          highlightPill: 'Toàn Hàm Ăn Nhai 48h',
+          photoType: 'senior_couple',
+          duration: '0:40',
+          imageUrl: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80'
+        },
+        intel: {
+          campaignGoal: 'Đánh vào các ca phục hình toàn hàm giá trị cao (All-on-4 / All-on-6 từ 80 - 150 triệu).',
+          psychologicalHook: 'Hình ảnh cặp vợ chồng lớn tuổi ăn uống ngon miệng sau khi trồng răng khơi dậy khao khát hồi phục chất lượng sống.',
+          targetAudience: 'Người trên 50 tuổi mất nhiều răng và con cái tìm nha khoa cho cha mẹ.',
+          estimatedDailySpend: '15.000.000 đ/ngày',
+          competitorWeakness: 'Chi phí toàn hàm cao, ít chính sách chia nhỏ đợt thanh toán.',
+          counterAdTemplate: {
+            headline: 'Trồng Răng Toàn Hàm All-on-4 Trả Góp 0% - Bác Sĩ CKI Khám Trực Tiếp',
+            description: 'Chỉ cần 4-6 trụ phục hồi nguyên hàm răng chắc khỏe. Cam kết bảo hành trọn đời. Tặng vé xe / đưa đón miễn phí.',
+            sitelinks: ['Gói Toàn Hàm Tiết Kiệm', 'Hình Ảnh Ca Phẫu Thuật', 'Đăng Ký Khám 0đ'],
+            biddingAdvice: 'Đẩy mạnh YouTube TrueView và Display Remarketing nhắm tệp 45+.',
+            uniqueSellingPoint: 'Chính sách tài chính trả góp linh hoạt và chăm sóc hậu phẫu chu đáo.'
+          }
+        }
+      }
+    ]
+  },
+
+  'saigonimplant.com': {
+    domain: 'saigonimplant.com',
+    brandName: 'Sài Gòn Implant',
+    legalEntity: 'HỆ THỐNG NHA KHOA SÀI GÒN IMPLANT',
+    approxActiveAds: 54,
+    isVerified: true,
+    description: 'Miền này bao gồm kết quả cho nhiều tài khoản nhà quảng cáo có quảng cáo trỏ đến miền này. Bạn có thể lọc theo từng nhà quảng cáo bên dưới.',
+    primaryServices: ['Cấy Ghép Trụ Implant Chuẩn Y Khoa', 'Nâng Xoang Ghép Xương Nhân Tạo', 'Phục Hình Răng Mất Lâu Năm'],
+    ads: [
+      {
+        id: 'saigonimplant-ad-1',
+        advertiserName: 'Sài Gòn Implant',
+        legalEntity: 'HỆ THỐNG NHA KHOA SÀI GÒN IMPLANT',
+        domain: 'saigonimplant.com',
+        isVerified: true,
+        format: 'text',
+        platform: 'Google Search',
+        firstSeen: '20/01/2025',
+        lastSeen: 'Đang chạy hôm nay',
+        category: 'implant',
+        searchAd: {
+          displayDomain: 'saigonimplant.com',
+          path: 'saigonimplant.com/bang-gia-implant-chinh-hang',
+          headline: 'Sài Gòn Implant - Cấy Ghép Răng Implant Chuẩn Quốc Tế',
+          description: 'Trụ Implant Mỹ, Thụy Sĩ, Hàn Quốc chính hãng 100%. Công nghệ định vị 3D không rạch nướu, không đau sưng. Đặt hẹn nhận ưu đãi 30%!',
+          sitelinks: [
+            'Bảng Giá Trụ Chính Hãng',
+            'Công Nghệ Không Đau 3D',
+            'Đội Ngũ Bác Sĩ CKI',
+            'Chính Sách Bảo Hành'
+          ],
+          callouts: ['Trụ Mỹ - Thụy Sĩ', 'Không Rạch Nướu', 'Bảo Hành Trọn Đời', 'Giảm 30%']
+        },
+        intel: {
+          campaignGoal: 'Tập trung vào phân khúc cấy ghép Implant chất lượng cao với công nghệ phẫu thuật ít xâm lấn.',
+          psychologicalHook: 'Thông điệp "Không rạch nướu, không đau sưng" đánh trúng nỗi sợ đau của người muốn trồng răng.',
+          targetAudience: 'Người mất răng sợ đau, người muốn dùng trụ cao cấp Âu Mỹ.',
+          estimatedDailySpend: '14.000.000 đ/ngày',
+          competitorWeakness: 'Thương hiệu tương đối mới, số lượng phòng khám ít.',
+          counterAdTemplate: {
+            headline: 'Cấy Ghép Implant Không Đau Bằng Máng Hướng Dẫn 3D - Chuỗi 17 Chi Nhánh',
+            description: 'Ứng dụng công nghệ Navigation 3D chuẩn xác đến 0.1mm. Không đau, lành thương trong 24h. Bác sĩ CKI trên 15 năm kinh nghiệm.',
+            sitelinks: ['Công Nghệ Không Đau', 'Bảng Giá Trọn Gói', 'Hệ Thống Chi Nhánh'],
+            biddingAdvice: 'Đánh vào từ khóa "implant không đau", "trồng răng không sưng".',
+            uniqueSellingPoint: 'Kinh nghiệm lâm sàng trên 100.000 ca và hệ thống công nghệ số hàng đầu.'
+          }
+        }
+      },
+      {
+        id: 'saigonimplant-ad-2',
+        advertiserName: 'Sài Gòn Implant',
+        legalEntity: 'HỆ THỐNG NHA KHOA SÀI GÒN IMPLANT',
+        domain: 'saigonimplant.com',
+        isVerified: true,
+        format: 'image',
+        platform: 'Google Display Network',
+        firstSeen: '28/01/2025',
+        lastSeen: 'Đang chạy hôm nay',
+        category: 'implant',
+        visual: {
+          theme: 'dark_luxury',
+          brandLogoText: 'SÀI GÒN IMPLANT',
+          topBadgeText: 'CÔNG NGHỆ MỸ',
+          headlineMain: 'TRỒNG RĂNG 1 LẦN DÙNG TRỌN ĐỜI - TRỢ GIÁ ĐẾN 40%',
+          subHeadline: 'Bảo Hành Chính Hãng Trọn Đời Bằng Mã QR Điện Tử • Cam Kết Không Đau',
+          highlightPill: 'Trợ Giá Đến 40%',
+          photoType: 'surgery_room',
+          imageUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80'
+        },
+        intel: {
+          campaignGoal: 'Quảng bá gói Implant trợ giá trên mạng lưới GDN và báo chí trực tuyến.',
+          psychologicalHook: '"Dùng trọn đời" + "Trợ giá 40%" tạo động lực quyết định nhanh.',
+          targetAudience: 'Người đọc báo điện tử tuổi 35-65.',
+          estimatedDailySpend: '9.000.000 đ/ngày',
+          competitorWeakness: 'Ngân sách GDN còn mỏng so với các tập đoàn nha khoa lớn.',
+          counterAdTemplate: {
+            headline: 'Trồng Răng Implant Đạt Chuẩn Quốc Tế - Bảo Hành Điện Tử Toàn Cầu',
+            description: '100% Khách hàng được quét CT 3D & lập phác đồ kỹ thuật số miễn phí. Cam kết không phát sinh phụ phí.',
+            sitelinks: ['Nhận Ưu Đãi Trọn Gói', 'Xem Video Trực Tiếp', 'Tư Vấn Online 24/7'],
+            biddingAdvice: 'Tập trung GDN theo vị trí đặt (Placement) trên các trang tin sức khỏe.',
+            uniqueSellingPoint: 'Thương hiệu uy tín, quy trình chuẩn y khoa và bảo hành an tâm tuyệt đối.'
           }
         }
       }

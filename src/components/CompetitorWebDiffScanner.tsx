@@ -93,7 +93,7 @@ const VERIFIED_DENTAL_ADVERTISERS: VerifiedAdvertiser[] = [
   {
     id: 'saigonbh',
     name: 'Nha Khoa Sài Gòn B.H',
-    domain: 'nhakhoasaigon.vn',
+    domain: 'nhakhoasaigonbh.com',
     legalEntity: 'CÔNG TY TNHH NHA KHOA SÀI GÒN B.H',
     primaryServices: ['Cấy Ghép Implant', 'Chỉnh Nha Chuyên Sâu', 'Răng Sứ Thẩm Mỹ'],
     activeAdFormats: ['Văn bản Search (RSA)', 'Hình ảnh Display', 'Video YouTube'],
