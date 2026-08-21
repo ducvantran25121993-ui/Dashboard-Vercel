@@ -38,7 +38,11 @@ import {
   ShieldCheck,
   Compass,
   Bookmark,
-  Share2
+  Share2,
+  Video,
+  Play,
+  Film,
+  MonitorPlay
 } from 'lucide-react';
 import { CompetitorDiffItem, INITIAL_COMPETITOR_DIFFS } from '../data/competitorDiffs';
 
@@ -177,6 +181,17 @@ const VERIFIED_DENTAL_ADVERTISERS: VerifiedAdvertiser[] = [
   }
 ];
 
+interface DiscoveredAdMedia {
+  type: 'image' | 'video' | 'search';
+  title: string;
+  previewUrl: string;
+  badge: string;
+  dimensions?: string;
+  videoDuration?: string;
+  headlineOverlay?: string;
+  descriptionText?: string;
+}
+
 interface DiscoveredAd {
   competitorName: string;
   domain: string;
@@ -200,13 +215,14 @@ interface DiscoveredAd {
     sitelinks: string[];
     biddingAdvice: string;
   };
+  mediaAds?: DiscoveredAdMedia[];
 }
 
 const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
   {
     competitorName: 'Nha Khoa Kim',
     domain: 'nhakhoakim.com',
-    adPlatform: 'Google Search Ads',
+    adPlatform: 'Google Search Ads, GDN & YouTube Ads',
     targetKeyword: 'trồng răng implant giá bao nhiêu',
     adCopy: {
       headline: 'Trồng Răng Implant Chuẩn Y Khoa - Trợ Giá Trụ Chỉ Từ 11.9Tr',
@@ -225,7 +241,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Tặng trọn bộ Abutment & Răng sứ cao cấp. Miễn phí xe đưa đón. 17 chi nhánh tại TP.HCM & Miền Tây.',
       sitelinks: ['Bảng Giá Gốc Trọn Gói', 'Ưu Đãi Khách Tỉnh', 'Bác Sĩ CKI Trực Tiếp', 'Ăn Nhai Trong Ngày'],
       biddingAdvice: 'Tăng thầu +20% tại Cần Thơ, Tiền Giang, Cà Mau, Vĩnh Long để đón đầu khách hàng tỉnh.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner GDN - Trồng Răng Implant Trợ Giá 11.9Tr',
+        previewUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80',
+        badge: 'Google Display (300x250 & 728x90)',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Trồng Răng Implant Chuẩn Quốc Tế - Trợ Giá Trụ 11.9Tr',
+        descriptionText: 'Miễn phí chụp phim CT ConeBeam 3D trị giá 1.500.000đ khi đặt hẹn online.'
+      },
+      {
+        type: 'video',
+        title: 'Video YouTube TrueView - Bác Sĩ Cấy Ghép Không Đau',
+        previewUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80',
+        badge: 'YouTube In-Stream (15s Non-skip)',
+        videoDuration: '0:35',
+        headlineOverlay: 'Phục Hồi Nụ Cười Tuổi 50+ Sau 48h Cùng Bác Sĩ Kim Dental',
+        descriptionText: 'Xem quy trình cấy ghép Implant an toàn, vô trùng tuyệt đối tại phòng mổ áp lực dương.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa Paris',
@@ -249,7 +285,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Bác sĩ chuyên khoa chỉnh nha trên 10 năm kinh nghiệm. Miễn phí chụp phim 3D 1.5Tr. Cam kết phác đồ chuẩn y khoa.',
       sitelinks: ['Bảng Giá Minh Bạch', 'Trả Góp 800k/Tháng', 'Feedback Khách Hàng', 'Tư Vấn Miễn Phí'],
       biddingAdvice: 'Nhắm từ khóa "niềng răng trả góp uy tín" và ghim Sitelink "Trả Góp 800k/Tháng".'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner PMax - Lễ Hội Niềng Răng Đồng Giá 18Tr',
+        previewUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&auto=format&fit=crop&q=80',
+        badge: 'PMax Visual Banner',
+        dimensions: '1080 x 1080 px',
+        headlineOverlay: 'Đồng Giá Niềng Răng 18 Triệu - Trả Góp 0% Sinh Viên',
+        descriptionText: 'Tặng voucher tẩy trắng răng 2.500.000đ khi thanh toán trước kỳ học mới.'
+      },
+      {
+        type: 'video',
+        title: 'Video Reels/TikTok Ads - Hành Trình Tháo Niềng Lột Xác',
+        previewUrl: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600&auto=format&fit=crop&q=80',
+        badge: 'Shorts & YouTube Video',
+        videoDuration: '0:45',
+        headlineOverlay: 'Góc Nghiêng Thần Thánh Sau 18 Tháng Niềng Răng Paris',
+        descriptionText: 'Khách hàng chia sẻ cảm nhận niềng răng không đau, tự tin giao tiếp.'
+      }
+    ]
   },
   {
     competitorName: 'Dr. Care Implant',
@@ -273,7 +329,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Không cần lên Sài Gòn! 17 chi nhánh tại Cần Thơ, Tiền Giang, Cà Mau, TP.HCM. Bác sĩ chuyên khoa trực tiếp điều trị.',
       sitelinks: ['Tìm Chi Nhánh Gần Bạn', 'Bảng Giá Trọn Gói', 'Xe Đưa Đón Miễn Phí', 'Đăng Ký Khám 0đ'],
       biddingAdvice: 'Tăng ngân sách chạy phủ toàn bộ các tỉnh Tây Nam Bộ với thông điệp "Khám ngay tại quê nhà - Đẳng cấp quốc tế".'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Facebook & GDN - Trồng Răng Toàn Hàm Giảm 30Tr',
+        previewUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&auto=format&fit=crop&q=80',
+        badge: 'Facebook & Google Display',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Trồng Răng Không Đau Cho Người Trung Niên - Trợ Giá 30 Triệu',
+        descriptionText: 'Miễn phí xe đưa đón & 2 đêm khách sạn 4 sao cho khách hàng ở tỉnh xa.'
+      },
+      {
+        type: 'video',
+        title: 'Video Phỏng Vấn Bệnh Nhân Sau Khi Cấy Ghép All-on-4',
+        previewUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80',
+        badge: 'YouTube Ads & Fanpage',
+        videoDuration: '1:15',
+        headlineOverlay: 'Cô Mai (62 tuổi) Ăn Nhai Thỏa Thích Sau 3 Năm Mất Răng Toàn Hàm',
+        descriptionText: 'Xem trực tiếp cảm nhận xúc động của bệnh nhân sau 48 giờ lắp răng tạm.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa Việt Hàn 04',
@@ -297,7 +373,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Đã bao gồm trụ + Abutment chính hãng + Răng sứ. Hơn 17 chi nhánh chuẩn quốc tế. Miễn phí chụp phim 3D 1.5Tr.',
       sitelinks: ['Bảng Giá Trọn Gói Minh Bạch', 'Hợp Đồng Cam Kết Không Phát Sinh', 'Xem Review Thực Tế', '17 Chi Nhánh'],
       biddingAdvice: 'Đánh mạnh thông điệp "Cam Kết Trọn Gói - Không Bẫy Giá Mồi" để vợt khách đang phân vân.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Khuyến Mãi Trụ Implant 7.5 Triệu',
+        previewUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80',
+        badge: 'Banner Facebook & Website Popup',
+        dimensions: '1080 x 1080 px',
+        headlineOverlay: 'Trợ Giá Trụ Implant Hàn Quốc Chỉ Từ 7.500.000đ',
+        descriptionText: 'Tặng mão sứ Titan + Miễn phí công cấy ghép chuyên khoa.'
+      },
+      {
+        type: 'video',
+        title: 'Video Cấy Ghép Implant Trực Tiếp Phòng Phẫu Thuật',
+        previewUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Facebook & TikTok',
+        videoDuration: '0:28',
+        headlineOverlay: 'Quy Trình Cấy 1 Trụ Implant Nhẹ Nhàng Trong 15 Phút',
+        descriptionText: 'Bác sĩ thao tác chính xác, không sưng đau, về nhà ăn cháo nhẹ ngay.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa Sài Gòn B.H',
@@ -321,7 +417,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Chuyên sâu Implant & Răng sứ. Bác sĩ CKI trực tiếp phẫu thuật. Trả góp 0% lãi suất. Đặt lịch nhận ưu đãi 30%.',
       sitelinks: ['Hệ Thống 17 Chi Nhánh', 'Bảng Giá Ưu Đãi 30%', 'Đội Ngũ Bác Sĩ CKI', 'Tư Vấn Miễn Phí'],
       biddingAdvice: 'Chiếm lĩnh từ khóa khu vực lân cận TP.HCM và các trục đường chính miền Nam.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Giảm 20% Cấy Ghép Răng Tại Biên Hòa & Sài Gòn',
+        previewUrl: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600&auto=format&fit=crop&q=80',
+        badge: 'Display Banner GDN',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Nha Khoa Sài Gòn B.H - Ưu Đãi Giảm 20% Cấy Ghép Răng',
+        descriptionText: '15 năm uy tín - Bác sĩ Đại học Y Dược trực tiếp thực hiện.'
+      },
+      {
+        type: 'video',
+        title: 'Video Giới Thiệu Cơ Sở Vật Chất Phòng Khám Sài Gòn B.H',
+        previewUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video YouTube Brand',
+        videoDuration: '1:00',
+        headlineOverlay: 'Không Gian Nha Khoa Hiện Đại Đạt Chuẩn Sở Y Tế Cấp Phép',
+        descriptionText: 'Trang bị máy chụp CT ConeBeam thế hệ mới nhất từ Đức.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa Trồng Răng Sài Gòn',
@@ -345,7 +461,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Ưu đãi trọn gói chỉ từ 9.9Tr. Tặng mão sứ Zirconia chính hãng. Đưa đón tận nơi cho khách hàng ở xa.',
       sitelinks: ['Chi Nhánh Gần Nhất', 'Bảng Giá Trọn Gói', 'Bác Sĩ CKI Trực Tiếp', 'Ưu Đãi Hôm Nay'],
       biddingAdvice: 'Đấu thầu đối kháng từ khóa "nha khoa trồng răng" kết hợp Sitelink hỗ trợ xe đưa đón.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Google Search Companion - Trồng Răng Giá 13.5Tr',
+        previewUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&auto=format&fit=crop&q=80',
+        badge: 'Display Banner & Social',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Trồng Răng Chuyên Sâu Không Đau - Tặng Mão Sứ Cercon 4.5Tr',
+        descriptionText: 'Khôi phục răng mất vĩnh viễn, bảo hành chu đáo 15 năm.'
+      },
+      {
+        type: 'video',
+        title: 'Video Cận Cảnh Trồng Răng Implant Không Rạch Nướu',
+        previewUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Bác Sĩ Chia Sẻ',
+        videoDuration: '0:50',
+        headlineOverlay: 'Kỹ Thuật Định Vị 3D Giúp Đặt Trụ Implant Chính Xác Tuyệt Đối',
+        descriptionText: 'Bác sĩ chuyên khoa giải thích cơ chế lành thương nhanh chỉ sau 3 ngày.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa Sài Gòn Implant',
@@ -369,7 +505,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Đã thực hiện thành công hơn 10.000 ca cấy ghép toàn hàm. 17 chi nhánh chuẩn quốc tế. Hỗ trợ trả góp 0%.',
       sitelinks: ['Xem 10.000 Ca Thành Công', 'Ưu Đãi Trợ Giá 35Tr', 'Khám Bác Sĩ CKI 0đ', '17 Chi Nhánh'],
       biddingAdvice: 'Tăng hiển thị trên nhóm từ khóa "cấy ghép implant toàn hàm" với bằng chứng xã hội 10.000 ca thành công.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner All-on-6 Trợ Giá 25 Triệu',
+        previewUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&auto=format&fit=crop&q=80',
+        badge: 'Display Network Banner',
+        dimensions: '1080 x 1080 px',
+        headlineOverlay: 'Trồng Răng Toàn Hàm All-on-4 & All-on-6 - Trợ Giá 25 Triệu',
+        descriptionText: 'Lắp hàm răng tức thì trong 48h, bảo hành trọn đời bằng hợp đồng pháp lý.'
+      },
+      {
+        type: 'video',
+        title: 'Video 3D Mô Phỏng Cấy Ghép 6 Trụ Nâng Đỡ Cả Hàm Răng',
+        previewUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Animation Y Khoa',
+        videoDuration: '0:40',
+        headlineOverlay: 'Giải Pháp Cứu Cánh Cho Người Bị Mất Toàn Bộ Răng Hoặc Tụt Nướu Nặng',
+        descriptionText: 'Không cần ghép xương phức tạp, tái tạo thẩm mỹ khuôn mặt trẻ ra 10 tuổi.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa Shark',
@@ -393,7 +549,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: '100% phôi sứ Đức chính hãng có thẻ bảo hành IDPI truy xuất nguồn gốc. Không mài mòn răng thật.',
       sitelinks: ['Thẻ Bảo Hành Chính Hãng', 'Bảng Giá Răng Toàn Sứ', 'Hình Ảnh Thực Tế', '17 Chi Nhánh'],
       biddingAdvice: 'Nhấn mạnh chất lượng "Toàn Sứ Chính Hãng Đức - Bảo Hành IDPI".'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Răng Sứ Thẩm Mỹ 899K/Răng',
+        previewUrl: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600&auto=format&fit=crop&q=80',
+        badge: 'Social Media & GDN Ads',
+        dimensions: '1080 x 1350 px',
+        headlineOverlay: 'Răng Sứ Phong Thủy Trắng Sáng Tự Nhiên Chỉ Từ 899K',
+        descriptionText: 'Bảo hành 10 năm, làm xong răng đẹp tự tin đón tài lộc.'
+      },
+      {
+        type: 'video',
+        title: 'Video Livestream Răng Sứ Tại Nha Khoa Shark',
+        previewUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Livestream Ads',
+        videoDuration: '0:35',
+        headlineOverlay: 'So Sánh Nụ Cười Trước & Sau Khi Bọc 16 Răng Toàn Sứ',
+        descriptionText: 'Khách hàng vô cùng hài lòng với nụ cười mới rạng rỡ.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa Parkway',
@@ -417,7 +593,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Công nghệ scan 3D hiện đại. Bác sĩ chuyên khoa chỉnh nha theo sát từng tháng. Tặng gói tẩy trắng răng 2.5Tr.',
       sitelinks: ['Bảng Giá Niềng Răng', 'Trả Góp 1Tr/Tháng', 'Feedback Khách Hàng', 'Đăng Ký Khám 0đ'],
       biddingAdvice: 'Tập trung nhắm nhóm từ khóa niềng răng trả góp với chi phí hợp lý.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Black Diamond Invisalign - Giảm 15 Triệu',
+        previewUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80',
+        badge: 'Google Display & Premium Ads',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Hệ Thống Chỉnh Nha Parkway - Tiên Phong Niềng Răng Trong Suốt',
+        descriptionText: 'Xem trước kết quả nụ cười tương lai 3D trên máy quét Itero 5D hiện đại.'
+      },
+      {
+        type: 'video',
+        title: 'Video YouTube Shorts - Đeo Khay Niềng Trong Suốt Vô Hình',
+        previewUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80',
+        badge: 'YouTube Shorts Ads',
+        videoDuration: '0:20',
+        headlineOverlay: 'Niềng Răng Nhưng Không Ai Biết Bạn Đang Niềng',
+        descriptionText: 'Tháo lắp khay niềng ăn uống cực kỳ dễ dàng, không sợ xước môi má.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa I-Dent',
@@ -441,7 +637,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Hoàn thiện răng cấp tốc trong kỳ nghỉ. 17 chi nhánh tại TP.HCM & các tỉnh Miền Tây. Bảo hành chính hãng toàn cầu.',
       sitelinks: ['Gói Kiều Bào Trọn Gói', 'Xe Đưa Đón Tận Nơi', 'Bác Sĩ CKI Khám Trực Tiếp', 'Hotline Kiều Bào'],
       biddingAdvice: 'Nhắm đối tượng kiều bào và thân nhân tại các tỉnh Tây Nam Bộ.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Kiều Bào Về Nước Làm Răng',
+        previewUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80',
+        badge: 'Google Ads Target Quốc Tế (US, AU, CA)',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Gói Trồng Răng Cấp Tốc 7 Ngày Dành Riêng Cho Kiều Bào Về Nước',
+        descriptionText: 'Tiết kiệm đến 70% chi phí so với làm răng tại Mỹ/Úc. Xe đón tại sân bay.'
+      },
+      {
+        type: 'video',
+        title: 'Video Cảm Nhận Khách Hàng Từ California Về Trồng Răng',
+        previewUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Facebook & YouTube',
+        videoDuration: '1:30',
+        headlineOverlay: 'Chú John Nguyễn (Việt Kiều Mỹ): Bác Sĩ Làm Rất Nhẹ Nhàng, Rất Hài Lòng',
+        descriptionText: 'Chia sẻ hành trình làm lại nguyên hàm răng ăn Tết chỉ trong 1 tuần.'
+      }
+    ]
   },
   {
     competitorName: 'Nha Khoa Đông Nam',
@@ -465,7 +681,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Trang thiết bị hiện đại bậc nhất. 17 chi nhánh phủ sóng toàn miền Nam. Ăn nhai chắc khỏe trọn đời.',
       sitelinks: ['Bảng Giá Trọn Gói', 'Đăng Ký Khám 0đ', 'Bác Sĩ Chuyên Sâu', '17 Chi Nhánh'],
       biddingAdvice: 'Cạnh tranh trực tiếp từ khóa tìm kiếm khu vực TP.HCM.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Giảm 20% Chi Phí Trụ Implant',
+        previewUrl: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600&auto=format&fit=crop&q=80',
+        badge: 'Display Network Banner',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Nha Khoa Đông Nam - Cấy Ghép Răng Implant Giảm 20%',
+        descriptionText: 'Miễn phí thăm khám, chụp phim CT 3D và tặng kèm răng sứ.'
+      },
+      {
+        type: 'video',
+        title: 'Video Hướng Dẫn Chăm Sóc Răng Sau Khi Trồng Răng',
+        previewUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80',
+        badge: 'Video Tư Vấn Y Khoa',
+        videoDuration: '0:45',
+        headlineOverlay: 'Bác Sĩ Trưởng Khoa Hướng Dẫn Cách Giữ Gìn Răng Sứ Bền Đẹp',
+        descriptionText: 'Vệ sinh đúng cách bằng máy tăm nước và chỉ nha khoa.'
+      }
+    ]
   },
   {
     competitorName: 'Tâm Đức Smile (Của Bạn)',
@@ -489,7 +725,27 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
       description: 'Giữ vững thị phần số 1 tại TP.HCM và các tỉnh Tây Nam Bộ với hơn 17 chi nhánh hiện đại.',
       sitelinks: ['Chi Nhánh Gần Bạn', 'Bảng Giá Trọn Gói', 'Xem Review Bệnh Nhân', 'Đặt Hẹn Ngay'],
       biddingAdvice: 'Duy trì top 1-2 từ khóa thương hiệu và đẩy mạnh các từ khóa địa phương tỉnh.'
-    }
+    },
+    mediaAds: [
+      {
+        type: 'image',
+        title: 'Banner Tâm Đức Smile - Hệ Thống 17 Chi Nhánh Chuẩn Quốc Tế',
+        previewUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80',
+        badge: 'Official Brand Banner (1200x628)',
+        dimensions: '1200 x 628 px',
+        headlineOverlay: 'Hệ Thống Nha Khoa Tâm Đức Smile - Trồng Răng Trọn Gói 9.9Tr',
+        descriptionText: 'Đưa đón miễn phí cho khách hàng tỉnh. 17 chi nhánh hiện đại tại TP.HCM và Miền Tây.'
+      },
+      {
+        type: 'video',
+        title: 'Video TVC Thương Hiệu - Đẳng Cấp Nụ Cười Tâm Đức Smile',
+        previewUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&auto=format&fit=crop&q=80',
+        badge: 'TVC & YouTube Video (4K)',
+        videoDuration: '0:45',
+        headlineOverlay: 'Hơn 10.000 Khách Hàng Đã Tự Tin Cười Cùng Tâm Đức Smile',
+        descriptionText: 'Đội ngũ Bác sĩ CKI tận tâm, trang thiết bị nhập khẩu 100% từ Đức & Thụy Sĩ.'
+      }
+    ]
   }
 ];
 
@@ -886,6 +1142,7 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                       onClick={() => {
                         setSelectedAdvertiser(adv);
                         setSelectedCompetitor(adv.name);
+                        // Tự động chuyển qua xem chi tiết quảng cáo của nha khoa đó
                       }}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 group ${
                         isSelected
@@ -1044,6 +1301,91 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                           </div>
                         )}
                       </div>
+
+                      {/* QUẢNG CÁO HÌNH ẢNH & VIDEO ĐỐI THỦ ĐANG CHẠY */}
+                      {matchedAd.mediaAds && matchedAd.mediaAds.length > 0 && (
+                        <div className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between">
+                            <h5 className="text-xs font-bold text-cyan-300 flex items-center gap-1.5 uppercase">
+                              <Film className="w-3.5 h-3.5 text-cyan-400" />
+                              <span>Mẫu Quảng Cáo Hình Ảnh & Video ({matchedAd.competitorName})</span>
+                            </h5>
+                            <span className="text-[10px] text-slate-400 font-mono">
+                              GDN, PMax & YouTube
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {matchedAd.mediaAds.map((media, mIdx) => (
+                              <div
+                                key={mIdx}
+                                className="group relative rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/50 overflow-hidden shadow-lg transition-all flex flex-col justify-between"
+                              >
+                                <div className="relative aspect-video w-full overflow-hidden bg-slate-950">
+                                  <img
+                                    src={media.previewUrl}
+                                    alt={media.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    referrerPolicy="no-referrer"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
+                                  
+                                  {/* Badge Overlay */}
+                                  <div className="absolute top-2 left-2 flex items-center gap-1">
+                                    <span className="px-2 py-0.5 rounded-md bg-slate-950/80 backdrop-blur-md text-[10px] font-bold text-white border border-slate-700/80 flex items-center gap-1">
+                                      {media.type === 'video' ? (
+                                        <Video className="w-3 h-3 text-rose-400" />
+                                      ) : (
+                                        <ImageIcon className="w-3 h-3 text-cyan-400" />
+                                      )}
+                                      {media.badge}
+                                    </span>
+                                  </div>
+
+                                  {media.type === 'video' && (
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                      <div className="w-10 h-10 rounded-full bg-rose-600/90 text-white flex items-center justify-center shadow-lg shadow-rose-600/50 group-hover:scale-110 transition-transform">
+                                        <Play className="w-5 h-5 fill-white ml-0.5" />
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {media.videoDuration && (
+                                    <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-slate-950/90 text-[10px] font-mono text-white font-bold">
+                                      {media.videoDuration}
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="p-3 space-y-1.5 flex-1 flex flex-col justify-between">
+                                  <div>
+                                    <div className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-1">
+                                      {media.title}
+                                    </div>
+                                    {media.headlineOverlay && (
+                                      <div className="text-[11px] font-semibold text-emerald-400 mt-1 line-clamp-1">
+                                        "{media.headlineOverlay}"
+                                      </div>
+                                    )}
+                                    {media.descriptionText && (
+                                      <p className="text-[11px] text-slate-300 mt-0.5 line-clamp-2 leading-snug">
+                                        {media.descriptionText}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
+                                    <span>Định dạng: {media.dimensions || 'Chuẩn Display/Video'}</span>
+                                    <span className="text-cyan-400 font-bold flex items-center gap-0.5">
+                                      Đang phân phối ✓
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Promo Change & Weakness Intel */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1473,6 +1815,82 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                         ))}
                       </div>
                     </div>
+
+                    {/* Media Ads (Images & Videos) in Radar Card */}
+                    {ad.mediaAds && ad.mediaAds.length > 0 && (
+                      <div className="space-y-2 pt-2">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                          <span className="flex items-center gap-1.5 text-cyan-400">
+                            <Film className="w-3.5 h-3.5" /> Mẫu Quảng Cáo Hình Ảnh & Video ({ad.competitorName}):
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-mono">Google Display & YouTube</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {ad.mediaAds.map((media, mIdx) => (
+                            <div
+                              key={mIdx}
+                              className="group relative rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/40 overflow-hidden shadow transition-all flex flex-col justify-between"
+                            >
+                              <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
+                                <img
+                                  src={media.previewUrl}
+                                  alt={media.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  referrerPolicy="no-referrer"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                                
+                                <div className="absolute top-2 left-2">
+                                  <span className="px-2 py-0.5 rounded bg-slate-950/80 backdrop-blur-md text-[10px] font-bold text-white border border-slate-700/80 flex items-center gap-1">
+                                    {media.type === 'video' ? (
+                                      <Video className="w-3 h-3 text-rose-400" />
+                                    ) : (
+                                      <ImageIcon className="w-3 h-3 text-cyan-400" />
+                                    )}
+                                    {media.badge}
+                                  </span>
+                                </div>
+
+                                {media.type === 'video' && (
+                                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <div className="w-9 h-9 rounded-full bg-rose-600/90 text-white flex items-center justify-center shadow-lg shadow-rose-600/50 group-hover:scale-110 transition-transform">
+                                      <Play className="w-4 h-4 fill-white ml-0.5" />
+                                    </div>
+                                  </div>
+                                )}
+
+                                {media.videoDuration && (
+                                  <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-slate-950/90 text-[10px] font-mono text-white font-bold">
+                                    {media.videoDuration}
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="p-3 space-y-1">
+                                <div className="text-xs font-bold text-slate-200 group-hover:text-cyan-300 transition-colors line-clamp-1">
+                                  {media.title}
+                                </div>
+                                {media.headlineOverlay && (
+                                  <div className="text-[11px] font-semibold text-emerald-400 line-clamp-1">
+                                    "{media.headlineOverlay}"
+                                  </div>
+                                )}
+                                {media.descriptionText && (
+                                  <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                                    {media.descriptionText}
+                                  </p>
+                                )}
+                                <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400">
+                                  <span>{media.dimensions || 'Chuẩn Display / Video'}</span>
+                                  <span className="text-cyan-400 font-medium">Đang chạy thực tế</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* 2. ĐỐI CHIẾU ƯU ĐÃI / BẢNG GIÁ CŨ VS MỚI */}
