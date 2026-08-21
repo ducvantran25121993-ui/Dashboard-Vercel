@@ -76,6 +76,46 @@ const VERIFIED_DENTAL_ADVERTISERS: VerifiedAdvertiser[] = [
     notes: 'Tập trung đánh mạnh khuyến mãi giá mồi 18 triệu cho học sinh - sinh viên.'
   },
   {
+    id: 'viethan04',
+    name: 'Nha Khoa Việt Hàn 04',
+    domain: 'nhakhoaviethan04.com',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA QUỐC TẾ VIỆT HÀN (HỆ THỐNG VIỆT HÀN 04)',
+    primaryServices: ['Trồng Răng Implant Giá Rẻ', 'Bọc Răng Sứ', 'Niềng Răng Trả Góp'],
+    activeAdFormats: ['Văn bản Search (RSA)', 'Performance Max', 'Facebook Ads'],
+    approxActiveAds: '24+ Mẫu Quảng Cáo Đang Chạy',
+    notes: 'Đối thủ cạnh tranh quyết liệt về giá trụ Implant và bọc răng sứ khuyến mãi tại TP.HCM và các quận huyện vùng ven.'
+  },
+  {
+    id: 'saigonbh',
+    name: 'Nha Khoa Sài Gòn B.H',
+    domain: 'nhakhoasaigon.vn',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA SÀI GÒN B.H',
+    primaryServices: ['Cấy Ghép Implant', 'Chỉnh Nha Chuyên Sâu', 'Răng Sứ Thẩm Mỹ'],
+    activeAdFormats: ['Văn bản Search (RSA)', 'Hình ảnh Display', 'Video YouTube'],
+    approxActiveAds: '32+ Mẫu Quảng Cáo Đang Chạy',
+    notes: 'Thương hiệu nha khoa uy tín lâu năm tại Đồng Nai (Biên Hòa) & TP.HCM, đối thủ lớn ở khu vực Đông Nam Bộ.'
+  },
+  {
+    id: 'trongrangsg',
+    name: 'Nha Khoa Trồng Răng Sài Gòn',
+    domain: 'nhakhoatrongrang.com',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA TRỒNG RĂNG SÀI GÒN',
+    primaryServices: ['Chuyên Sâu Trồng Răng Implant', 'Trồng Răng Toàn Hàm', 'Răng Giả Tháo Lắp'],
+    activeAdFormats: ['Văn bản Search (RSA)', 'Performance Max', 'Display Ads'],
+    approxActiveAds: '28+ Mẫu Quảng Cáo Đang Chạy',
+    notes: 'Đánh cực mạnh vào từ khóa chính xác "trồng răng", "trồng răng implant giá bao nhiêu", cạnh tranh khốc liệt top 1-2 Google Search.'
+  },
+  {
+    id: 'saigonimplant',
+    name: 'Nha Khoa Sài Gòn Implant',
+    domain: 'saigonimplant.com',
+    legalEntity: 'HỆ THỐNG NHA KHOA SÀI GÒN IMPLANT',
+    primaryServices: ['Cấy Ghép Trụ Implant', 'Ghép Xương Nâng Xoang', 'Phục Hình Toàn Hàm All-on-4'],
+    activeAdFormats: ['Văn bản Search (RSA)', 'Display Banner'],
+    approxActiveAds: '20+ Mẫu Quảng Cáo Đang Chạy',
+    notes: 'Chuyên môn hóa ngách cấy ghép răng Implant và cạnh tranh trực tiếp giá trụ cấy ghép Hàn Quốc / Mỹ / Thụy Sĩ.'
+  },
+  {
     id: 'drcare',
     name: 'Dr. Care Implant',
     domain: 'drcareimplant.com',
@@ -274,6 +314,10 @@ export const CompetitorWebDiffScanner: React.FC = () => {
   const PRESET_URLS = [
     { name: 'Nha Khoa Kim', url: 'https://nhakhoakim.com/bang-gia-implant' },
     { name: 'Nha Khoa Paris', url: 'https://nhakhoaparis.vn/khuyen-mai-nieng-rang' },
+    { name: 'Nha Khoa Việt Hàn 04', url: 'https://nhakhoaviethan04.com/bang-gia-implant' },
+    { name: 'Nha Khoa Sài Gòn B.H', url: 'https://nhakhoasaigon.vn/bang-gia-nha-khoa' },
+    { name: 'Nha Khoa Trồng Răng', url: 'https://nhakhoatrongrang.com/bang-gia-trong-rang-implant' },
+    { name: 'Sài Gòn Implant', url: 'https://saigonimplant.com/bang-gia-cay-ghep-implant' },
     { name: 'Dr. Care Implant', url: 'https://drcareimplant.com/uu-dai-implant' },
     { name: 'Nha Khoa Shark', url: 'https://nhakhoashark.vn/boc-rang-su' },
     { name: 'Nha Khoa I-Dent', url: 'https://nhakhoaident.com/implant-viet-kieu' },
@@ -602,7 +646,7 @@ export const CompetitorWebDiffScanner: React.FC = () => {
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
                   <Target className="w-4 h-4 text-emerald-400" />
-                  <span>Danh Sách 8 Nhà Quảng Cáo Nha Khoa Lớn Nhất ({filteredAdvertisers.length})</span>
+                  <span>Danh Sách Nhà Quảng Cáo Nha Khoa Trọng Điểm ({filteredAdvertisers.length})</span>
                 </h4>
                 <div className="relative w-36">
                   <input
@@ -873,10 +917,15 @@ export const CompetitorWebDiffScanner: React.FC = () => {
                   <option value="Tất cả đối thủ lớn">Tất cả chuỗi nha khoa đối thủ (Quét toàn diện)</option>
                   <option value="Nha Khoa Kim">Nha Khoa Kim (nhakhoakim.com)</option>
                   <option value="Nha Khoa Paris">Nha Khoa Paris (nhakhoaparis.vn)</option>
+                  <option value="Nha Khoa Việt Hàn 04">Nha Khoa Việt Hàn 04 (nhakhoaviethan04.com)</option>
+                  <option value="Nha Khoa Sài Gòn B.H">Nha Khoa Sài Gòn B.H (nhakhoasaigon.vn)</option>
+                  <option value="Nha Khoa Trồng Răng">Nha Khoa Trồng Răng Sài Gòn (nhakhoatrongrang.com)</option>
+                  <option value="Sài Gòn Implant">Nha Khoa Sài Gòn Implant (saigonimplant.com)</option>
                   <option value="Dr. Care Implant">Dr. Care Implant (drcareimplant.com)</option>
                   <option value="Nha Khoa Shark">Nha Khoa Shark (nhakhoashark.vn)</option>
                   <option value="Nha Khoa Parkway">Nha Khoa Parkway (parkway.com.vn)</option>
                   <option value="Nha Khoa I-Dent">Nha Khoa I-Dent (nhakhoaident.com)</option>
+                  <option value="Nha Khoa Đông Nam">Nha Khoa Đông Nam (nhakhoadongnam.com)</option>
                 </select>
               </div>
 
