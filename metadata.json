@@ -1,6 +1,6 @@
 {
   "name": "Dashboard Báo Cáo Doanh Thu",
-  "description": "Creates monthly charts for regional revenue and VAT costs, organizing six months of data into separate spreadsheet tabs.",
+  "description": "Hệ thống phân tích đối thủ, quét thay đổi website và Trung tâm minh bạch quảng cáo Google Ads Transparency cho chuỗi nha khoa.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
