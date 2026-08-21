@@ -7,6 +7,7 @@ export type SidebarTab =
   | 'google_ads'
   | 'leads_funnel'
   | 'campaigns'
+  | 'competitor'
   | 'sales_copilot'
   | 'consultation'
   | 'decision_board'

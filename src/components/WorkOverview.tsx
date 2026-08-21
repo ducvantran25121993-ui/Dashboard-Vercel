@@ -18,6 +18,7 @@ import {
   Award,
   Bot,
   Zap,
+  Swords,
 } from 'lucide-react';
 import { MonthDataset } from '../data/revenueData';
 import { DisplayUnit, SidebarTab } from '../types';
@@ -327,7 +328,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 pt-2">
           {/* Card 1: Google Ads */}
           <div
             onClick={() => onNavigateToTab('google_ads')}
@@ -350,7 +351,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
               </p>
             </div>
             <div className="mt-4 flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform">
-              <span>Mở bảng dữ liệu chi tiết</span>
+              <span>Mở bảng dữ liệu</span>
               <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
             </div>
           </div>
@@ -377,7 +378,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
               </p>
             </div>
             <div className="mt-4 flex items-center text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform">
-              <span>Xem phân tích phễu</span>
+              <span>Xem phân tích</span>
               <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
             </div>
           </div>
@@ -393,7 +394,7 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
                   <Megaphone className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">
-                  6 Đang chạy
+                  Active
                 </span>
               </div>
               <h4 className="text-base font-bold text-white mt-3 group-hover:text-amber-300 transition-colors">
@@ -409,34 +410,61 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
             </div>
           </div>
 
-          {/* Card 4: Sáng kiến & Sáng Tạo */}
+          {/* Card 4: Theo dõi đối thủ */}
           <div
-            onClick={() => onNavigateToTab('innovation')}
+            onClick={() => onNavigateToTab('competitor')}
             className="group p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-indigo-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
           >
             <div>
               <div className="flex items-start justify-between">
                 <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
-                  <Lightbulb className="w-5 h-5" />
+                  <Swords className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
-                  AI Gợi Ý
+                  Radar AI
                 </span>
               </div>
               <h4 className="text-base font-bold text-white mt-3 group-hover:text-indigo-300 transition-colors">
-               Sáng Tạo & Đổi Mới
+                Theo Dõi Đối Thủ
               </h4>
               <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                Khám phá và tự động tạo các ý tưởng thử nghiệm mới cùng AI: Livestream, mini-tool nụ cười, tối ưu Google Ads.
+                Auction insights, radar mẫu quảng cáo, so sánh bảng giá và chiến lược phản công đè đối thủ.
               </p>
             </div>
             <div className="mt-4 flex items-center text-xs font-semibold text-indigo-400 group-hover:translate-x-1 transition-transform">
+              <span>Xem phân tích đối thủ</span>
+              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+            </div>
+          </div>
+
+          {/* Card 5: Sáng kiến & Sáng Tạo */}
+          <div
+            onClick={() => onNavigateToTab('innovation')}
+            className="group p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-purple-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center">
+                  <Lightbulb className="w-5 h-5" />
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-400/30">
+                  AI Gợi Ý
+                </span>
+              </div>
+              <h4 className="text-base font-bold text-white mt-3 group-hover:text-purple-300 transition-colors">
+               Sáng Tạo & Đổi Mới
+              </h4>
+              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+                Khám phá ý tưởng mới: Livestream, mini-tool nụ cười, tối ưu Google Ads.
+              </p>
+            </div>
+            <div className="mt-4 flex items-center text-xs font-semibold text-purple-400 group-hover:translate-x-1 transition-transform">
               <span>Mở phòng thử nghiệm</span>
               <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
             </div>
           </div>
 
-          {/* Card 5: AI Agent Copilot */}
+          {/* Card 6: AI Agent Copilot */}
           <div
             onClick={() => onNavigateToTab('ai_agent')}
             className="group p-4 rounded-xl bg-gradient-to-b from-slate-800/80 to-indigo-950/40 hover:bg-slate-800 border border-indigo-500/30 hover:border-cyan-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
@@ -455,11 +483,11 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
                 <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               </h4>
               <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                Chat trực tiếp với AI thông minh phân tích số liệu thực tế, tối ưu chi phí Ads & kịch bản Telesales.
+                Chat trực tiếp với AI thông minh phân tích số liệu thực tế, tối ưu Ads & kịch bản Telesales.
               </p>
             </div>
             <div className="mt-4 flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform">
-              <span>Trò chuyện cùng Trợ Lý AI</span>
+              <span>Trò chuyện cùng AI</span>
               <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
             </div>
           </div>

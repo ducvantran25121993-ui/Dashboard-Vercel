@@ -8,6 +8,7 @@ import { InnovationView } from './components/InnovationView';
 import { AIAgentView } from './components/AIAgentView';
 import { LeadsFunnelView } from './components/LeadsFunnelView';
 import { CampaignsView } from './components/CampaignsView';
+import { CompetitorTrackingView } from './components/CompetitorTrackingView';
 import { SalesCopilotView, ConsultationView, DecisionBoardView } from './components/ExtraViews';
 import { KPISummary } from './components/KPISummary';
 import { CostChart } from './components/CostChart';
@@ -253,6 +254,7 @@ export default function App() {
                     {activeSidebarTab === 'overview' && 'Tổng Quan Quản Trị Hiệu Suất'}
                     {activeSidebarTab === 'leads_funnel' && 'Lead & Phễu Chuyển Đổi'}
                     {activeSidebarTab === 'campaigns' && 'Chiến Dịch Quảng Cáo'}
+                    {activeSidebarTab === 'competitor' && 'Theo Dõi Đối Thủ & Auction Insights'}
                     {activeSidebarTab === 'sales_copilot' && 'Sales Copilot AI'}
                     {activeSidebarTab === 'consultation' && 'Hội Thoại Tư Vấn'}
                     {activeSidebarTab === 'decision_board' && 'Decision Board'}
@@ -341,6 +343,10 @@ export default function App() {
 
           {activeSidebarTab === 'campaigns' && (
             <CampaignsView displayUnit={displayUnit} userRole={userRole} />
+          )}
+
+          {activeSidebarTab === 'competitor' && (
+            <CompetitorTrackingView />
           )}
 
           {activeSidebarTab === 'sales_copilot' && <SalesCopilotView />}

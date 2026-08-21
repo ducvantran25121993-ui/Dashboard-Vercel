@@ -14,6 +14,7 @@ import {
   Users,
   Sparkles,
   Zap,
+  Swords,
 } from 'lucide-react';
 import { SidebarTab } from '../types';
 import { getActiveAIModelBadge } from '../utils/aiBadgeHelper';
@@ -96,6 +97,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Megaphone,
       badge: `${campaignsCount} Active`,
       badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+    },
+    {
+      id: 'competitor',
+      label: 'Theo dõi đối thủ',
+      icon: Swords,
+      badge: '20 Chuỗi',
+      badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
     },
     {
       id: 'sales_copilot',
