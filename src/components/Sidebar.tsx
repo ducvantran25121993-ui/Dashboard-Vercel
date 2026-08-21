@@ -72,7 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }[] = [
     {
       id: 'overview',
-      label: 'Tổng quan',
+      label: 'Tổng Quan',
       icon: LayoutDashboard,
       badge: 'Hub',
       badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
@@ -100,9 +100,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'competitor',
-      label: 'Theo dõi đối thủ',
+      label: 'Theo Dõi Đối Thủ',
       icon: Swords,
-      badge: 'AI Quét Link',
+      badge: 'URL',
       badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse',
     },
     {
