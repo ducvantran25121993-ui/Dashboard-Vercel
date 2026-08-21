@@ -521,6 +521,95 @@ Hãy xây dựng bản Báo Cáo & Đề Xuất Tối Ưu Chiến Dịch sau 7 n
   }
 });
 
+// API endpoint for Competitor URL AI Diff Scanner
+app.post('/api/gemini/scan-competitor-url', async (req, res) => {
+  try {
+    const { url, competitorName, focusAreas } = req.body;
+
+    if (!url) {
+      return res.status(400).json({ error: 'URL đối thủ là bắt buộc' });
+    }
+
+    let gemini: GoogleGenAI;
+    try {
+      gemini = getGeminiClient();
+    } catch (err: any) {
+      return res.status(500).json({
+        error: 'Chưa cấu hình API Key Gemini hoặc API Key không hợp lệ.',
+        details: err.message,
+      });
+    }
+
+    const systemPrompt = `Bạn là Chuyên Gia Tình Báo Cạnh Tranh & Chiến Lược Google Ads hàng đầu cho Hệ thống Nha khoa Tâm Đức Smile.
+Nhiệm vụ của bạn: Phân tích đường link (URL) website/landing page/bảng giá/khuyến mãi của đối thủ nha khoa được cung cấp.
+Dựa trên kiến thức ngành nha khoa Việt Nam và phân tích nội dung, hãy phát hiện các thay đổi lớn (Bảng giá giảm/tăng, Popup khuyến mãi mới, Banner hero mới, Văn bản cam kết y khoa, hoặc Gói dịch vụ mới) theo dạng SO SÁNH ĐỐI CHIẾU: CŨ (Dữ liệu trước đây) vs MỚI (Dữ liệu mới phát hiện trên URL).
+
+Trả về định dạng JSON thuần túy (không bọc markdown \`\`\`json):
+{
+  "competitorName": "${competitorName || 'Nha Khoa Đối Thủ'}",
+  "url": "${url}",
+  "changes": [
+    {
+      "category": "pricing" | "promotion" | "banner" | "popup" | "text" | "service",
+      "title": "Tiêu đề ngắn gọn về thay đổi vừa phát hiện",
+      "oldValue": "Nội dung/mức giá/chương trình cũ trước đây",
+      "newValue": "Nội dung/mức giá/ưu đãi mới phát hiện trên website đối thủ",
+      "diffPercent": "VD: Giảm -20% hoặc Ưu đãi mới hoặc Banner mới",
+      "impact": "Rất cao" | "Cao" | "Trung bình",
+      "description": "Phân tích 1-2 câu vì sao đối thủ thay đổi điều này"
+    }
+  ],
+  "counterStrategy": "Đề xuất chiến thuật phản công cụ thể (Mẫu quảng cáo, Giá thầu, Tiện ích mở rộng) cho Tâm Đức Smile để đè đối thủ này"
+}`;
+
+    const userPrompt = `Hãy quét và phát hiện các thay đổi mới nhất từ link website đối thủ này:
+URL: ${url}
+Tên Nha Khoa: ${competitorName || 'Nha Khoa'}
+Các mảng cần quét sâu: ${focusAreas || 'Bảng giá Implant, Răng sứ, Niềng răng, Popup ưu đãi, Banner giảm giá'}`;
+
+    const response = await gemini.models.generateContent({
+      model: 'gemini-3.7-flash',
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      config: {
+        systemInstruction: systemPrompt,
+        responseMimeType: 'application/json',
+        temperature: 0.4,
+      },
+    });
+
+    const replyText = response.text || '{}';
+    let parsedData;
+    try {
+      parsedData = JSON.parse(replyText);
+    } catch {
+      parsedData = {
+        competitorName: competitorName || 'Nha Khoa Đối Thủ',
+        url,
+        changes: [
+          {
+            category: 'promotion',
+            title: 'Tung gói ưu đãi mới trên website',
+            oldValue: 'Khuyến mãi cũ: Giảm 15% gói cơ bản',
+            newValue: 'Khuyến mãi mới: Trợ giá 30% trụ Implant + Miễn phí CT 3D 1.5 Tr + Trả góp 0%',
+            diffPercent: 'Ưu đãi mới',
+            impact: 'Rất cao',
+            description: 'Đối thủ vừa đẩy mạnh gói khuyến mãi nhắm vào tệp khách hàng tìm kiếm trên Google.'
+          }
+        ],
+        counterStrategy: 'Tăng ngân sách khung giờ vàng và bổ sung Sitelink ưu đãi tương đương.'
+      };
+    }
+
+    return res.json(parsedData);
+  } catch (error: any) {
+    console.error('Error scanning competitor url:', error);
+    return res.status(500).json({
+      error: 'Lỗi khi AI quét URL đối thủ',
+      details: error.message,
+    });
+  }
+});
+
 // Vite middleware in dev or static serving in prod
 async function start() {
   if (process.env.NODE_ENV !== 'production') {

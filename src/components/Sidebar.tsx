@@ -102,8 +102,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'competitor',
       label: 'Theo dõi đối thủ',
       icon: Swords,
-      badge: '20 Chuỗi',
-      badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+      badge: 'AI Quét Link',
+      badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse',
     },
     {
       id: 'sales_copilot',
