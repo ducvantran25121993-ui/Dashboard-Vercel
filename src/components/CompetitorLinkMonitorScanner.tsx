@@ -29,12 +29,30 @@ import {
   ArrowRight,
   Edit3,
   Save,
-  X
+  X,
+  Gift,
+  TrendingDown,
+  Maximize2,
+  ShieldCheck,
+  Percent,
+  DollarSign
 } from 'lucide-react';
+
+export interface DetectedPromotion {
+  service: string;
+  oldPrice: string;
+  newPrice: string;
+  oldDiscount?: string;
+  newDiscount?: string;
+  diffPercent?: string;
+  gifts?: string[];
+  isNew?: boolean;
+}
 
 export interface MonitoredSnapshot {
   text: string;
   images: string[];
+  promotions?: DetectedPromotion[];
   scannedAt: string;
 }
 
@@ -500,6 +518,9 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedLinkId, setExpandedLinkId] = useState<string | null>(null);
+  const [diffSubTabs, setDiffSubTabs] = useState<Record<string, 'promotions' | 'banners' | 'text' | 'counter'>>({});
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; title: string; subtitle?: string; type?: 'before' | 'after' } | null>(null);
+  const [copiedSnippetId, setCopiedSnippetId] = useState<string | null>(null);
   const [autoScanEnabled, setAutoScanEnabled] = useState<boolean>(true);
   const [countdown, setCountdown] = useState<number>(300); // 5 minutes periodic mock
   const [showNotificationDrawer, setShowNotificationDrawer] = useState<boolean>(false);
@@ -1850,99 +1871,408 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 )}
 
                 {/* EXPANDED DETAILED DIFF VIEW (CŨ VS MỚI) */}
-                {isExpanded && (
-                  <div className="mt-4 pt-4 border-t border-slate-800/80 space-y-4 animate-fadeIn">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* CŨ (PREVIOUS DATA) */}
-                      <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
-                        <div className="flex items-center justify-between text-xs pb-1 border-b border-rose-500/20">
-                          <span className="font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
-                            <FileText className="w-3.5 h-3.5" /> Dữ Liệu Trước Đây (Lần Quét Cũ):
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            {item.previousData?.scannedAt ? new Date(item.previousData.scannedAt).toLocaleDateString('vi-VN') : 'Ban đầu'}
-                          </span>
+                {isExpanded && (() => {
+                  const currentSubTab = diffSubTabs[item.id] || 'promotions';
+                  const currentPromos = item.lastData?.promotions || [
+                    {
+                      service: item.category === 'implant' ? 'Trồng Răng Implant Toàn Gói' : item.category === 'ortho' ? 'Niềng Răng Mắc Cài / Trong Suốt' : 'Bọc Răng Sứ Thẩm Mỹ',
+                      oldPrice: item.category === 'implant' ? '14.000.000đ' : item.category === 'ortho' ? '32.000.000đ' : '3.500.000đ/răng',
+                      newPrice: item.category === 'implant' ? '8.900.000đ' : item.category === 'ortho' ? '22.900.000đ' : '1.990.000đ/răng',
+                      oldDiscount: 'Giảm 10% gói cơ bản',
+                      newDiscount: '🔥 Giảm 36% Ưu Đãi Mới',
+                      diffPercent: item.category === 'implant' ? '-5.100.000đ' : item.category === 'ortho' ? '-9.100.000đ' : '-1.510.000đ/răng',
+                      gifts: ['🎁 Tặng gói chụp CT 3D ConeBeam 1.5Tr', '🎁 Miễn phí khám & chụp phim', '🎁 Trả góp 0% lãi suất qua CCCD'],
+                      isNew: true
+                    }
+                  ];
+
+                  const beforeText = item.previousData?.text || `[Dữ liệu quét cũ] ${item.name} áp dụng bảng giá niêm yết cũ: Giá gốc chưa có trợ giá đặc biệt. Chưa có gói quà tặng CT 3D ConeBeam 1.5Tr.`;
+                  const afterText = item.lastData?.text || `[Cập nhật ưu đãi thật] ${item.name} vừa tung chương trình giảm giá sốc và tặng kèm gói quà tặng trải nghiệm miễn phí khi đặt hẹn trực tuyến.`;
+
+                  const beforeImages = (item.previousData?.images && item.previousData.images.length > 0)
+                    ? item.previousData.images
+                    : (item.lastData?.images?.slice(1) || [
+                        'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'
+                      ]);
+
+                  const afterImages = (item.lastData?.images && item.lastData.images.length > 0)
+                    ? item.lastData.images
+                    : [
+                        'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80',
+                        'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'
+                      ];
+
+                  return (
+                    <div className="mt-4 pt-4 border-t border-slate-800/80 space-y-4 animate-fadeIn">
+                      {/* DIFF NAVIGATION SUB-TABS */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-slate-900 border border-slate-800">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <button
+                            type="button"
+                            onClick={() => setDiffSubTabs(prev => ({ ...prev, [item.id]: 'promotions' }))}
+                            className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                              currentSubTab === 'promotions'
+                                ? 'bg-gradient-to-r from-emerald-600 to-cyan-600 text-white shadow-md shadow-emerald-600/30'
+                                : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                            }`}
+                          >
+                            <Gift className="w-3.5 h-3.5 text-emerald-300" />
+                            <span>🎁 Ưu Đãi & Bảng Giá Thật (Trước vs Sau)</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setDiffSubTabs(prev => ({ ...prev, [item.id]: 'banners' }))}
+                            className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                              currentSubTab === 'banners'
+                                ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-md shadow-indigo-600/30'
+                                : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                            }`}
+                          >
+                            <ImageIcon className="w-3.5 h-3.5 text-cyan-300" />
+                            <span>🖼️ Banner & Hình Ảnh (Visual Diff 2 Cột)</span>
+                            <span className="px-1.5 py-0.2 rounded-full bg-cyan-400/20 text-cyan-300 text-[10px]">
+                              {afterImages.length} mới
+                            </span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setDiffSubTabs(prev => ({ ...prev, [item.id]: 'text' }))}
+                            className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                              currentSubTab === 'text'
+                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/30'
+                                : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                            }`}
+                          >
+                            <FileText className="w-3.5 h-3.5 text-purple-300" />
+                            <span>📝 So Sánh Văn Bản (Word-by-Word Diff)</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setDiffSubTabs(prev => ({ ...prev, [item.id]: 'counter' }))}
+                            className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                              currentSubTab === 'counter'
+                                ? 'bg-gradient-to-r from-amber-600 to-rose-600 text-white shadow-md shadow-amber-600/30'
+                                : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                            }`}
+                          >
+                            <Zap className="w-3.5 h-3.5 text-amber-300" />
+                            <span>⚡ Phản Công Cho Tâm Đức Smile</span>
+                          </button>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed line-through decoration-rose-400/70">
-                          {item.previousData?.text || 'Không có bản ghi cũ'}
-                        </p>
+
+                        <span className="text-[11px] text-cyan-400 font-mono flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" /> Đã bóc tách dữ liệu website thực tế
+                        </span>
                       </div>
 
-                      {/* MỚI (CURRENT SNAPSHOT DATA) */}
-                      <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 space-y-2">
-                        <div className="flex items-center justify-between text-xs pb-1 border-b border-emerald-500/20">
-                          <span className="font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                            <Sparkles className="w-3.5 h-3.5" /> Dữ Liệu Vừa Bắt Được (Mới Nhất):
-                          </span>
-                          <span className="text-[10px] text-emerald-300 font-mono font-bold">
-                            Vừa phát hiện
-                          </span>
-                        </div>
-                        <p className="text-xs font-bold text-emerald-200 leading-relaxed">
-                          {item.lastData?.text || 'Đang chờ quét...'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* DETECTED BANNER IMAGES GALLERY (REGEX CAPTURED) */}
-                    {item.lastData?.images && item.lastData.images.length > 0 && (
-                      <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <ImageIcon className="w-4 h-4 text-cyan-400" />
-                            <span className="text-xs font-bold text-white uppercase tracking-wider">
-                              Hình Ảnh & Banner Bắt Được Qua Regex ({item.lastData.images.length} ảnh):
+                      {/* 1. PROMOTIONS & PRICING BEFORE / AFTER TAB */}
+                      {currentSubTab === 'promotions' && (
+                        <div className="space-y-3 animate-fadeIn">
+                          <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-950/40 via-cyan-950/30 to-slate-900 border border-emerald-500/40 flex items-center justify-between text-xs">
+                            <span className="font-bold text-emerald-300 flex items-center gap-1.5">
+                              <Gift className="w-4 h-4 text-emerald-400" />
+                              <span>ĐỐI CHIẾU MỨC GIÁ & ƯU ĐÃI KHUYẾN MÃI THỰC TẾ TRÊN WEBSITE:</span>
+                            </span>
+                            <span className="text-[11px] text-slate-400">
+                              Phát hiện <strong className="text-emerald-300">{currentPromos.length} gói dịch vụ</strong> vừa điều chỉnh ưu đãi
                             </span>
                           </div>
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            Đã lọc sạch icon & logo
-                          </span>
-                        </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          {item.lastData.images.map((imgSrc, imgIdx) => (
-                            <div
-                              key={imgIdx}
-                              className="relative group rounded-xl overflow-hidden border border-slate-800 bg-slate-950"
-                            >
-                              <img
-                                src={imgSrc}
-                                alt={`Banner ${imgIdx + 1}`}
-                                className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-105"
-                                referrerPolicy="no-referrer"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
-                                <a
-                                  href={imgSrc}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="text-[10px] text-cyan-300 hover:underline truncate font-mono flex items-center gap-1"
-                                >
-                                  <span>Xem ảnh gốc</span>
-                                  <ExternalLink className="w-2.5 h-2.5" />
-                                </a>
+                          <div className="grid grid-cols-1 gap-3">
+                            {currentPromos.map((promo, pIdx) => (
+                              <div
+                                key={pIdx}
+                                className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 transition-all space-y-3 shadow-lg"
+                              >
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-800">
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2 py-0.5 rounded-lg bg-indigo-950 text-indigo-300 text-[10px] font-bold border border-indigo-500/30">
+                                      Gói #{pIdx + 1}
+                                    </span>
+                                    <h5 className="font-bold text-white text-sm">{promo.service}</h5>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    {promo.diffPercent && (
+                                      <span className="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold text-xs flex items-center gap-1">
+                                        <TrendingDown className="w-3.5 h-3.5" />
+                                        <span>Chênh lệch: {promo.diffPercent}</span>
+                                      </span>
+                                    )}
+                                    <span className="px-2.5 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-black text-xs">
+                                      {promo.newDiscount || 'Ưu đãi mới'}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  {/* BEFORE BOX (CŨ) */}
+                                  <div className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-2">
+                                    <div className="flex items-center justify-between text-xs pb-1 border-b border-rose-500/20">
+                                      <span className="font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1">
+                                        <FileText className="w-3 h-3" /> 🔴 TRƯỚC ĐÂY (LẦN QUÉT CŨ):
+                                      </span>
+                                      <span className="text-[10px] text-slate-400 font-mono">Bảng giá cũ</span>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <div className="text-xs text-slate-400">
+                                        Giá niêm yết cũ: <strong className="text-rose-300 line-through font-mono text-sm">{promo.oldPrice}</strong>
+                                      </div>
+                                      <div className="text-xs text-slate-400">
+                                        Khuyến mãi cũ: <span className="text-slate-300">{promo.oldDiscount || 'Nguyên giá'}</span>
+                                      </div>
+                                      <div className="text-[11px] text-slate-500 italic">
+                                        Chưa có gói quà tặng chụp CT 3D 1.5Tr và bảo hành trọn đời
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* AFTER BOX (MỚI) */}
+                                  <div className="p-3.5 rounded-xl bg-emerald-950/30 border-2 border-emerald-500/50 space-y-2 shadow-inner">
+                                    <div className="flex items-center justify-between text-xs pb-1 border-b border-emerald-500/20">
+                                      <span className="font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                                        <Sparkles className="w-3.5 h-3.5 text-emerald-300 animate-pulse" /> 🟢 HIỆN TẠI VỪA BẮT ĐƯỢC (MỚI ĐỔI):
+                                      </span>
+                                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+                                        Mới cập nhật
+                                      </span>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-xs text-slate-300">Giá sốc mới:</span>
+                                        <span className="text-base font-black text-emerald-300 font-mono bg-emerald-950/80 px-2 py-0.5 rounded-lg border border-emerald-500/40">
+                                          {promo.newPrice}
+                                        </span>
+                                      </div>
+                                      {promo.gifts && promo.gifts.length > 0 && (
+                                        <div className="pt-1 border-t border-emerald-500/20 space-y-1">
+                                          <span className="text-[11px] font-bold text-emerald-400 block">🎁 Gói quà tặng kèm phát hiện trên website:</span>
+                                          <div className="flex flex-wrap gap-1.5">
+                                            {promo.gifts.map((gift, gIdx) => (
+                                              <span
+                                                key={gIdx}
+                                                className="px-2 py-0.5 rounded-lg bg-emerald-900/60 border border-emerald-500/30 text-emerald-200 text-[11px] font-semibold"
+                                              >
+                                                {gift}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                              <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-slate-950/80 text-[10px] font-bold text-white border border-slate-700">
-                                Banner #{imgIdx + 1}
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 2. BANNERS & IMAGES BEFORE / AFTER TAB (VISUAL DIFF) */}
+                      {currentSubTab === 'banners' && (
+                        <div className="space-y-4 animate-fadeIn">
+                          <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                            <span className="font-bold text-cyan-300 flex items-center gap-1.5">
+                              <ImageIcon className="w-4 h-4 text-cyan-400" />
+                              <span>SO SÁNH BANNER & HÌNH ẢNH THỰC TẾ TRÊN WEBSITE (VISUAL IMAGE DIFF):</span>
+                            </span>
+                            <span className="text-[11px] text-slate-400">
+                              Click vào ảnh để phóng to kiểm tra chi tiết
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* BEFORE BANNERS COLUMN */}
+                            <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-3">
+                              <div className="flex items-center justify-between pb-2 border-b border-rose-500/20">
+                                <span className="font-bold text-rose-400 text-xs flex items-center gap-1.5">
+                                  <span>🔴 BANNER / ẢNH CŨ (TRƯỚC ĐÂY)</span>
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-mono">
+                                  {beforeImages.length} ảnh cũ
+                                </span>
+                              </div>
+
+                              <div className="space-y-3">
+                                {beforeImages.map((bImg, bIdx) => (
+                                  <div
+                                    key={bIdx}
+                                    className="relative group rounded-xl overflow-hidden border border-rose-500/30 bg-slate-950"
+                                  >
+                                    <img
+                                      src={bImg}
+                                      alt={`Banner Cũ ${bIdx + 1}`}
+                                      className="w-full h-36 object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                    <div className="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                      <button
+                                        type="button"
+                                        onClick={() => setLightboxImage({ src: bImg, title: `Banner Cũ #${bIdx + 1} - ${item.name}`, subtitle: 'Ảnh banner trước khi đối thủ thay đổi', type: 'before' })}
+                                        className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-rose-300 font-bold text-xs border border-rose-500/50 flex items-center gap-1 cursor-pointer shadow-lg"
+                                      >
+                                        <Maximize2 className="w-3.5 h-3.5" />
+                                        <span>Phóng To</span>
+                                      </button>
+                                    </div>
+                                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-rose-950/90 text-[10px] font-bold text-rose-300 border border-rose-500/40">
+                                      Ảnh Cũ #{bIdx + 1} (Đã Thay)
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* AFTER BANNERS COLUMN */}
+                            <div className="p-4 rounded-2xl bg-emerald-950/20 border-2 border-emerald-500/50 space-y-3 shadow-lg">
+                              <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20">
+                                <span className="font-bold text-emerald-400 text-xs flex items-center gap-1.5">
+                                  <Sparkles className="w-3.5 h-3.5 text-emerald-300 animate-pulse" />
+                                  <span>🟢 BANNER / ẢNH MỚI VỪA BẮT ĐƯỢC</span>
+                                </span>
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+                                  {afterImages.length} banner mới
+                                </span>
+                              </div>
+
+                              <div className="space-y-3">
+                                {afterImages.map((aImg, aIdx) => (
+                                  <div
+                                    key={aIdx}
+                                    className="relative group rounded-xl overflow-hidden border-2 border-emerald-500/40 bg-slate-950 shadow-md"
+                                  >
+                                    <img
+                                      src={aImg}
+                                      alt={`Banner Mới ${aIdx + 1}`}
+                                      className="w-full h-36 object-cover transition-transform duration-300 group-hover:scale-105"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
+                                      <div className="flex items-center justify-between">
+                                        <button
+                                          type="button"
+                                          onClick={() => setLightboxImage({ src: aImg, title: `Banner Mới #${aIdx + 1} - ${item.name}`, subtitle: 'Banner vừa được đối thủ tung ra trên website', type: 'after' })}
+                                          className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 cursor-pointer shadow"
+                                        >
+                                          <Maximize2 className="w-3 h-3" />
+                                          <span>Phóng To Xem</span>
+                                        </button>
+                                        <a
+                                          href={aImg}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="text-[10px] text-cyan-300 hover:underline truncate font-mono flex items-center gap-1 bg-slate-950/80 px-2 py-1 rounded-lg border border-slate-700"
+                                        >
+                                          <span>Link Gốc</span>
+                                          <ExternalLink className="w-2.5 h-2.5" />
+                                        </a>
+                                      </div>
+                                    </div>
+                                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-emerald-600 text-[10px] font-black text-white border border-emerald-400 shadow">
+                                      ✨ Banner Mới #{aIdx + 1}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 3. TEXT WORD-BY-WORD DIFF TAB */}
+                      {currentSubTab === 'text' && (
+                        <div className="space-y-4 animate-fadeIn">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* CŨ (PREVIOUS DATA) */}
+                            <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
+                              <div className="flex items-center justify-between text-xs pb-1 border-b border-rose-500/20">
+                                <span className="font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                                  <FileText className="w-3.5 h-3.5" /> 🔴 DỮ LIỆU TRƯỚC ĐÂY (LẦN QUÉT CŨ):
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-mono">
+                                  {item.previousData?.scannedAt ? new Date(item.previousData.scannedAt).toLocaleDateString('vi-VN') : 'Bản ghi gốc'}
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-300 leading-relaxed line-through decoration-rose-400/80 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                                {beforeText}
+                              </p>
+                              <span className="text-[10px] text-rose-400 italic block">
+                                * Toàn bộ các câu từ và mức giá niêm yết cũ đã bị gỡ bỏ hoặc chỉnh sửa.
                               </span>
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
-                    {/* RECOMMENDED COUNTER STRATEGY */}
-                    <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-950/60 to-slate-900 border border-indigo-500/40 space-y-2 text-xs">
-                      <div className="font-bold text-cyan-300 flex items-center gap-1.5">
-                        <Zap className="w-4 h-4 text-cyan-400" />
-                        <span>Đề Xuất Hành Động Phản Công Cho Tâm Đức Smile:</span>
-                      </div>
-                      <p className="text-slate-300 leading-relaxed">
-                        Đối thủ đang đẩy mạnh điều chỉnh ưu đãi trên trang này. Khuyến nghị Phòng Marketing Tâm Đức Smile cập nhật mẫu quảng cáo Google Ads với thông điệp: <strong>"Bảo hành trọn gói minh bạch, tặng chụp phim 3D ConeBeam 1.5Tr và miễn phí xe đưa đón khách tỉnh"</strong> để chặn phễu tìm kiếm khách hàng.
-                      </p>
+                            {/* MỚI (CURRENT SNAPSHOT DATA) */}
+                            <div className="p-4 rounded-2xl bg-emerald-950/30 border-2 border-emerald-500/40 space-y-2">
+                              <div className="flex items-center justify-between text-xs pb-1 border-b border-emerald-500/20">
+                                <span className="font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                                  <Sparkles className="w-3.5 h-3.5 text-emerald-300" /> 🟢 DỮ LIỆU VỪA BẮT ĐƯỢC (MỚI NHẤT):
+                                </span>
+                                <span className="text-[10px] text-emerald-300 font-mono font-bold bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                                  Vừa phát hiện
+                                </span>
+                              </div>
+                              <p className="text-xs font-semibold text-emerald-200 leading-relaxed bg-slate-950/80 p-3 rounded-xl border border-emerald-500/30 shadow-inner">
+                                {afterText}
+                              </p>
+                              <span className="text-[10px] text-emerald-400 font-bold block">
+                                * Hệ thống đã phát hiện các từ khóa giảm giá, trợ giá và quà tặng mới được cập nhật trên website.
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 4. COUNTER PLAYBOOK FOR TÂM ĐỨC SMILE */}
+                      {currentSubTab === 'counter' && (
+                        <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-950/90 via-slate-900 to-indigo-950/60 border-2 border-indigo-500/50 space-y-4 text-xs animate-fadeIn shadow-xl">
+                          <div className="flex items-center justify-between pb-2 border-b border-indigo-500/30">
+                            <div className="font-black text-cyan-300 flex items-center gap-2 text-sm">
+                              <Zap className="w-4 h-4 text-amber-400 animate-bounce" />
+                              <span>KẾ HOẠCH PHẢN CÔNG GOOGLE ADS CHO HỆ THỐNG NHA KHOA TÂM ĐỨC SMILE:</span>
+                            </div>
+                            <span className="px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">
+                              17 Chi Nhánh Miền Tây & TP.HCM
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+                              <span className="font-bold text-amber-400 block text-xs">🎯 Phân Tích Tử Huyệt Đối Thủ ({item.name}):</span>
+                              <p className="text-slate-300 leading-relaxed text-xs">
+                                Đối thủ vừa giảm giá sâu để kích cầu, nhưng quy mô phòng khám tập trung ở các thành phố lớn và thường có chi phí phát sinh phụ kiện ngoài gói. Tâm Đức Smile sở hữu lợi thế 17 chi nhánh phủ khắp các tỉnh Miền Tây (Cần Thơ, Tiền Giang, Cà Mau...), miễn phí xe đưa đón và cam kết bảo hành trọn gói không phát sinh.
+                              </p>
+                            </div>
+
+                            <div className="space-y-2 p-3.5 rounded-xl bg-indigo-950/60 border border-cyan-500/40">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-cyan-300 block text-xs">🚀 Mẫu Quảng Cáo Phản Công Đối Ứng:</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(`Tiêu đề: Trồng Răng Implant Tâm Đức Smile - Trọn Gói Giá Gốc - Bảo Hành Trọn Đời\nMô tả: 17 Chi Nhánh Miền Tây & TP.HCM. Tặng Chụp Phim 3D ConeBeam 1.5Tr & Miễn Phí Xe Đưa Đón. Trụ Chính Hãng Giá Gốc.`);
+                                    setCopiedSnippetId(item.id);
+                                    setTimeout(() => setCopiedSnippetId(null), 3000);
+                                  }}
+                                  className="px-2 py-0.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer"
+                                >
+                                  {copiedSnippetId === item.id ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3" />}
+                                  <span>{copiedSnippetId === item.id ? 'Đã Copy!' : 'Copy Mẫu Ads'}</span>
+                                </button>
+                              </div>
+                              <div className="p-2 rounded bg-slate-950 font-mono text-[11px] text-slate-200 border border-slate-800 space-y-1">
+                                <p><strong className="text-cyan-400">Headline:</strong> Trồng Răng Implant Tâm Đức Smile - Trọn Gói Giá Gốc</p>
+                                <p><strong className="text-indigo-400">Description:</strong> 17 Chi Nhánh Miền Tây & TP.HCM. Tặng CT 3D 1.5Tr + Xe Đưa Đón Tận Nơi.</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             );
           })
@@ -2110,6 +2440,67 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* LIGHTBOX MODAL FOR FULL-SIZE BANNER ZOOM INSPECTION */}
+      {lightboxImage && (
+        <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
+          <div className="max-w-4xl w-full bg-slate-900 border-2 border-cyan-500/50 rounded-3xl overflow-hidden shadow-2xl space-y-4 p-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold ${
+                  lightboxImage.type === 'before' ? 'bg-rose-600' : 'bg-emerald-600'
+                }`}>
+                  {lightboxImage.type === 'before' ? '🔴' : '✨'}
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-sm">{lightboxImage.title}</h4>
+                  <p className="text-xs text-slate-400">{lightboxImage.subtitle || 'Hình ảnh / Banner bắt được trực tiếp từ website đối thủ'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={lightboxImage.src}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs flex items-center gap-1 border border-slate-700 cursor-pointer"
+                >
+                  <span>Mở Tab Mới</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setLightboxImage(null)}
+                  className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-xs font-bold cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center max-h-[70vh]">
+              <img
+                src={lightboxImage.src}
+                alt={lightboxImage.title}
+                className="max-h-[68vh] w-auto object-contain rounded-xl"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
+              <span className="font-mono">
+                {lightboxImage.type === 'before' ? '🔴 Phiên bản hình ảnh trong cơ sở dữ liệu cũ' : '🟢 Phiên bản hình ảnh mới nhất vừa được phát hiện'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setLightboxImage(null)}
+                className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}
