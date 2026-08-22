@@ -642,6 +642,25 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
               )}
             </button>
 
+            {/* Quick Link Import/Export & Presets */}
+            <button
+              type="button"
+              onClick={() => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(monitoredLinks, null, 2));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `danh_sach_link_doi_thu_${new Date().toISOString().slice(0,10)}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+              }}
+              title="Xuất file JSON danh sách link đã lưu"
+              className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+            >
+              <Copy className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Backup / Tải File Link</span>
+            </button>
+
             {/* Add Link Button */}
             <button
               type="button"
@@ -649,7 +668,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
               className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 cursor-pointer transition-all"
             >
               <Plus className="w-4 h-4" />
-              <span>+ Thêm Link Quét Mới</span>
+              <span>+ Lưu Thêm Link Đối Thủ</span>
             </button>
 
             {/* Scan All Now Button */}
@@ -822,6 +841,46 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* DIRECT QUICK-PASTE & SAVE BAR */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <Plus className="w-4 h-4 text-cyan-400" />
+            <span>Dán Nhanh Link Đối Thủ Cần Lưu & Quét:</span>
+          </label>
+          <span className="text-[11px] text-slate-400">
+            Dữ liệu được <strong>tự động lưu vào trình duyệt (LocalStorage)</strong> vĩnh viễn
+          </span>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center gap-2">
+          <input
+            type="text"
+            placeholder="Tên nha khoa (VD: Nha Khoa I-Dent, Parkway...)"
+            value={newLinkName}
+            onChange={e => setNewLinkName(e.target.value)}
+            className="w-full sm:w-1/3 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+          />
+          <input
+            type="url"
+            placeholder="Dán link website đối thủ (VD: https://nhakhoaident.com/bang-gia-implant)"
+            value={newLinkUrl}
+            onChange={e => setNewLinkUrl(e.target.value)}
+            className="w-full sm:flex-1 bg-slate-950 border border-cyan-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 ring-1 ring-cyan-500/20"
+          />
+          <button
+            type="button"
+            onClick={e => {
+              if (!newLinkUrl.trim()) return;
+              handleAddLink(e as any);
+            }}
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+          >
+            <Check className="w-4 h-4" />
+            <span>Lưu & Quét Link</span>
+          </button>
+        </div>
+      </div>
 
       {/* FILTER & SEARCH BAR */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-4 rounded-2xl bg-slate-950/90 border border-slate-800 text-xs">
