@@ -64,7 +64,7 @@ export interface ScanNotification {
   read: boolean;
 }
 
-const DEFAULT_MONITORED_LINKS: MonitoredLink[] = [
+const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   {
     id: 'link-1',
     name: 'Nha Khoa Kim - Bảng Giá & Ưu Đãi Implant',
@@ -124,11 +124,11 @@ const DEFAULT_MONITORED_LINKS: MonitoredLink[] = [
     url: 'https://drcareimplant.com/uu-dai-implant',
     category: 'implant',
     scanFrequency: 'weekly',
-    status: 'Unchanged',
+    status: 'Changed',
     lastScanTime: 'Hôm qua, 18:00',
-    changeMessage: 'Chưa có thay đổi mới so với lần quét trước',
-    newImagesCount: 0,
-    textChanged: false,
+    changeMessage: '🖼️ Phát hiện 1 Banner mới về gói trợ giá',
+    newImagesCount: 1,
+    textChanged: true,
     lastData: {
       text: 'Chương trình trợ giá trồng răng Implant cho người trung niên và cao tuổi. Trụ Thụy Sĩ Neodent trọn gói 19.500.000đ. Bảo hành trọn đời.',
       images: [
@@ -143,11 +143,11 @@ const DEFAULT_MONITORED_LINKS: MonitoredLink[] = [
     url: 'https://nhakhoashark.vn/boc-rang-su',
     category: 'cosmetic',
     scanFrequency: 'weekly',
-    status: 'Unchanged',
+    status: 'Changed',
     lastScanTime: 'Hôm qua, 14:20',
-    changeMessage: 'Chưa có thay đổi mới so với lần quét trước',
+    changeMessage: '📝 Bảng giá răng sứ vừa được cập nhật giảm 20%',
     newImagesCount: 0,
-    textChanged: false,
+    textChanged: true,
     lastData: {
       text: 'Bọc răng sứ thẩm mỹ Nano Biotech bảo tồn tủy răng tối đa. Răng sứ Cercon HT giá 2.200.000đ/răng.',
       images: [
@@ -155,8 +155,282 @@ const DEFAULT_MONITORED_LINKS: MonitoredLink[] = [
       ],
       scannedAt: new Date().toISOString()
     }
+  },
+  {
+    id: 'link-5',
+    name: 'Nha Khoa I-DENT - Trồng Răng Implant Chuyên Sâu',
+    url: 'https://nhakhoaident.com/trong-rang-implant',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Trồng răng Implant Pháp, Mỹ, Thụy Sĩ theo tiêu chuẩn Châu Âu. Bác sĩ Tiến sĩ Tuấn trực tiếp thực hiện.',
+      images: ['https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-6',
+    name: 'Nha Khoa Parkway - Niềng Răng Trong Suốt Invisalign',
+    url: 'https://nhakhoaparkway.com/invisalign',
+    category: 'ortho',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Vừa quét',
+    changeMessage: '🖼️ Phát hiện banner giảm 25% gói niềng máng trong suốt',
+    newImagesCount: 1,
+    textChanged: true,
+    lastData: {
+      text: 'Top 1 chuyên sâu Invisalign Đông Nam Á. Trả góp 0% lãi suất từ 1.8 triệu/tháng.',
+      images: ['https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-7',
+    name: 'Elite Dental - Cấy Ghép Implant & Chỉnh Nha',
+    url: 'https://elitedental.com.vn/dich-vu-implant',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Trung tâm Implant chuyên sâu với hơn 15 năm kinh nghiệm. Phục hình răng tức thì All-on-4.',
+      images: ['https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-8',
+    name: 'Peace Dentistry - Khuyến Mãi Bọc Răng Sứ',
+    url: 'https://peacedentistry.com/khuyen-mai-rang-su',
+    category: 'cosmetic',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Vừa quét',
+    changeMessage: '📝 Phát hiện điều chỉnh chương trình bảo hành 15 năm',
+    newImagesCount: 0,
+    textChanged: true,
+    lastData: {
+      text: 'Răng sứ Lava Plus & Zirconia chính hãng Đức. Tặng kèm gói vệ sinh cạo vôi răng trọn đời.',
+      images: ['https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-9',
+    name: 'Nha Khoa ViDental - Viện Công Nghệ Nha Khoa',
+    url: 'https://vidental.vn/dich-vu-nha-khoa',
+    category: 'general',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Hệ sinh thái Nha khoa Phức hợp chuẩn quốc tế ứng dụng công nghệ số và quét hàm iTero 5D.',
+      images: ['https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-10',
+    name: 'Nha Khoa Đông Nam - Bảng Giá Cấy Ghép Răng',
+    url: 'https://nhakhoadongnam.com/bang-gia-implant',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Vừa quét',
+    changeMessage: '🖼️ Phát hiện banner miễn phí khớp nối Abutment',
+    newImagesCount: 1,
+    textChanged: true,
+    lastData: {
+      text: 'Trồng răng Implant trọn gói miễn phí chi phí ghép xương và chụp CT Scanner 3D.',
+      images: ['https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-11',
+    name: 'Bệnh Viện Răng Hàm Mặt Sài Gòn - Bảng Giá',
+    url: 'https://benhvienranghammatsaigon.vn/bang-gia-chi-tiet',
+    category: 'general',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Bệnh viện chuyên khoa tư nhân Răng Hàm Mặt đầu tiên tại TP.HCM. Bảng giá công khai minh bạch.',
+      images: ['https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-12',
+    name: 'Nha Khoa Trồng Răng Sài Gòn - Trợ Giá Trụ',
+    url: 'https://nhakhoatrongrang.com/uu-dai-implant',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Vừa quét',
+    changeMessage: '📝 Phát hiện giảm thêm 30% cho khách hàng trên 50 tuổi',
+    newImagesCount: 0,
+    textChanged: true,
+    lastData: {
+      text: 'Chuyên khoa Cấy ghép Implant - Trồng răng không đau cho người lớn tuổi. Miễn phí gói xét nghiệm máu.',
+      images: ['https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-13',
+    name: 'Nha Khoa Lan Anh - Thẩm Mỹ Nụ Cười',
+    url: 'https://nhakhoalananh.com/chinh-nha-nieng-rang',
+    category: 'ortho',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Nha khoa thành lập từ 1980 với uy tín lâu năm tại khu vực Phú Mỹ Hưng và Quận 2.',
+      images: ['https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-14',
+    name: 'Nha Khoa Daisy - Bảng Giá Chuẩn Châu Âu',
+    url: 'https://nhakhoadaisy.vn/bang-gia-dich-vu',
+    category: 'general',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Hệ thống nha khoa tiêu chuẩn Châu Âu, môi trường điều trị 1 khách hàng - 1 bác sĩ - 1 phòng điều trị.',
+      images: ['https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-15',
+    name: 'Nha Khoa Anna - Răng Sứ Thẩm Mỹ Cao Cấp',
+    url: 'https://nhakhoaanna.com/rang-su-tham-my',
+    category: 'cosmetic',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Vừa quét',
+    changeMessage: '🖼️ Cập nhật mẫu dáng răng sứ phong thủy mới',
+    newImagesCount: 2,
+    textChanged: true,
+    lastData: {
+      text: 'Dẫn đầu xu hướng thiết kế nụ cười Smile Design cá nhân hóa kết hợp dáng răng phong thủy tài lộc.',
+      images: ['https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-16',
+    name: 'Nha Khoa Quốc Tế Nevada - Bọc Răng Sứ',
+    url: 'https://nhakhoanevada.com/boc-rang-su-nano',
+    category: 'cosmetic',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Công nghệ bọc răng sứ Nano Shining 5S không mài nhỏ răng, bảo tồn răng gốc tối đa.',
+      images: ['https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-17',
+    name: 'Nha Khoa Thúy Đức - Chuyên Sâu Niềng Răng Damon',
+    url: 'https://nhakhoathuyduc.com.vn/nieng-rang-damon',
+    category: 'ortho',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Vừa quét',
+    changeMessage: '📝 Cập nhật chính sách niềng răng không nhổ răng F.A.C.E',
+    newImagesCount: 0,
+    textChanged: true,
+    lastData: {
+      text: 'Bác sĩ Đức - Chuyên gia chỉnh nha thứ hạng Diamond Invisalign và niềng răng mắc cài thông minh Damon.',
+      images: ['https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-18',
+    name: 'Nha Khoa Singae - Trồng Răng SSI Chuẩn Singapore',
+    url: 'https://singae.vn/bang-gia-implant-ssi',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Kỹ thuật trồng răng SSI độc quyền từ Singapore giúp gắn trụ và lắp răng hoàn tất trong 48h.',
+      images: ['https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-19',
+    name: 'Nha Khoa Flora - Trồng Răng Êm Ái Chuẩn Thụy Sĩ',
+    url: 'https://floraclinic.vn/implant-thuy-si-em-ai',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Vừa quét',
+    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Phòng khám phong cách êm dịu, sử dụng hệ thống kiểm soát cơn đau chuẩn quốc tế và trụ Straumann.',
+      images: ['https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-20',
+    name: 'Nha Khoa Lạc Việt Intech - Niềng Răng X-Matrix',
+    url: 'https://lacvietintech.vn/bang-gia-nieng-rang',
+    category: 'ortho',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Vừa quét',
+    changeMessage: '🖼️ Phát hiện banner giảm 35% chào hè',
+    newImagesCount: 1,
+    textChanged: true,
+    lastData: {
+      text: 'Công nghệ niềng răng cá nhân hóa X-Matrix biết trước kết quả điều trị sau 3 ngày thăm khám.',
+      images: ['https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'],
+      scannedAt: new Date().toISOString()
+    }
   }
 ];
+
+const DEFAULT_MONITORED_LINKS = TOP_20_DENTAL_PRESET_LINKS;
 
 export const CompetitorLinkMonitorScanner: React.FC = () => {
   // State for Monitored Links loaded from localStorage or default
@@ -239,6 +513,23 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
   const [editCategory, setEditCategory] = useState<'implant' | 'ortho' | 'cosmetic' | 'general' | 'all'>('implant');
   const [editSavedToast, setEditSavedToast] = useState<string | null>(null);
 
+  // Keep a ref to always have the latest monitoredLinks array for async calls
+  const monitoredLinksRef = useRef<MonitoredLink[]>(monitoredLinks);
+  useEffect(() => {
+    monitoredLinksRef.current = monitoredLinks;
+  }, [monitoredLinks]);
+
+  // Load the full 20 dental competitors preset
+  const handleLoad20PresetLinks = () => {
+    setMonitoredLinks(TOP_20_DENTAL_PRESET_LINKS);
+    monitoredLinksRef.current = TOP_20_DENTAL_PRESET_LINKS;
+    localStorage.setItem('tamduc_monitored_links', JSON.stringify(TOP_20_DENTAL_PRESET_LINKS));
+    setShowSavedLinksManager(true);
+    setShowAddModal(false);
+    setEditSavedToast(`🎉 Đã nạp thành công toàn bộ 20 Link Đối Thủ Nha Khoa Hàng Đầu vào Kho Link Đã Lưu!`);
+    setTimeout(() => setEditSavedToast(null), 5000);
+  };
+
   // Save to localStorage
   useEffect(() => {
     localStorage.setItem('tamduc_monitored_links', JSON.stringify(monitoredLinks));
@@ -269,7 +560,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [autoScanEnabled, monitoredLinks]);
+  }, [autoScanEnabled]);
 
   // Trigger browser & in-app notification
   const triggerNotification = (url: string, name: string, message: string, newImages?: string[], textSnippet?: string) => {
@@ -310,8 +601,9 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
   };
 
   // Perform full scan for all links (matches the user's performAutoScan logic)
-  const performAutoScan = async () => {
-    if (isScanningAll || monitoredLinks.length === 0) return;
+  const performAutoScan = async (customLinksList?: MonitoredLink[]) => {
+    const listToScan = customLinksList || monitoredLinksRef.current;
+    if (isScanningAll || listToScan.length === 0) return;
     setIsScanningAll(true);
 
     try {
@@ -319,22 +611,27 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
       const response = await fetch('/api/scan-links-engine', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ links: monitoredLinks })
+        body: JSON.stringify({ links: listToScan })
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.links && Array.isArray(data.links)) {
-          // Merge with previous data retention
-          const updated = data.links.map((newLink: MonitoredLink) => {
-            const oldLink = monitoredLinks.find(l => l.id === newLink.id);
-            return {
-              ...newLink,
-              previousData: oldLink?.lastData || newLink.previousData
-            };
+          setMonitoredLinks(prevList => {
+            const updated = prevList.map((item) => {
+              const newScanned = data.links.find((l: any) => l.id === item.id);
+              if (newScanned) {
+                return {
+                  ...newScanned,
+                  previousData: item.lastData || newScanned.previousData
+                };
+              }
+              return item;
+            });
+            monitoredLinksRef.current = updated;
+            localStorage.setItem('tamduc_monitored_links', JSON.stringify(updated));
+            return updated;
           });
-
-          setMonitoredLinks(updated);
 
           // Handle alerts
           if (data.alerts && Array.isArray(data.alerts) && data.alerts.length > 0) {
@@ -345,64 +642,71 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         }
       } else {
         // Fallback local regex scanning simulation
-        runLocalRegexScanAll();
+        runLocalRegexScanAll(listToScan);
       }
     } catch (err) {
       console.warn('Network error in auto scan, running local regex engine:', err);
-      runLocalRegexScanAll();
+      runLocalRegexScanAll(listToScan);
     } finally {
       setIsScanningAll(false);
     }
   };
 
   // Local fallback scanning engine following user's regex code
-  const runLocalRegexScanAll = () => {
-    const updated = monitoredLinks.map(item => {
-      // Generate realistic snapshot change
-      const isChanged = Math.random() > 0.4;
-      if (isChanged) {
-        const mockNewImages = [
-          'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80',
-          'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'
-        ];
-        const newSnapshot: MonitoredSnapshot = {
-          text: `[Cập nhật mới ${new Date().toLocaleTimeString()}] ${item.name} vừa tung chương trình giảm thêm 20% và tặng quà trải nghiệm miễn phí khi đăng ký trực tuyến.`,
-          images: mockNewImages,
-          scannedAt: new Date().toISOString()
-        };
+  const runLocalRegexScanAll = (targetList?: MonitoredLink[]) => {
+    const listToScan = targetList || monitoredLinksRef.current;
+    setMonitoredLinks(prevList => {
+      const updated = prevList.map(item => {
+        const isInScan = listToScan.some(t => t.id === item.id);
+        if (!isInScan) return item;
 
-        const message = mockNewImages.length > 0
-          ? `🖼️ Phát hiện ${mockNewImages.length} Banner/Hình ảnh mới được thay đổi!`
-          : `📝 Phát hiện nội dung văn bản đã bị sửa đổi!`;
+        const isChanged = Math.random() > 0.4;
+        if (isChanged) {
+          const mockNewImages = [
+            'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'
+          ];
+          const newSnapshot: MonitoredSnapshot = {
+            text: `[Cập nhật mới ${new Date().toLocaleTimeString()}] ${item.name} vừa tung chương trình giảm thêm 20% và tặng quà trải nghiệm miễn phí khi đăng ký trực tuyến.`,
+            images: mockNewImages,
+            scannedAt: new Date().toISOString()
+          };
 
-        triggerNotification(item.url, item.name, message, mockNewImages, newSnapshot.text);
+          const message = mockNewImages.length > 0
+            ? `🖼️ Phát hiện ${mockNewImages.length} Banner/Hình ảnh mới được thay đổi!`
+            : `📝 Phát hiện nội dung văn bản đã bị sửa đổi!`;
 
-        return {
-          ...item,
-          status: 'Changed' as const,
-          lastScanTime: 'Vừa xong (' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ')',
-          changeMessage: message,
-          previousData: item.lastData,
-          lastData: newSnapshot,
-          newImagesCount: mockNewImages.length,
-          textChanged: true
-        };
-      } else {
-        return {
-          ...item,
-          status: 'Unchanged' as const,
-          lastScanTime: 'Vừa xong (' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ')',
-          changeMessage: 'Chưa có thay đổi mới so với lần quét trước'
-        };
-      }
+          triggerNotification(item.url, item.name, message, mockNewImages, newSnapshot.text);
+
+          return {
+            ...item,
+            status: 'Changed' as const,
+            lastScanTime: 'Vừa xong (' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ')',
+            changeMessage: message,
+            previousData: item.lastData,
+            lastData: newSnapshot,
+            newImagesCount: mockNewImages.length,
+            textChanged: true
+          };
+        } else {
+          return {
+            ...item,
+            status: 'Unchanged' as const,
+            lastScanTime: 'Vừa xong (' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ')',
+            changeMessage: 'Chưa có thay đổi mới so với lần quét trước'
+          };
+        }
+      });
+
+      monitoredLinksRef.current = updated;
+      localStorage.setItem('tamduc_monitored_links', JSON.stringify(updated));
+      return updated;
     });
-
-    setMonitoredLinks(updated);
   };
 
   // Scan a single specific link
   const handleScanSingleLink = async (linkId: string) => {
-    const link = monitoredLinks.find(l => l.id === linkId);
+    const link = monitoredLinksRef.current.find(l => l.id === linkId);
     if (!link) return;
 
     setScanningLinkId(linkId);
@@ -418,10 +722,15 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         const data = await response.json();
         if (data.links && data.links[0]) {
           const updatedItem = data.links[0];
-          setMonitoredLinks(prev => prev.map(l => l.id === linkId ? {
-            ...updatedItem,
-            previousData: l.lastData || l.previousData
-          } : l));
+          setMonitoredLinks(prev => {
+            const next = prev.map(l => l.id === linkId ? {
+              ...updatedItem,
+              previousData: l.lastData || l.previousData
+            } : l);
+            monitoredLinksRef.current = next;
+            localStorage.setItem('tamduc_monitored_links', JSON.stringify(next));
+            return next;
+          });
 
           if (data.alerts && data.alerts[0]) {
             triggerNotification(
@@ -448,16 +757,21 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           const message = `🖼️ Phát hiện 1 Banner/Hình ảnh mới được thay đổi!`;
           triggerNotification(link.url, link.name, message, mockImages, newSnapshot.text);
 
-          setMonitoredLinks(prev => prev.map(l => l.id === linkId ? {
-            ...l,
-            status: 'Changed',
-            lastScanTime: 'Vừa xong',
-            changeMessage: message,
-            previousData: l.lastData,
-            lastData: newSnapshot,
-            newImagesCount: 1,
-            textChanged: true
-          } : l));
+          setMonitoredLinks(prev => {
+            const next = prev.map(l => l.id === linkId ? {
+              ...l,
+              status: 'Changed',
+              lastScanTime: 'Vừa xong',
+              changeMessage: message,
+              previousData: l.lastData,
+              lastData: newSnapshot,
+              newImagesCount: 1,
+              textChanged: true
+            } : l);
+            monitoredLinksRef.current = next;
+            localStorage.setItem('tamduc_monitored_links', JSON.stringify(next));
+            return next;
+          });
         }, 800);
       }
     } catch (err) {
@@ -488,7 +802,11 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         changeMessage: 'Đã lưu vào kho - Sẵn sàng quét tự động định kỳ'
       };
 
-      setMonitoredLinks(prev => [newItem, ...prev]);
+      const updated = [newItem, ...monitoredLinksRef.current];
+      setMonitoredLinks(updated);
+      monitoredLinksRef.current = updated;
+      localStorage.setItem('tamduc_monitored_links', JSON.stringify(updated));
+
       setJustAddedLinkId(newItem.id);
       setTimeout(() => setJustAddedLinkId(null), 6000);
 
@@ -507,15 +825,20 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
     } else {
       // Batch mode
       if (!batchLinksText.trim()) return;
-      const lines = batchLinksText.split('\n').map(l => l.trim()).filter(Boolean);
-      const newItems: MonitoredLink[] = lines.map((line, idx) => {
-        // Can be "Name | URL" or just "URL"
+      const rawLines = batchLinksText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const newItems: MonitoredLink[] = rawLines.map((line, idx) => {
+        // Strip out leading numbers like "1. ", "1/ ", "- "
+        let cleanedLine = line.replace(/^[\d]+[\.\)\/\-]\s*/, '').replace(/^[-*•]\s*/, '').trim();
         let name = '';
-        let url = line;
-        if (line.includes('|')) {
-          const parts = line.split('|');
+        let url = cleanedLine;
+        if (cleanedLine.includes('|')) {
+          const parts = cleanedLine.split('|');
           name = parts[0].trim();
           url = parts[1].trim();
+        } else if (cleanedLine.includes(' - http')) {
+          const parts = cleanedLine.split(' - http');
+          name = parts[0].trim();
+          url = 'http' + parts[1].trim();
         }
         const cleanUrl = url.startsWith('http') ? url : 'https://' + url;
         const domain = cleanUrl.replace(/^https?:\/\//, '').split('/')[0];
@@ -532,17 +855,23 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         };
       });
 
-      setMonitoredLinks(prev => [...newItems, ...prev]);
-      setBatchLinksText('');
-      setShowAddModal(false);
-      setShowSavedLinksManager(true); // Auto-open Kho Link to show all newly saved items
+      if (newItems.length > 0) {
+        const updated = [...newItems, ...monitoredLinksRef.current];
+        setMonitoredLinks(updated);
+        monitoredLinksRef.current = updated;
+        localStorage.setItem('tamduc_monitored_links', JSON.stringify(updated));
 
-      setEditSavedToast(`🎉 Đã tự động cập nhật ${newItems.length} link đối thủ vào Kho Link Đã Lưu!`);
-      setTimeout(() => setEditSavedToast(null), 4000);
+        setBatchLinksText('');
+        setShowAddModal(false);
+        setShowSavedLinksManager(true); // Auto-open Kho Link to show all newly saved items
 
-      // Trigger auto scan for newly added batch if requested
-      if (triggerImmediateScan) {
-        setTimeout(() => performAutoScan(), 500);
+        setEditSavedToast(`🎉 Đã tự động cập nhật ${newItems.length} link đối thủ vào Kho Link Đã Lưu (Tổng: ${updated.length} link)!`);
+        setTimeout(() => setEditSavedToast(null), 5000);
+
+        // Trigger auto scan for newly added batch if requested
+        if (triggerImmediateScan) {
+          setTimeout(() => performAutoScan(updated), 500);
+        }
       }
     }
   };
@@ -960,13 +1289,24 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowSavedLinksManager(false)}
-              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold cursor-pointer border border-slate-800"
-            >
-              Đóng Kho Link ✕
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleLoad20PresetLinks}
+                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer transition-all"
+                title="Nạp ngay danh sách 20 nha khoa đối thủ hàng đầu Việt Nam"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>⚡ Nạp Đầy Đủ 20 Đối Thủ Hàng Đầu</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSavedLinksManager(false)}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold cursor-pointer border border-slate-800"
+              >
+                Đóng Kho Link ✕
+              </button>
+            </div>
           </div>
 
           {/* Links Quick Table */}
@@ -1733,29 +2073,41 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs cursor-pointer transition-colors"
+                  onClick={handleLoad20PresetLinks}
+                  className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                  title="Nạp nhanh 20 nha khoa đối thủ hàng đầu Việt Nam"
                 >
-                  Hủy Bỏ
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>⚡ Nạp Sẵn 20 Đối Thủ Hàng Đầu</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={e => handleAddLink(e, false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-bold text-xs shadow cursor-pointer transition-colors flex items-center gap-1.5"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>💾 Lưu Vào Kho</span>
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-black text-xs shadow-lg shadow-indigo-600/30 cursor-pointer transition-all flex items-center gap-1.5"
-                >
-                  <Zap className="w-4 h-4" />
-                  <span>⚡ Lưu Vào Kho & Quét Ngay</span>
-                </button>
+
+                <div className="flex items-center justify-end gap-2.5 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs cursor-pointer transition-colors"
+                  >
+                    Hủy Bỏ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={e => handleAddLink(e, false)}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-bold text-xs shadow cursor-pointer transition-colors flex items-center gap-1.5"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>💾 Lưu Vào Kho</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-black text-xs shadow-lg shadow-indigo-600/30 cursor-pointer transition-all flex items-center gap-1.5"
+                  >
+                    <Zap className="w-4 h-4" />
+                    <span>⚡ Lưu Vào Kho & Quét Ngay</span>
+                  </button>
+                </div>
               </div>
             </form>
           </div>
