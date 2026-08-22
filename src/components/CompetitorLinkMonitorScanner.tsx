@@ -230,6 +230,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
   const [countdown, setCountdown] = useState<number>(300); // 5 minutes periodic mock
   const [showNotificationDrawer, setShowNotificationDrawer] = useState<boolean>(false);
   const [showSavedLinksManager, setShowSavedLinksManager] = useState<boolean>(false);
+  const [justAddedLinkId, setJustAddedLinkId] = useState<string | null>(null);
 
   // Inline editing state for modifying saved links directly
   const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
@@ -467,7 +468,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
   };
 
   // Add a new link
-  const handleAddLink = (e: React.FormEvent) => {
+  const handleAddLink = (e: React.FormEvent, triggerImmediateScan: boolean = true) => {
     e.preventDefault();
 
     if (inputMode === 'single') {
@@ -483,17 +484,26 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         category: newLinkCategory,
         scanFrequency: newLinkFrequency,
         status: 'Unchanged',
-        lastScanTime: 'Chưa quét lần nào',
-        changeMessage: 'Sẵn sàng quét tự động định kỳ'
+        lastScanTime: 'Vừa thêm vào kho',
+        changeMessage: 'Đã lưu vào kho - Sẵn sàng quét tự động định kỳ'
       };
 
       setMonitoredLinks(prev => [newItem, ...prev]);
+      setJustAddedLinkId(newItem.id);
+      setTimeout(() => setJustAddedLinkId(null), 6000);
+
       setNewLinkName('');
       setNewLinkUrl('');
       setShowAddModal(false);
+      setShowSavedLinksManager(true); // Auto-open Kho Link to show the newly saved item
 
-      // Auto trigger initial scan
-      setTimeout(() => handleScanSingleLink(newItem.id), 300);
+      setEditSavedToast(`🎉 Đã tự động cập nhật & lưu "${name}" vào Kho Link Đã Lưu!`);
+      setTimeout(() => setEditSavedToast(null), 4000);
+
+      // Auto trigger scan if requested
+      if (triggerImmediateScan) {
+        setTimeout(() => handleScanSingleLink(newItem.id), 400);
+      }
     } else {
       // Batch mode
       if (!batchLinksText.trim()) return;
@@ -517,17 +527,23 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           category: newLinkCategory,
           scanFrequency: newLinkFrequency,
           status: 'Unchanged',
-          lastScanTime: 'Chưa quét lần nào',
-          changeMessage: 'Sẵn sàng quét tự động định kỳ'
+          lastScanTime: 'Vừa thêm vào kho',
+          changeMessage: 'Đã lưu vào kho - Sẵn sàng quét tự động định kỳ'
         };
       });
 
       setMonitoredLinks(prev => [...newItems, ...prev]);
       setBatchLinksText('');
       setShowAddModal(false);
+      setShowSavedLinksManager(true); // Auto-open Kho Link to show all newly saved items
 
-      // Trigger auto scan for newly added batch
-      setTimeout(() => performAutoScan(), 500);
+      setEditSavedToast(`🎉 Đã tự động cập nhật ${newItems.length} link đối thủ vào Kho Link Đã Lưu!`);
+      setTimeout(() => setEditSavedToast(null), 4000);
+
+      // Trigger auto scan for newly added batch if requested
+      if (triggerImmediateScan) {
+        setTimeout(() => performAutoScan(), 500);
+      }
     }
   };
 
@@ -967,9 +983,17 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
               <tbody className="divide-y divide-slate-800/60">
                 {monitoredLinks.map(link => {
                   const isEditingThis = editingLinkId === link.id;
+                  const isJustAdded = justAddedLinkId === link.id;
 
                   return (
-                    <tr key={link.id} className="hover:bg-slate-900/40 transition-colors">
+                    <tr
+                      key={link.id}
+                      className={`transition-all ${
+                        isJustAdded
+                          ? 'bg-emerald-950/50 border-l-4 border-l-emerald-400 ring-1 ring-emerald-500/30'
+                          : 'hover:bg-slate-900/40'
+                      }`}
+                    >
                       <td className="py-3 px-3 font-semibold text-white">
                         {isEditingThis ? (
                           <input
@@ -980,8 +1004,14 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                           />
                         ) : (
                           <div>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <span>{link.name}</span>
+                              {isJustAdded && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse flex items-center gap-1">
+                                  <Sparkles className="w-2.5 h-2.5 text-emerald-400" />
+                                  <span>VỪA LƯU VÀO KHO</span>
+                                </span>
+                              )}
                               <button
                                 onClick={() => handleStartEdit(link)}
                                 className="text-slate-500 hover:text-cyan-400 p-0.5"
@@ -1131,17 +1161,32 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
             onChange={e => setNewLinkUrl(e.target.value)}
             className="w-full sm:flex-1 bg-slate-950 border border-cyan-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 ring-1 ring-cyan-500/20"
           />
-          <button
-            type="button"
-            onClick={e => {
-              if (!newLinkUrl.trim()) return;
-              handleAddLink(e as any);
-            }}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
-          >
-            <Check className="w-4 h-4" />
-            <span>Lưu & Quét Link</span>
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={e => {
+                if (!newLinkUrl.trim()) return;
+                handleAddLink(e as any, false);
+              }}
+              className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-bold text-xs shadow cursor-pointer whitespace-nowrap flex items-center justify-center gap-1.5 transition-colors"
+              title="Lưu link vào kho trình duyệt mà chưa cần quét ngay"
+            >
+              <Save className="w-4 h-4" />
+              <span>💾 Lưu Vào Kho</span>
+            </button>
+            <button
+              type="button"
+              onClick={e => {
+                if (!newLinkUrl.trim()) return;
+                handleAddLink(e as any, true);
+              }}
+              className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-black text-xs shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap transition-all"
+              title="Lưu link vào kho và bắt đầu quét so sánh ngay"
+            >
+              <Zap className="w-4 h-4" />
+              <span>⚡ Lưu & Quét Ngay</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1697,11 +1742,19 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                   Hủy Bỏ
                 </button>
                 <button
+                  type="button"
+                  onClick={e => handleAddLink(e, false)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-bold text-xs shadow cursor-pointer transition-colors flex items-center gap-1.5"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>💾 Lưu Vào Kho</span>
+                </button>
+                <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-black text-xs shadow-lg shadow-indigo-600/30 cursor-pointer transition-all flex items-center gap-1.5"
                 >
-                  <Check className="w-4 h-4" />
-                  <span>Lưu & Quét Ngay</span>
+                  <Zap className="w-4 h-4" />
+                  <span>⚡ Lưu Vào Kho & Quét Ngay</span>
                 </button>
               </div>
             </form>
