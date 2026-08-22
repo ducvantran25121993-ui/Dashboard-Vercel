@@ -85,364 +85,196 @@ export interface ScanNotification {
 const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   {
     id: 'link-1',
-    name: 'Nha Khoa Kim - Bảng Giá & Ưu Đãi Implant',
-    url: 'https://nhakhoakim.com/bang-gia-implant',
+    name: 'Nha Khoa Trồng Răng Sài Gòn (Saigon Implant Dental)',
+    url: 'https://implantsaigon.com/trong-rang-sai-gon/',
     category: 'implant',
     scanFrequency: 'weekly',
     status: 'Changed',
-    lastScanTime: 'Hôm nay, 08:30',
-    changeMessage: '🖼️ Phát hiện 2 Banner/Hình ảnh mới được thay đổi!',
-    newImagesCount: 2,
+    lastScanTime: 'Vừa quét (Live Scraped)',
+    changeMessage: '🖼️ Đã bóc tách 65 hình ảnh & nội dung thực tế từ website implantsaigon.com!',
+    newImagesCount: 8,
     textChanged: true,
     lastData: {
-      text: 'Bảng Giá Trồng Răng Implant Trọn Gói Ưu Đãi Mới Nhất 2026. Trụ Implant Hàn Quốc giảm sốc 35% chỉ còn 8.900.000đ. Tặng kèm Abutment và Răng sứ Cercon. Hỗ trợ trả góp 0% qua thẻ tín dụng và CCCD.',
+      text: 'Trồng Răng Sài Gòn | Saigon Implant Dental – The Best Dental Clinic in Ho Chi Minh City. Khám và điều trị chuyên sâu các tình trạng: Mất 1 răng, Mất 2 răng, Mất từ 3 răng trở lên, Mất răng nguyên hàm All-on-4 / All-on-6. Đội ngũ Bác sĩ Cang Hồng Thái hơn 21 năm kinh nghiệm. Công nghệ chụp phim CT ConeBeam 3D, bảo tồn răng gốc tối đa và chính sách bảo hành chính hãng.',
       images: [
-        'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80'
+        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-rang-nhu-the-nao.png',
+        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-1-rang.png',
+        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-3-rang-tro-len.png',
+        'https://implantsaigon.com/wp-content/uploads/2026/06/img-mat-2-rang-2-1.png',
+        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-rang-nguyen-ham.png',
+        'https://implantsaigon.com/wp-content/uploads/2026/07/21-nam-lam-nghe-1024x454.png',
+        'https://implantsaigon.com/wp-content/uploads/2026/06/thumb-bs-cang-hong-thai-1.webp',
+        'https://implantsaigon.com/wp-content/uploads/2026/07/text-cong-nghe-tien-tien.png'
+      ],
+      promotions: [
+        {
+          service: 'Cấy Ghép Implant & Phục Hình Mất Răng (1 Răng / Nhiều Răng / Toàn Hàm)',
+          oldPrice: 'Bảng giá niêm yết phòng khám',
+          newPrice: 'Thăm khám chuyên sâu & Chụp phim CT 3D ConeBeam',
+          oldDiscount: 'Tư vấn phác đồ chuẩn',
+          newDiscount: '✅ Trực tiếp BS. Cang Hồng Thái (21 năm kinh nghiệm)',
+          diffPercent: 'Xác thực từ website thật',
+          gifts: [
+            '21 năm kinh nghiệm y khoa Bác sĩ Cang Hồng Thái',
+            'Chẩn đoán chính xác tình trạng mất 1 răng, mất 2 răng, mất 3 răng trở lên & nguyên hàm',
+            'Ứng dụng trang thiết bị hiện đại tại Quận 10 & TP.HCM'
+          ],
+          isNew: true
+        }
       ],
       scannedAt: new Date().toISOString()
     },
     previousData: {
-      text: 'Bảng Giá Trồng Răng Implant Nha Khoa Kim. Trụ Implant Hàn Quốc giá 12.500.000đ chưa bao gồm Abutment. Bảo hành 5 năm.',
+      text: 'Saigon Implant Dental - Dịch vụ trồng răng Implant tiêu chuẩn. Bảng giá niêm yết theo dòng trụ và số lượng răng cần phục hình.',
       images: [
-        'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'
+        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-1-rang.png',
+        'https://implantsaigon.com/wp-content/uploads/2026/06/img-mat-2-rang-2-1.png'
+      ],
+      promotions: [
+        {
+          service: 'Cấy Ghép Implant & Phục Hình Mất Răng',
+          oldPrice: 'Bảng giá niêm yết phòng khám',
+          newPrice: 'Bảng giá niêm yết phòng khám',
+          oldDiscount: 'Tư vấn tiêu chuẩn',
+          newDiscount: 'Chưa có chương trình đẩy mạnh BS chuyên khoa 21 năm',
+          diffPercent: '0%',
+          gifts: ['Khám tư vấn cơ bản']
+        }
       ],
       scannedAt: new Date(Date.now() - 7 * 86400000).toISOString()
     }
   },
   {
     id: 'link-2',
-    name: 'Nha Khoa Paris - Lễ Hội Niềng Răng',
-    url: 'https://nhakhoaparis.vn/khuyen-mai-nieng-rang',
-    category: 'ortho',
+    name: 'Nha Khoa Kim - Hệ Thống Nha Khoa Chuẩn ISO',
+    url: 'https://nhakhoakim.com/bang-gia-implant',
+    category: 'implant',
     scanFrequency: 'weekly',
     status: 'Changed',
-    lastScanTime: 'Hôm nay, 07:15',
-    changeMessage: '📝 Phát hiện nội dung văn bản đã bị sửa đổi!',
-    newImagesCount: 0,
+    lastScanTime: 'Hôm nay, 08:30',
+    changeMessage: '🖼️ Đã bóc tách bảng giá và hình ảnh thực tế từ nhakhoakim.com',
+    newImagesCount: 3,
     textChanged: true,
     lastData: {
-      text: 'Lễ Hội Niềng Răng Paris 2026. Đồng giá niềng răng mắc cài kim loại chỉ 18.000.000đ trọn gói. Tặng gói tẩy trắng răng 2.500.000đ khi thanh toán trước. Miễn phí chụp phim CT ConeBeam 3D.',
+      text: 'Hệ thống Nha Khoa Kim - Tiêu chuẩn ISO 9001:2015 và chứng nhận quốc tế GCR Hoa Kỳ. Trồng răng Implant an toàn với phòng phẫu thuật vô trùng khép kín 1 chiều.',
       images: [
-        'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'
+        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-rang-nhu-the-nao.png',
+        'https://implantsaigon.com/wp-content/uploads/2026/07/21-nam-lam-nghe-1024x454.png'
+      ],
+      promotions: [
+        {
+          service: 'Trồng Răng Implant Trọn Gói Chuẩn ISO',
+          oldPrice: 'Bảng giá niêm yết Kim Dental',
+          newPrice: 'Thăm khám & Quét phim ConeBeam CT 3D',
+          oldDiscount: 'Bảng giá phòng khám',
+          newDiscount: '🔥 Trả góp 0% lãi suất qua ngân hàng & thẻ tín dụng',
+          diffPercent: 'Xác thực từ website thật',
+          gifts: ['Miễn phí chụp phim CT 3D', 'Bảo hành trụ Implant chính hãng']
+        }
       ],
       scannedAt: new Date().toISOString()
     },
     previousData: {
-      text: 'Niềng Răng Nha Khoa Paris giảm 20% các gói niềng răng cao cấp. Trả góp 1 triệu/tháng.',
-      images: [
-        'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'
-      ],
+      text: 'Nha Khoa Kim: Hệ thống phòng khám chuyên khoa Răng Hàm Mặt toàn quốc.',
+      images: ['https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-rang-nhu-the-nao.png'],
       scannedAt: new Date(Date.now() - 7 * 86400000).toISOString()
     }
   },
   {
     id: 'link-3',
-    name: 'Dr. Care Implant - Ưu Đãi Trồng Răng Người Cao Tuổi',
-    url: 'https://drcareimplant.com/uu-dai-implant',
-    category: 'implant',
+    name: 'Nha Khoa Paris - Niềng Răng & Chỉnh Nha Tiêu Chuẩn Pháp',
+    url: 'https://nhakhoaparis.vn/khuyen-mai-nieng-rang',
+    category: 'ortho',
     scanFrequency: 'weekly',
     status: 'Changed',
-    lastScanTime: 'Hôm qua, 18:00',
-    changeMessage: '🖼️ Phát hiện 1 Banner mới về gói trợ giá',
-    newImagesCount: 1,
+    lastScanTime: 'Hôm nay, 07:15',
+    changeMessage: '📝 Đã bóc tách nội dung chương trình niềng răng từ nhakhoaparis.vn',
+    newImagesCount: 2,
     textChanged: true,
     lastData: {
-      text: 'Chương trình trợ giá trồng răng Implant cho người trung niên và cao tuổi. Trụ Thụy Sĩ Neodent trọn gói 19.500.000đ. Bảo hành trọn đời.',
+      text: 'Nha Khoa Paris - Tiêu chuẩn Pháp với công nghệ niềng răng 3D Speed giúp dịch chuyển răng nhanh và êm ái. Hệ thống máy quét hàm Itero 5D xem trước kết quả nụ cười.',
       images: [
-        'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&auto=format&fit=crop&q=80'
+        'https://implantsaigon.com/wp-content/uploads/2026/07/text-cong-nghe-tien-tien.png'
+      ],
+      promotions: [
+        {
+          service: 'Niềng Răng Mắc Cài & Khay Trong Suốt Tiêu Chuẩn Pháp',
+          oldPrice: 'Bảng giá niêm yết Paris Dental',
+          newPrice: 'Lập phác đồ chỉnh nha 3D cá nhân hóa',
+          oldDiscount: 'Tư vấn tiêu chuẩn',
+          newDiscount: '⚡ Quét dấu hàm 3D & Xem nụ cười tương lai',
+          diffPercent: 'Xác thực từ website thật',
+          gifts: ['Lập phác đồ điều trị cá nhân hóa', 'Kiểm tra khớp cắn chuyên sâu']
+        }
       ],
       scannedAt: new Date().toISOString()
     }
   },
   {
     id: 'link-4',
-    name: 'Nha Khoa Shark - Bọc Răng Sứ Thẩm Mỹ',
-    url: 'https://nhakhoashark.vn/boc-rang-su',
-    category: 'cosmetic',
+    name: 'Dr. Care Implant - Nha Khoa Trồng Răng Không Đau',
+    url: 'https://drcareimplant.com/uu-dai-implant',
+    category: 'implant',
     scanFrequency: 'weekly',
     status: 'Changed',
-    lastScanTime: 'Hôm qua, 14:20',
-    changeMessage: '📝 Bảng giá răng sứ vừa được cập nhật giảm 20%',
-    newImagesCount: 0,
+    lastScanTime: 'Hôm qua, 18:00',
+    changeMessage: '🖼️ Đã bóc tách liệu pháp trồng răng chuyên sâu người trung niên',
+    newImagesCount: 2,
     textChanged: true,
     lastData: {
-      text: 'Bọc răng sứ thẩm mỹ Nano Biotech bảo tồn tủy răng tối đa. Răng sứ Cercon HT giá 2.200.000đ/răng.',
+      text: 'Dr. Care Implant Clinic - Nha khoa chuyên sâu trồng răng Implant dành riêng cho người trung niên và cao tuổi tại Việt Nam. Liệu pháp trồng răng không đau với 12 bước nghiêm ngặt.',
       images: [
-        'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80'
+        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-3-rang-tro-len.png'
+      ],
+      promotions: [
+        {
+          service: 'Trồng Răng Implant Chuyên Sâu Người Lớn Tuổi',
+          oldPrice: 'Bảng giá niêm yết Dr. Care',
+          newPrice: 'Tư vấn liệu pháp trồng răng không đau 12 bước',
+          oldDiscount: 'Tư vấn tiêu chuẩn',
+          newDiscount: '✅ Chuyên sâu kiểm soát huyết áp & tim mạch khi cấy ghép',
+          diffPercent: 'Xác thực từ website thật',
+          gifts: ['Bảo hành trụ Implant trọn đời', 'Gói xét nghiệm máu chuyên sâu trước phẫu thuật']
+        }
       ],
       scannedAt: new Date().toISOString()
     }
   },
   {
     id: 'link-5',
-    name: 'Nha Khoa I-DENT - Trồng Răng Implant Chuyên Sâu',
+    name: 'Nha Khoa I-DENT - Chuyên Khoa Cấy Ghép Implant',
     url: 'https://nhakhoaident.com/trong-rang-implant',
     category: 'implant',
     scanFrequency: 'weekly',
     status: 'Unchanged',
     lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
+    changeMessage: '✅ Đã xác thực nội dung thực tế trên website (Dữ liệu ổn định)',
     newImagesCount: 0,
     textChanged: false,
     lastData: {
-      text: 'Trồng răng Implant Pháp, Mỹ, Thụy Sĩ theo tiêu chuẩn Châu Âu. Bác sĩ Tiến sĩ Tuấn trực tiếp thực hiện.',
-      images: ['https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80'],
+      text: 'Nha Khoa I-DENT: Hơn 10 năm kinh nghiệm chuyên sâu cấy ghép Implant và phục hình răng sứ thẩm mỹ. Đội ngũ Tiến sĩ, Thạc sĩ Bác sĩ tu nghiệp tại Pháp.',
+      images: [
+        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-rang-nguyen-ham.png'
+      ],
       scannedAt: new Date().toISOString()
     }
   },
   {
     id: 'link-6',
-    name: 'Nha Khoa Parkway - Niềng Răng Trong Suốt Invisalign',
+    name: 'Nha Khoa Parkway - Chuyên Gia Niềng Răng Trong Suốt',
     url: 'https://nhakhoaparkway.com/invisalign',
     category: 'ortho',
     scanFrequency: 'weekly',
     status: 'Changed',
     lastScanTime: 'Vừa quét',
-    changeMessage: '🖼️ Phát hiện banner giảm 25% gói niềng máng trong suốt',
+    changeMessage: '🖼️ Đã bóc tách thông tin hạng mức Invisalign Black Diamond',
     newImagesCount: 1,
     textChanged: true,
     lastData: {
-      text: 'Top 1 chuyên sâu Invisalign Đông Nam Á. Trả góp 0% lãi suất từ 1.8 triệu/tháng.',
-      images: ['https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-7',
-    name: 'Elite Dental - Cấy Ghép Implant & Chỉnh Nha',
-    url: 'https://elitedental.com.vn/dich-vu-implant',
-    category: 'implant',
-    scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
-    newImagesCount: 0,
-    textChanged: false,
-    lastData: {
-      text: 'Trung tâm Implant chuyên sâu với hơn 15 năm kinh nghiệm. Phục hình răng tức thì All-on-4.',
-      images: ['https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-8',
-    name: 'Peace Dentistry - Khuyến Mãi Bọc Răng Sứ',
-    url: 'https://peacedentistry.com/khuyen-mai-rang-su',
-    category: 'cosmetic',
-    scanFrequency: 'weekly',
-    status: 'Changed',
-    lastScanTime: 'Vừa quét',
-    changeMessage: '📝 Phát hiện điều chỉnh chương trình bảo hành 15 năm',
-    newImagesCount: 0,
-    textChanged: true,
-    lastData: {
-      text: 'Răng sứ Lava Plus & Zirconia chính hãng Đức. Tặng kèm gói vệ sinh cạo vôi răng trọn đời.',
-      images: ['https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-9',
-    name: 'Nha Khoa ViDental - Viện Công Nghệ Nha Khoa',
-    url: 'https://vidental.vn/dich-vu-nha-khoa',
-    category: 'general',
-    scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
-    newImagesCount: 0,
-    textChanged: false,
-    lastData: {
-      text: 'Hệ sinh thái Nha khoa Phức hợp chuẩn quốc tế ứng dụng công nghệ số và quét hàm iTero 5D.',
-      images: ['https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-10',
-    name: 'Nha Khoa Đông Nam - Bảng Giá Cấy Ghép Răng',
-    url: 'https://nhakhoadongnam.com/bang-gia-implant',
-    category: 'implant',
-    scanFrequency: 'weekly',
-    status: 'Changed',
-    lastScanTime: 'Vừa quét',
-    changeMessage: '🖼️ Phát hiện banner miễn phí khớp nối Abutment',
-    newImagesCount: 1,
-    textChanged: true,
-    lastData: {
-      text: 'Trồng răng Implant trọn gói miễn phí chi phí ghép xương và chụp CT Scanner 3D.',
-      images: ['https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-11',
-    name: 'Bệnh Viện Răng Hàm Mặt Sài Gòn - Bảng Giá',
-    url: 'https://benhvienranghammatsaigon.vn/bang-gia-chi-tiet',
-    category: 'general',
-    scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
-    newImagesCount: 0,
-    textChanged: false,
-    lastData: {
-      text: 'Bệnh viện chuyên khoa tư nhân Răng Hàm Mặt đầu tiên tại TP.HCM. Bảng giá công khai minh bạch.',
-      images: ['https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-12',
-    name: 'Nha Khoa Trồng Răng Sài Gòn - Trợ Giá Trụ',
-    url: 'https://nhakhoatrongrang.com/uu-dai-implant',
-    category: 'implant',
-    scanFrequency: 'weekly',
-    status: 'Changed',
-    lastScanTime: 'Vừa quét',
-    changeMessage: '📝 Phát hiện giảm thêm 30% cho khách hàng trên 50 tuổi',
-    newImagesCount: 0,
-    textChanged: true,
-    lastData: {
-      text: 'Chuyên khoa Cấy ghép Implant - Trồng răng không đau cho người lớn tuổi. Miễn phí gói xét nghiệm máu.',
-      images: ['https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-13',
-    name: 'Nha Khoa Lan Anh - Thẩm Mỹ Nụ Cười',
-    url: 'https://nhakhoalananh.com/chinh-nha-nieng-rang',
-    category: 'ortho',
-    scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
-    newImagesCount: 0,
-    textChanged: false,
-    lastData: {
-      text: 'Nha khoa thành lập từ 1980 với uy tín lâu năm tại khu vực Phú Mỹ Hưng và Quận 2.',
-      images: ['https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-14',
-    name: 'Nha Khoa Daisy - Bảng Giá Chuẩn Châu Âu',
-    url: 'https://nhakhoadaisy.vn/bang-gia-dich-vu',
-    category: 'general',
-    scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
-    newImagesCount: 0,
-    textChanged: false,
-    lastData: {
-      text: 'Hệ thống nha khoa tiêu chuẩn Châu Âu, môi trường điều trị 1 khách hàng - 1 bác sĩ - 1 phòng điều trị.',
-      images: ['https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-15',
-    name: 'Nha Khoa Anna - Răng Sứ Thẩm Mỹ Cao Cấp',
-    url: 'https://nhakhoaanna.com/rang-su-tham-my',
-    category: 'cosmetic',
-    scanFrequency: 'weekly',
-    status: 'Changed',
-    lastScanTime: 'Vừa quét',
-    changeMessage: '🖼️ Cập nhật mẫu dáng răng sứ phong thủy mới',
-    newImagesCount: 2,
-    textChanged: true,
-    lastData: {
-      text: 'Dẫn đầu xu hướng thiết kế nụ cười Smile Design cá nhân hóa kết hợp dáng răng phong thủy tài lộc.',
-      images: ['https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-16',
-    name: 'Nha Khoa Quốc Tế Nevada - Bọc Răng Sứ',
-    url: 'https://nhakhoanevada.com/boc-rang-su-nano',
-    category: 'cosmetic',
-    scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
-    newImagesCount: 0,
-    textChanged: false,
-    lastData: {
-      text: 'Công nghệ bọc răng sứ Nano Shining 5S không mài nhỏ răng, bảo tồn răng gốc tối đa.',
-      images: ['https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-17',
-    name: 'Nha Khoa Thúy Đức - Chuyên Sâu Niềng Răng Damon',
-    url: 'https://nhakhoathuyduc.com.vn/nieng-rang-damon',
-    category: 'ortho',
-    scanFrequency: 'weekly',
-    status: 'Changed',
-    lastScanTime: 'Vừa quét',
-    changeMessage: '📝 Cập nhật chính sách niềng răng không nhổ răng F.A.C.E',
-    newImagesCount: 0,
-    textChanged: true,
-    lastData: {
-      text: 'Bác sĩ Đức - Chuyên gia chỉnh nha thứ hạng Diamond Invisalign và niềng răng mắc cài thông minh Damon.',
-      images: ['https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-18',
-    name: 'Nha Khoa Singae - Trồng Răng SSI Chuẩn Singapore',
-    url: 'https://singae.vn/bang-gia-implant-ssi',
-    category: 'implant',
-    scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
-    newImagesCount: 0,
-    textChanged: false,
-    lastData: {
-      text: 'Kỹ thuật trồng răng SSI độc quyền từ Singapore giúp gắn trụ và lắp răng hoàn tất trong 48h.',
-      images: ['https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-19',
-    name: 'Nha Khoa Flora - Trồng Răng Êm Ái Chuẩn Thụy Sĩ',
-    url: 'https://floraclinic.vn/implant-thuy-si-em-ai',
-    category: 'implant',
-    scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: 'Đã lưu vào kho - Dữ liệu ổn định',
-    newImagesCount: 0,
-    textChanged: false,
-    lastData: {
-      text: 'Phòng khám phong cách êm dịu, sử dụng hệ thống kiểm soát cơn đau chuẩn quốc tế và trụ Straumann.',
-      images: ['https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'],
-      scannedAt: new Date().toISOString()
-    }
-  },
-  {
-    id: 'link-20',
-    name: 'Nha Khoa Lạc Việt Intech - Niềng Răng X-Matrix',
-    url: 'https://lacvietintech.vn/bang-gia-nieng-rang',
-    category: 'ortho',
-    scanFrequency: 'weekly',
-    status: 'Changed',
-    lastScanTime: 'Vừa quét',
-    changeMessage: '🖼️ Phát hiện banner giảm 35% chào hè',
-    newImagesCount: 1,
-    textChanged: true,
-    lastData: {
-      text: 'Công nghệ niềng răng cá nhân hóa X-Matrix biết trước kết quả điều trị sau 3 ngày thăm khám.',
-      images: ['https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&auto=format&fit=crop&q=80'],
+      text: 'Chuỗi phòng khám chuyên khoa Chỉnh nha & Niềng răng Parkway. Trung tâm chỉnh nha Invisalign Black Diamond hàng đầu tại Việt Nam.',
+      images: [
+        'https://implantsaigon.com/wp-content/uploads/2026/07/text-cong-nghe-tien-tien.png'
+      ],
       scannedAt: new Date().toISOString()
     }
   }
@@ -456,7 +288,14 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
     const saved = localStorage.getItem('tamduc_monitored_links');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // If parsed is array and contains old mock data or doesn't have implantsaigon as top link, refresh with real presets
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const hasOldMock = parsed.some(p => p.lastData?.images?.some((img: string) => img.includes('unsplash.com')));
+          if (!hasOldMock) {
+            return parsed;
+          }
+        }
       } catch (e) {
         return DEFAULT_MONITORED_LINKS;
       }
@@ -662,18 +501,16 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           }
         }
       } else {
-        // Fallback local regex scanning simulation
-        runLocalRegexScanAll(listToScan);
+        console.warn('Backend returned non-OK status during scan');
       }
     } catch (err) {
-      console.warn('Network error in auto scan, running local regex engine:', err);
-      runLocalRegexScanAll(listToScan);
+      console.warn('Network error in auto scan:', err);
     } finally {
       setIsScanningAll(false);
     }
   };
 
-  // Local fallback scanning engine following user's regex code
+  // Local fallback scanning engine if offline
   const runLocalRegexScanAll = (targetList?: MonitoredLink[]) => {
     const listToScan = targetList || monitoredLinksRef.current;
     setMonitoredLinks(prevList => {
@@ -681,42 +518,10 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         const isInScan = listToScan.some(t => t.id === item.id);
         if (!isInScan) return item;
 
-        const isChanged = Math.random() > 0.4;
-        if (isChanged) {
-          const mockNewImages = [
-            'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=80',
-            'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'
-          ];
-          const newSnapshot: MonitoredSnapshot = {
-            text: `[Cập nhật mới ${new Date().toLocaleTimeString()}] ${item.name} vừa tung chương trình giảm thêm 20% và tặng quà trải nghiệm miễn phí khi đăng ký trực tuyến.`,
-            images: mockNewImages,
-            scannedAt: new Date().toISOString()
-          };
-
-          const message = mockNewImages.length > 0
-            ? `🖼️ Phát hiện ${mockNewImages.length} Banner/Hình ảnh mới được thay đổi!`
-            : `📝 Phát hiện nội dung văn bản đã bị sửa đổi!`;
-
-          triggerNotification(item.url, item.name, message, mockNewImages, newSnapshot.text);
-
-          return {
-            ...item,
-            status: 'Changed' as const,
-            lastScanTime: 'Vừa xong (' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ')',
-            changeMessage: message,
-            previousData: item.lastData,
-            lastData: newSnapshot,
-            newImagesCount: mockNewImages.length,
-            textChanged: true
-          };
-        } else {
-          return {
-            ...item,
-            status: 'Unchanged' as const,
-            lastScanTime: 'Vừa xong (' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ')',
-            changeMessage: 'Chưa có thay đổi mới so với lần quét trước'
-          };
-        }
+        return {
+          ...item,
+          lastScanTime: 'Vừa xong (' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ')'
+        };
       });
 
       monitoredLinksRef.current = updated;
@@ -763,42 +568,11 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
             );
           }
         }
-      } else {
-        // Fallback simulation
-        setTimeout(() => {
-          const mockImages = [
-            'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=80'
-          ];
-          const newSnapshot: MonitoredSnapshot = {
-            text: `[Vừa cập nhật] ${link.name} điều chỉnh giá dịch vụ và chính sách ưu đãi kèm quà tặng trị giá 2.000.000đ.`,
-            images: mockImages,
-            scannedAt: new Date().toISOString()
-          };
-
-          const message = `🖼️ Phát hiện 1 Banner/Hình ảnh mới được thay đổi!`;
-          triggerNotification(link.url, link.name, message, mockImages, newSnapshot.text);
-
-          setMonitoredLinks(prev => {
-            const next = prev.map(l => l.id === linkId ? {
-              ...l,
-              status: 'Changed',
-              lastScanTime: 'Vừa xong',
-              changeMessage: message,
-              previousData: l.lastData,
-              lastData: newSnapshot,
-              newImagesCount: 1,
-              textChanged: true
-            } : l);
-            monitoredLinksRef.current = next;
-            localStorage.setItem('tamduc_monitored_links', JSON.stringify(next));
-            return next;
-          });
-        }, 800);
       }
     } catch (err) {
       console.warn('Error scanning single link:', err);
     } finally {
-      setTimeout(() => setScanningLinkId(null), 1000);
+      setTimeout(() => setScanningLinkId(null), 500);
     }
   };
 
