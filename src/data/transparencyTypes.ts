@@ -24,7 +24,7 @@ export interface TransparencyAdItem {
     headlineMain: string;
     subHeadline?: string;
     highlightPill?: string;
-    photoType?: 'harvard_group' | 'doctor_guide' | 'aligner_girl' | 'viet_kieu_smile' | 'big4_trust' | 'surgery_room' | 'senior_couple' | 'porcelain_smile';
+    photoType?: 'harvard_group' | 'doctor_guide' | 'aligner_girl' | 'viet_kieu_smile' | 'big4_trust' | 'surgery_room' | 'senior_couple' | 'porcelain_smile' | 'implant_lunch_hour' | 'viet_kieu_smile_2' | 'vung_tau_clinic' | 'implant_senior_male';
     duration?: string;
     imageUrl?: string;
     videoScript?: string;

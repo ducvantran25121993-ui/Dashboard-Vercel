@@ -1298,7 +1298,7 @@ export const CompetitorWebDiffScanner: React.FC = () => {
       {/* TOP NAVIGATION BUTTONS */}
       <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 shrink-0 overflow-x-auto">
-          {/* TAB 1: GOOGLE ADS TRANSPARENCY CENTER (REAL-TIME CHÍNH THỨC) */}
+          {/* TAB 1: GOOGLE ADS TRANSPARENCY CENTER */}
           <button
             type="button"
             onClick={() => setActiveMode('google_transparency')}
@@ -1309,10 +1309,7 @@ export const CompetitorWebDiffScanner: React.FC = () => {
             }`}
           >
             <ShieldCheck className="w-4 h-4 text-emerald-300" />
-            <span>GOOGLE ADS TRANSPARENCY CENTER (REAL-TIME 100%)</span>
-            <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-200 border border-emerald-400/40 font-mono animate-pulse">
-              CHÍNH THỨC
-            </span>
+            <span>GOOGLE ADS TRANSPARENCY CENTER</span>
           </button>
 
           {/* TAB 2: URL DEEP SCANNER */}

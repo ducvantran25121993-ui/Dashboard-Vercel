@@ -4,9 +4,10 @@ import { generateBrandAds } from './adGeneratorHelper';
 export * from './transparencyTypes';
 
 // ============================================================================
-// BASE CURATED ADS FOR NHA KHOA KIM
+// BASE CURATED ADS FOR NHA KHOA KIM (MATCHING EXACT GOOGLE ADS TRANSPARENCY SCREENSHOT)
 // ============================================================================
 const KIM_BASE_ADS: TransparencyAdItem[] = [
+  // Row 1, Col 1: Quy trình trồng Implant chỉ 2 lần hẹn
   {
     id: 'kim-ad-1',
     advertiserName: 'Nha Khoa Kim',
@@ -15,89 +16,15 @@ const KIM_BASE_ADS: TransparencyAdItem[] = [
     isVerified: true,
     format: 'video',
     platform: 'YouTube',
-    firstSeen: '10/01/2025',
-    lastSeen: 'Đang chạy hôm nay',
-    category: 'general',
-    visual: {
-      theme: 'navy_gold',
-      brandLogoText: 'NHA KHOA KIM',
-      topBadgeText: 'CHUẨN QUỐC TẾ',
-      headlineMain: 'BIG 4 KIỂM CHỨNG QUẢN TRỊ NHA KHOA KIM',
-      subBadgeText: 'Deloitte • EY • PwC • KPMG',
-      highlightPill: 'Quản Trị Minh Bạch',
-      photoType: 'big4_trust',
-      duration: '0:30',
-      imageUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&auto=format&fit=crop&q=80'
-    },
-    intel: {
-      campaignGoal: 'Xây dựng uy tín tối thượng, khẳng định vị thế chuỗi nha khoa đạt chuẩn kiểm toán quốc tế.',
-      psychologicalHook: 'Đòn bẩy tâm lý "Big 4" - tạo cảm giác an tâm tuyệt đối về chất lượng và tính minh bạch tài chính/vận hành.',
-      targetAudience: 'Khách hàng trung lưu, người có thu nhập cao và khách hàng kỹ tính tại TP.HCM & Hà Nội.',
-      estimatedDailySpend: '15.000.000 đ/ngày (YouTube & PMax)',
-      competitorWeakness: 'Đánh bóng thương hiệu quá mức nhưng chi phí vận hành lớn khiến bảng giá dịch vụ luôn cao hơn 25-40% so với thị trường.',
-      counterAdTemplate: {
-        headline: 'Nha Khoa Tâm Đức Smile - Trực Tiếp Bác Sĩ CKI Điều Trị Không Qua Trung Gian',
-        description: '17 chi nhánh TP.HCM & Miền Tây. Cam kết bảng giá niêm yết trọn gói 100%, không phụ phí. Hơn 100.000 nụ cười tin chọn.',
-        sitelinks: ['Bảng Giá Gốc 2026', '17 Chi Nhánh Gần Bạn', 'Bác Sĩ CKI Khám 0đ', 'Xem Khách Hàng Thực Tế'],
-        biddingAdvice: 'Nhắm từ khóa thương hiệu "nha khoa kim uy tín" và nhấn mạnh "Giá Gốc Trọn Gói - Bác Sĩ Trực Tiếp".',
-        uniqueSellingPoint: 'Chi phí hợp lý, tiết kiệm hơn 30% với chất lượng điều trị tương đương và phủ rộng khắp miền Tây.'
-      }
-    }
-  },
-  {
-    id: 'kim-ad-2',
-    advertiserName: 'Nha Khoa Kim',
-    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
-    domain: 'nhakhoakim.com',
-    isVerified: true,
-    format: 'video',
-    platform: 'YouTube',
-    firstSeen: '15/01/2025',
-    lastSeen: 'Đang chạy hôm nay',
-    category: 'general',
-    visual: {
-      theme: 'harvard_gold',
-      brandLogoText: 'NHA KHOA KIM',
-      topBadgeText: 'ĐẠI HỌC HARVARD',
-      headlineMain: 'NHA KHOA KIM & HARVARD - NÂNG CHUẨN ĐIỀU TRỊ NHA KHOA',
-      subHeadline: 'Case Study Được Giảng Dạy Tại Harvard Business School',
-      highlightPill: 'Harvard Business School',
-      photoType: 'harvard_group',
-      duration: '0:45',
-      imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop&q=80'
-    },
-    intel: {
-      campaignGoal: 'Định vị Nha Khoa Kim là nha khoa duy nhất tại VN được Harvard đưa vào tài liệu giảng dạy nghiên cứu điển hình.',
-      psychologicalHook: 'Hiệu ứng hào quang (Halo Effect) từ thương hiệu Harvard để bán các gói dịch vụ giá cao.',
-      targetAudience: 'Giới trí thức, doanh nhân, kiều bào và người có yêu cầu khắt khe về tiêu chuẩn điều trị.',
-      estimatedDailySpend: '18.000.000 đ/ngày',
-      competitorWeakness: 'Harvard chỉ nghiên cứu về mô hình kinh doanh chuỗi, không phản ánh tay nghề từng bác sĩ tại chi nhánh lẻ.',
-      counterAdTemplate: {
-        headline: 'Tâm Đức Smile - Đội Ngũ Bác Sĩ CKI Tốt Nghiệp ĐH Y Dược Hơn 15 Năm Kinh Nghiệm',
-        description: 'Điều trị tận tâm, 1 Bác sĩ theo sát 1 Bệnh nhân từ đầu đến cuối. Trang thiết bị Đức & Thụy Sĩ chuẩn y khoa.',
-        sitelinks: ['Hồ Sơ Bác Sĩ CKI', 'Bảng Giá Trọn Gói', 'Cam Kết Bằng Văn Bản', 'Tư Vấn Miễn Phí'],
-        biddingAdvice: 'Đánh mạnh vào yếu tố "Bác sĩ trực tiếp làm từ A-Z, không chuyển giao cho phụ tá".',
-        uniqueSellingPoint: 'Chăm sóc 1:1 tận tụy, cam kết chất lượng trực tiếp từ bác sĩ chuyên khoa I.'
-      }
-    }
-  },
-  {
-    id: 'kim-ad-3',
-    advertiserName: 'Nha Khoa Kim',
-    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
-    domain: 'nhakhoakim.com',
-    isVerified: true,
-    format: 'video',
-    platform: 'YouTube',
-    firstSeen: '05/02/2025',
+    firstSeen: '20/02/2025',
     lastSeen: 'Đang chạy hôm nay',
     category: 'implant',
     visual: {
       theme: 'clinic_blue',
       brandLogoText: 'NHA KHOA KIM',
-      topBadgeText: 'CÔNG NGHỆ MÁNG ĐỊNH VỊ',
+      topBadgeText: 'MÁNG ĐỊNH VỊ 3D',
       headlineMain: 'QUY TRÌNH TRỒNG IMPLANT CHỈ 2 LẦN HẸN - MÁNG ĐỊNH VỊ',
-      subHeadline: 'Lần 1: Chụp CT 3D & Scan răng • Lần 2: Cắm trụ & Phục hình',
+      subHeadline: 'Lần 1: Chụp CT 3D & Quét răng • Lần 2: Cắm trụ & Phục hình',
       highlightPill: 'Không Đau - Nhanh Chóng',
       photoType: 'doctor_guide',
       duration: '0:40',
@@ -118,15 +45,16 @@ const KIM_BASE_ADS: TransparencyAdItem[] = [
       }
     }
   },
+  // Row 1, Col 2: Bảng Giá Nha Khoa 2025 - Google Search Ad
   {
-    id: 'kim-ad-4',
+    id: 'kim-ad-2',
     advertiserName: 'Nha Khoa Kim',
     legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
     domain: 'nhakhoakim.com',
     isVerified: true,
     format: 'text',
     platform: 'Google Search',
-    firstSeen: '01/01/2025',
+    firstSeen: '18/02/2025',
     lastSeen: 'Đang chạy hôm nay',
     category: 'general',
     searchAd: {
@@ -157,15 +85,16 @@ const KIM_BASE_ADS: TransparencyAdItem[] = [
       }
     }
   },
+  // Row 1, Col 3: Invisalign Đừng chỉ nhận khay hãy nhận kết quả
   {
-    id: 'kim-ad-5',
+    id: 'kim-ad-3',
     advertiserName: 'Nha Khoa Kim',
     legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
     domain: 'nhakhoakim.com',
     isVerified: true,
     format: 'video',
     platform: 'YouTube',
-    firstSeen: '12/01/2025',
+    firstSeen: '16/02/2025',
     lastSeen: 'Đang chạy hôm nay',
     category: 'ortho',
     visual: {
@@ -194,15 +123,16 @@ const KIM_BASE_ADS: TransparencyAdItem[] = [
       }
     }
   },
+  // Row 1, Col 4: Từ Mỹ trở về trồng răng toàn hàm
   {
-    id: 'kim-ad-6',
+    id: 'kim-ad-4',
     advertiserName: 'Nha Khoa Kim',
     legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
     domain: 'nhakhoakim.com',
     isVerified: true,
     format: 'video',
     platform: 'YouTube',
-    firstSeen: '20/01/2025',
+    firstSeen: '14/02/2025',
     lastSeen: 'Đang chạy hôm nay',
     category: 'implant',
     visual: {
@@ -228,6 +158,274 @@ const KIM_BASE_ADS: TransparencyAdItem[] = [
         sitelinks: ['Gói Kiều Bào Trọn Gói', 'Xe Đưa Đón Sân Bay', 'Ăn Nhai Trong 24H', 'Tư Vấn Online 24/7'],
         biddingAdvice: 'Chạy chiến dịch nhắm đối tượng có người thân ở nước ngoài hoặc truy cập từ IP US/AU/CA.',
         uniqueSellingPoint: 'Dịch vụ chuẩn VIP đưa đón sân bay, khách sạn, hoàn tất phục hình trong thời gian ngắn nhất.'
+      }
+    }
+  },
+  // Row 2, Col 1: Bảng Giá Nha Khoa Kim 2026 - An Toàn Tận Tâm Thẩm Mỹ Cao
+  {
+    id: 'kim-ad-5',
+    advertiserName: 'Nha Khoa Kim',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
+    domain: 'nhakhoakim.com',
+    isVerified: true,
+    format: 'text',
+    platform: 'Google Search',
+    firstSeen: '12/02/2025',
+    lastSeen: 'Đang chạy hôm nay',
+    category: 'general',
+    searchAd: {
+      displayDomain: 'nhakhoakim.com',
+      path: 'www.nhakhoakim.com/dia-chi/phong-kham',
+      headline: 'Bảng Giá Nha Khoa Kim 2026 - An Toàn-Tận Tâm-Thẩm Mỹ Cao',
+      description: '100% KH được điều trị bởi Bác sĩ giỏi chuyên môn và năng lực, đầy đủ bằng cấp, chứng chỉ. Chuỗi Nha khoa chiếm trọn 14 vị trí đầu...',
+      sitelinks: [
+        'Bảng Giá Nha Khoa 2026',
+        'An Toàn Trong Điều Trị',
+        '17 Chi Nhánh Toàn Quốc',
+        'Đội Ngũ Bác Sĩ CKI'
+      ],
+      callouts: ['ISO 9001:2015', 'Chi Nhánh Gần Bạn', 'Bác Sĩ Trực Tiếp Khám']
+    },
+    intel: {
+      campaignGoal: 'Đón traffic tìm kiếm địa chỉ phòng khám và bảng giá tổng quát.',
+      psychologicalHook: 'Thông điệp An toàn - Tận tâm - Thẩm mỹ cao tạo sự tin tưởng toàn diện.',
+      targetAudience: 'Người tìm kiếm chuỗi nha khoa uy tín tại TP.HCM & các tỉnh.',
+      estimatedDailySpend: '14.000.000 đ/ngày',
+      competitorWeakness: 'Đông bệnh nhân dẫn đến thời gian chờ đợi lâu tại một số chi nhánh trung tâm.',
+      counterAdTemplate: {
+        headline: 'Tâm Đức Smile - Đặt Hẹn Trước Khám Ngay Không Chờ Đợi • Bác Sĩ CKI',
+        description: 'Tặng trọn gói chụp CT 3D & Vệ sinh răng 0đ khi đặt lịch online. Bảng giá trọn gói niêm yết công khai.',
+        sitelinks: ['Đặt Hẹn 0đ Chờ Đợi', 'Bảng Giá Gốc', '17 Chi Nhánh'],
+        biddingAdvice: 'Đánh vào lợi thế "Khám ngay không phải chờ đợi" và miễn phí gói chụp phim.',
+        uniqueSellingPoint: 'Quy trình tiếp đón 1:1 nhanh chóng, không phải bốc số chờ đợi lâu.'
+      }
+    }
+  },
+  // Row 2, Col 2: Big 4 kiểm chứng quản trị
+  {
+    id: 'kim-ad-6',
+    advertiserName: 'Nha Khoa Kim',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
+    domain: 'nhakhoakim.com',
+    isVerified: true,
+    format: 'video',
+    platform: 'YouTube',
+    firstSeen: '10/02/2025',
+    lastSeen: 'Đang chạy hôm nay',
+    category: 'general',
+    visual: {
+      theme: 'navy_gold',
+      brandLogoText: 'NHA KHOA KIM',
+      topBadgeText: 'CHUẨN QUỐC TẾ',
+      headlineMain: 'BIG4 KIỂM CHỨNG QUẢN TRỊ NHA KHOA KIM',
+      subBadgeText: 'Deloitte • EY • PwC • KPMG',
+      highlightPill: 'Quản Trị Minh Bạch',
+      photoType: 'big4_trust',
+      duration: '0:30',
+      imageUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&auto=format&fit=crop&q=80'
+    },
+    intel: {
+      campaignGoal: 'Xây dựng uy tín tối thượng, khẳng định vị thế chuỗi nha khoa đạt chuẩn kiểm toán quốc tế.',
+      psychologicalHook: 'Đòn bẩy tâm lý "Big 4" - tạo cảm giác an tâm tuyệt đối về chất lượng và tính minh bạch tài chính/vận hành.',
+      targetAudience: 'Khách hàng trung lưu, người có thu nhập cao và khách hàng kỹ tính tại TP.HCM & Hà Nội.',
+      estimatedDailySpend: '15.000.000 đ/ngày',
+      competitorWeakness: 'Đánh bóng thương hiệu quá mức nhưng chi phí vận hành lớn khiến bảng giá dịch vụ luôn cao hơn 25-40% so với thị trường.',
+      counterAdTemplate: {
+        headline: 'Nha Khoa Tâm Đức Smile - Trực Tiếp Bác Sĩ CKI Điều Trị Không Qua Trung Gian',
+        description: '17 chi nhánh TP.HCM & Miền Tây. Cam kết bảng giá niêm yết trọn gói 100%, không phụ phí. Hơn 100.000 nụ cười tin chọn.',
+        sitelinks: ['Bảng Giá Gốc 2026', '17 Chi Nhánh Gần Bạn', 'Bác Sĩ CKI Khám 0đ', 'Xem Khách Hàng Thực Tế'],
+        biddingAdvice: 'Nhắm từ khóa thương hiệu "nha khoa kim uy tín" và nhấn mạnh "Giá Gốc Trọn Gói - Bác Sĩ Trực Tiếp".',
+        uniqueSellingPoint: 'Chi phí hợp lý, tiết kiệm hơn 30% với chất lượng điều trị tương đương và phủ rộng khắp miền Tây.'
+      }
+    }
+  },
+  // Row 2, Col 3: Harvard Nâng Chuẩn Điều Trị
+  {
+    id: 'kim-ad-7',
+    advertiserName: 'Nha Khoa Kim',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
+    domain: 'nhakhoakim.com',
+    isVerified: true,
+    format: 'video',
+    platform: 'YouTube',
+    firstSeen: '08/02/2025',
+    lastSeen: 'Đang chạy hôm nay',
+    category: 'general',
+    visual: {
+      theme: 'harvard_gold',
+      brandLogoText: 'NHA KHOA KIM & HARVARD',
+      topBadgeText: 'ĐẠI HỌC HARVARD',
+      headlineMain: 'NÂNG CHUẨN ĐIỀU TRỊ NHA KHOA',
+      subHeadline: 'Case Study Được Giảng Dạy Tại Harvard Business School',
+      highlightPill: 'Harvard Business School',
+      photoType: 'harvard_group',
+      duration: '0:45',
+      imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop&q=80'
+    },
+    intel: {
+      campaignGoal: 'Định vị Nha Khoa Kim là nha khoa duy nhất tại VN được Harvard đưa vào tài liệu giảng dạy nghiên cứu điển hình.',
+      psychologicalHook: 'Hiệu ứng hào quang (Halo Effect) từ thương hiệu Harvard để bán các gói dịch vụ giá cao.',
+      targetAudience: 'Giới trí thức, doanh nhân, kiều bào và người có yêu cầu khắt khe về tiêu chuẩn điều trị.',
+      estimatedDailySpend: '18.000.000 đ/ngày',
+      competitorWeakness: 'Harvard chỉ nghiên cứu về mô hình kinh doanh chuỗi, không phản ánh tay nghề từng bác sĩ tại chi nhánh lẻ.',
+      counterAdTemplate: {
+        headline: 'Tâm Đức Smile - Đội Ngũ Bác Sĩ CKI Tốt Nghiệp ĐH Y Dược Hơn 15 Năm Kinh Nghiệm',
+        description: 'Điều trị tận tâm, 1 Bác sĩ theo sát 1 Bệnh nhân từ đầu đến cuối. Trang thiết bị Đức & Thụy Sĩ chuẩn y khoa.',
+        sitelinks: ['Hồ Sơ Bác Sĩ CKI', 'Bảng Giá Trọn Gói', 'Cam Kết Bằng Văn Bản', 'Tư Vấn Miễn Phí'],
+        biddingAdvice: 'Đánh mạnh vào yếu tố "Bác sĩ trực tiếp làm từ A-Z, không chuyển giao cho phụ tá".',
+        uniqueSellingPoint: 'Chăm sóc 1:1 tận tụy, cam kết chất lượng trực tiếp từ bác sĩ chuyên khoa I.'
+      }
+    }
+  },
+  // Row 2, Col 4 (Ad 8): Trồng Implant chỉ trong 1 giờ nghỉ trưa
+  {
+    id: 'kim-ad-8',
+    advertiserName: 'Nha Khoa Kim',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
+    domain: 'nhakhoakim.com',
+    isVerified: true,
+    format: 'video',
+    platform: 'YouTube',
+    firstSeen: '06/02/2025',
+    lastSeen: 'Đang chạy hôm nay',
+    category: 'implant',
+    visual: {
+      theme: 'clinic_blue',
+      brandLogoText: 'NHA KHOA KIM',
+      topBadgeText: 'NHANH CHÓNG',
+      headlineMain: 'TRỒNG IMPLANT CHỈ TRONG 1 GIỜ NGHỈ TRƯA',
+      subHeadline: 'Phục hồi răng tức thì với máng định vị kỹ thuật số 3D',
+      highlightPill: '1 Giờ Nghỉ Trưa',
+      photoType: 'implant_lunch_hour',
+      duration: '0:30',
+      imageUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=600&auto=format&fit=crop&q=80'
+    },
+    intel: {
+      campaignGoal: 'Đánh vào tệp nhân viên văn phòng và người bận rộn cần cắm Implant nhanh chóng trong giờ nghỉ trưa.',
+      psychologicalHook: 'Thông điệp "Chỉ trong 1 giờ nghỉ trưa" xóa tan nỗi sợ mất nhiều ngày nghỉ làm để trồng răng.',
+      targetAudience: 'Nhân viên văn phòng, quản lý, chủ doanh nghiệp bận rộn tại các thành phố lớn.',
+      estimatedDailySpend: '18.000.000 đ/ngày',
+      competitorWeakness: '1 giờ chỉ đủ cắm trụ, chưa tính thời gian xét nghiệm máu và chụp phim CT ban đầu.',
+      counterAdTemplate: {
+        headline: 'Trồng Răng Implant Không Đau Tâm Đức Smile - Cắm Trụ Nhẹ Nhàng 15 Phút • Bác Sĩ CKI',
+        description: 'Chụp CT ConeBeam 3D khảo sát xương miễn phí 100%. Tặng máng phẫu thuật định vị chính xác.',
+        sitelinks: ['Khám Xương 3D 0đ', 'Trụ Implant 9.9Tr', 'Đặt Hẹn Giờ Nghỉ'],
+        biddingAdvice: 'Đấu thầu từ khóa "trồng răng implant nhanh cho người bận rộn".',
+        uniqueSellingPoint: 'Quy trình tiếp đón ưu tiên cho người bận rộn, phục hình răng nhanh.'
+      }
+    }
+  },
+  // Row 3, Col 2 (Ad 9): Từ Mỹ trở về trồng răng toàn hàm (Biến thể 2)
+  {
+    id: 'kim-ad-9',
+    advertiserName: 'Nha Khoa Kim',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
+    domain: 'nhakhoakim.com',
+    isVerified: true,
+    format: 'video',
+    platform: 'YouTube',
+    firstSeen: '05/02/2025',
+    lastSeen: 'Đang chạy hôm nay',
+    category: 'implant',
+    visual: {
+      theme: 'flag_us',
+      brandLogoText: 'NHA KHOA KIM',
+      topBadgeText: 'VIỆT KIỀU MỸ',
+      headlineMain: 'TỪ MỸ TRỞ VỀ TRỒNG RĂNG TOÀN HÀM',
+      subHeadline: 'Khách hàng Việt kiều Mỹ chia sẻ trải nghiệm dịch vụ',
+      highlightPill: 'Việt Kiều Mỹ',
+      photoType: 'viet_kieu_smile_2',
+      duration: '0:45',
+      imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&auto=format&fit=crop&q=80'
+    },
+    intel: {
+      campaignGoal: 'Tăng cường tần suất hiển thị thông điệp Việt kiều Mỹ về nước trồng răng toàn hàm.',
+      psychologicalHook: 'Social Proof từ đồng hương kiều bào giúp tăng tỷ lệ chuyển đổi.',
+      targetAudience: 'Việt kiều Mỹ, Canada, Úc và người thân tại Việt Nam.',
+      estimatedDailySpend: '20.000.000 đ/ngày',
+      competitorWeakness: 'Không có chính sách hỗ trợ đưa đón sân bay và xe đưa rước các buổi tái khám.',
+      counterAdTemplate: {
+        headline: 'Gói Kiều Bào Tâm Đức Smile - Trọn Gói Răng Toàn Hàm Tiết Kiệm 70% So Với Nước Ngoài',
+        description: 'Bảo hành quốc tế. Miễn phí xe đưa đón sân bay Tân Sơn Nhất & khách sạn nghỉ dưỡng.',
+        sitelinks: ['Gói Kiều Bào', 'Đưa Đón Sân Bay', 'Tư Vấn Online 24/7'],
+        biddingAdvice: 'Nhắm target kiều bào và người dùng tìm kiếm nha khoa cho người thân ở nước ngoài.',
+        uniqueSellingPoint: 'Dịch vụ chuẩn VIP toàn diện từ đón sân bay đến hoàn thiện răng.'
+      }
+    }
+  },
+  // Row 3, Col 3 (Ad 10): Môi trường làm việc tại Nha Khoa Kim Vũng Tàu
+  {
+    id: 'kim-ad-10',
+    advertiserName: 'Nha Khoa Kim',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
+    domain: 'nhakhoakim.com',
+    isVerified: true,
+    format: 'video',
+    platform: 'YouTube',
+    firstSeen: '03/02/2025',
+    lastSeen: 'Đang chạy hôm nay',
+    category: 'general',
+    visual: {
+      theme: 'clinic_blue',
+      brandLogoText: 'NHA KHOA KIM',
+      topBadgeText: 'CHI NHÁNH VŨNG TÀU',
+      headlineMain: 'MÔI TRƯỜNG LÀM VIỆC TẠI NHA KHOA KIM VŨNG TÀU',
+      subHeadline: 'Cơ sở vật chất hiện đại chuẩn quốc tế phục vụ người dân Bà Rịa - Vũng Tàu',
+      highlightPill: 'Vũng Tàu',
+      photoType: 'vung_tau_clinic',
+      duration: '0:35',
+      imageUrl: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&auto=format&fit=crop&q=80'
+    },
+    intel: {
+      campaignGoal: 'Đẩy mạnh nhận diện thương hiệu chi nhánh Vũng Tàu và thu hút bệnh nhân địa phương.',
+      psychologicalHook: 'Hình ảnh phòng khám khang trang, nhân sự chuyên nghiệp tạo sự an tâm khi đến khám tại tỉnh.',
+      targetAudience: 'Người dân sinh sống tại TP. Vũng Tàu, Bà Rịa và khu vực lân cận.',
+      estimatedDailySpend: '10.000.000 đ/ngày',
+      competitorWeakness: 'Chi phí dịch vụ tại chi nhánh tỉnh vẫn giữ nguyên mức giá cao như TP.HCM.',
+      counterAdTemplate: {
+        headline: 'Nha Khoa Tâm Đức Smile Vũng Tàu - Bác Sĩ CKI Khám Trực Tiếp • Ưu Đãi 50%',
+        description: 'Chi nhánh hiện đại tại Vũng Tàu. Khám & chụp CT 3D miễn phí. Bảng giá ưu đãi dành riêng cho người dân địa phương.',
+        sitelinks: ['Chi Nhánh Vũng Tàu', 'Bảng Giá Ưu Đãi', 'Đặt Lịch Ngay'],
+        biddingAdvice: 'Target địa lý TP. Vũng Tàu và bán kính 20km.',
+        uniqueSellingPoint: 'Chi nhánh hiện đại ngay trung tâm Vũng Tàu, giá cả hợp lý phù hợp người dân địa phương.'
+      }
+    }
+  },
+  // Row 3, Col 4 (Ad 11): Implant Toàn Hàm Chỉ 2 Lần Hẹn - Ăn Nhai Thoải Mái
+  {
+    id: 'kim-ad-11',
+    advertiserName: 'Nha Khoa Kim',
+    legalEntity: 'CÔNG TY TNHH NHA KHOA KIM',
+    domain: 'nhakhoakim.com',
+    isVerified: true,
+    format: 'video',
+    platform: 'YouTube',
+    firstSeen: '01/02/2025',
+    lastSeen: 'Đang chạy hôm nay',
+    category: 'implant',
+    visual: {
+      theme: 'clinic_blue',
+      brandLogoText: 'NHA KHOA KIM',
+      topBadgeText: 'IMPLANT TOÀN HÀM',
+      headlineMain: 'IMPLANT TOÀN HÀM CHỈ 2 LẦN HẸN - ĂN NHAI THOẢI MÁI',
+      subHeadline: 'Giải pháp phục hình răng nguyên hàm bền chắc trọn đời cho người lớn tuổi',
+      highlightPill: 'Ăn Nhai Thoải Mái',
+      photoType: 'implant_senior_male',
+      duration: '0:40',
+      imageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80'
+    },
+    intel: {
+      campaignGoal: 'Thúc đẩy dịch vụ Implant toàn hàm All On 4/6 với cam kết chỉ 2 lần hẹn.',
+      psychologicalHook: 'Hình ảnh chú lớn tuổi cười rạng rỡ và thông điệp "Ăn nhai thoải mái" kích thích nhu cầu phục hồi răng mất.',
+      targetAudience: 'Người cao tuổi từ 50-75 tuổi bị mất nhiều răng hoặc mất toàn bộ răng.',
+      estimatedDailySpend: '24.000.000 đ/ngày',
+      competitorWeakness: 'Chi phí trọn gói rất cao, phụ thu tiền máng định vị và răng sứ trên trụ.',
+      counterAdTemplate: {
+        headline: 'Trồng Răng Toàn Hàm All On 4 Tâm Đức Smile - Ăn Nhai Bền Chắc Trọn Đời • Giảm 50Tr',
+        description: 'Tặng trọn bộ CT 3D + Răng sứ chính hãng. Bác sĩ CKI hơn 15 năm kinh nghiệm. Đưa đón tận nhà.',
+        sitelinks: ['Gói Toàn Hàm 2026', 'Xem Khách Hàng U70', 'Đưa Đón 0đ'],
+        biddingAdvice: 'Đánh vào từ khóa "trồng răng toàn hàm cho người già" và nhấn mạnh ưu đãi trọn gói.',
+        uniqueSellingPoint: 'Gói hỗ trợ toàn hàm tốt nhất cho người lớn tuổi kèm chế độ chăm sóc đưa đón 1:1.'
       }
     }
   }
