@@ -360,10 +360,34 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
   const [diffSubTabs, setDiffSubTabs] = useState<Record<string, 'promotions' | 'banners' | 'text' | 'counter'>>({});
   const [lightboxImage, setLightboxImage] = useState<{ src: string; title: string; subtitle?: string; type?: 'before' | 'after' } | null>(null);
   const [copiedSnippetId, setCopiedSnippetId] = useState<string | null>(null);
+  // State for Auto Scan Interval (default: 24 hours = 86400 seconds)
+  const [autoScanInterval, setAutoScanInterval] = useState<number>(() => {
+    const saved = localStorage.getItem('tamduc_auto_scan_interval_sec');
+    if (saved) {
+      const parsed = parseInt(saved, 10);
+      if (!isNaN(parsed) && parsed > 0) return parsed;
+    }
+    return 86400; // 24 hours default
+  });
+
   const [autoScanEnabled, setAutoScanEnabled] = useState<boolean>(true);
-  const [countdown, setCountdown] = useState<number>(300); // 5 minutes periodic mock
+  
+  // Real-time persistent countdown
+  const [countdown, setCountdown] = useState<number>(() => {
+    const savedTarget = localStorage.getItem('tamduc_next_scan_target_timestamp');
+    if (savedTarget) {
+      const target = parseInt(savedTarget, 10);
+      const diff = Math.floor((target - Date.now()) / 1000);
+      if (diff > 0 && diff <= 86400 * 7) {
+        return diff;
+      }
+    }
+    return 86400; // 24 hours default
+  });
+
   const [showNotificationDrawer, setShowNotificationDrawer] = useState<boolean>(false);
   const [showSavedLinksManager, setShowSavedLinksManager] = useState<boolean>(false);
+  const [showIntervalSelectModal, setShowIntervalSelectModal] = useState<boolean>(false);
   const [justAddedLinkId, setJustAddedLinkId] = useState<string | null>(null);
 
   // Inline editing state for modifying saved links directly
@@ -406,21 +430,51 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
     }
   }, []);
 
-  // Periodic Timer simulating chrome.alarms ("weeklyScan" / auto background runner)
+  // Save interval to localStorage and update next scan timestamp
+  useEffect(() => {
+    localStorage.setItem('tamduc_auto_scan_interval_sec', autoScanInterval.toString());
+    const targetTimestamp = Date.now() + autoScanInterval * 1000;
+    localStorage.setItem('tamduc_next_scan_target_timestamp', targetTimestamp.toString());
+    setCountdown(autoScanInterval);
+  }, [autoScanInterval]);
+
+  // Periodic Timer for 24h Auto-Scan
   useEffect(() => {
     if (!autoScanEnabled) return;
     const interval = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           performAutoScan();
-          return 300;
+          const nextTarget = Date.now() + autoScanInterval * 1000;
+          localStorage.setItem('tamduc_next_scan_target_timestamp', nextTarget.toString());
+          return autoScanInterval;
         }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [autoScanEnabled]);
+  }, [autoScanEnabled, autoScanInterval]);
+
+  // Helper to format countdown timer as HH:MM:SS
+  const formatCountdown = (totalSec: number) => {
+    if (totalSec < 0) totalSec = 0;
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if (h > 0) {
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const getIntervalLabel = (sec: number) => {
+    if (sec === 86400) return 'Tự động 24h';
+    if (sec === 43200) return 'Tự động 12h';
+    if (sec === 21600) return 'Tự động 6h';
+    if (sec === 3600) return 'Tự động 1h';
+    return `${Math.floor(sec / 60)} phút`;
+  };
 
   // Trigger browser & in-app notification
   const triggerNotification = (url: string, name: string, message: string, newImages?: string[], textSnippet?: string) => {
@@ -937,21 +991,28 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           </div>
 
           <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
-            <div>
-              <div className="text-[11px] text-cyan-300 font-bold flex items-center gap-1">
-                <span>Báo Thức Định Kỳ</span>
-                <span className="px-1.5 py-0.2 rounded bg-cyan-900/60 text-[9px] text-cyan-300">weeklyScan</span>
+            <div className="flex-1">
+              <div className="text-[11px] text-cyan-300 font-bold flex items-center gap-1.5">
+                <span>Báo Thức Quét 24h</span>
+                <button
+                  type="button"
+                  onClick={() => setShowIntervalSelectModal(true)}
+                  className="px-2 py-0.5 rounded bg-cyan-950 text-[10px] text-cyan-300 border border-cyan-700/50 hover:bg-cyan-900/60 transition-colors font-bold cursor-pointer"
+                  title="Chọn chu kỳ quét tự động"
+                >
+                  ⚙️ {getIntervalLabel(autoScanInterval)}
+                </button>
               </div>
-              <div className="text-xs font-bold text-slate-200 mt-1 flex items-center gap-1 font-mono">
+              <div className="text-xs font-bold text-slate-200 mt-1 flex items-center gap-1.5 font-mono">
                 <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Tự quét lại sau: {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}</span>
+                <span>Tự quét lại sau: {formatCountdown(countdown)}</span>
               </div>
             </div>
             <button
               type="button"
               onClick={() => setAutoScanEnabled(!autoScanEnabled)}
-              title={autoScanEnabled ? 'Tạm dừng báo thức quét ngầm' : 'Kích hoạt báo thức quét ngầm'}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors cursor-pointer ${
+              title={autoScanEnabled ? 'Tạm dừng báo thức quét ngầm 24h' : 'Kích hoạt báo thức quét ngầm 24h'}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors cursor-pointer shrink-0 ml-2 ${
                 autoScanEnabled ? 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30' : 'bg-slate-800 text-slate-500 hover:text-slate-300'
               }`}
             >
