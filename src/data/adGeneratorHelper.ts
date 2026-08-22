@@ -48,6 +48,14 @@ interface BrandAdTemplate {
   counterUsp: string;
 }
 
+// Helper to format Date to DD/MM/YYYY
+export function formatDDMMYYYY(d: Date): string {
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 export function generateBrandAds(
   brandKey: string,
   brandName: string,
@@ -57,7 +65,23 @@ export function generateBrandAds(
   targetCount: number,
   templates: BrandAdTemplate[]
 ): TransparencyAdItem[] {
-  const result: TransparencyAdItem[] = [...baseAds];
+  const now = new Date();
+  
+  // Normalize base ads with proper timestamps if missing
+  const result: TransparencyAdItem[] = baseAds.map((ad, i) => {
+    const daysAgo = (i * 2) % 30; // Within last 30 days
+    const dateObj = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+    return {
+      ...ad,
+      daysAgo: ad.daysAgo ?? daysAgo,
+      firstSeen: ad.firstSeen || formatDDMMYYYY(dateObj),
+      firstSeenTimestamp: ad.firstSeenTimestamp ?? dateObj.getTime(),
+      lastSeen: ad.lastSeen || 'Đang chạy hôm nay',
+      impressionsEstimate: ad.impressionsEstimate || `${(50 + (i % 8) * 20).toLocaleString('vi-VN')}k+ lượt hiển thị`,
+      adDimensions: ad.format === 'image' ? ((i % 3 === 0) ? '1200 x 628 px' : (i % 3 === 1) ? '1080 x 1080 px' : '300 x 250 px') : undefined
+    };
+  });
+
   let index = baseAds.length + 1;
 
   while (result.length < targetCount) {
@@ -71,9 +95,14 @@ export function generateBrandAds(
         ? IMAGES.smile[index % IMAGES.smile.length]
         : IMAGES.doctors[index % IMAGES.doctors.length];
 
-      const dayOffset = (index * 3) % 28 + 1;
-      const monthOffset = index % 2 === 0 ? '01' : '02';
-      const firstSeen = `${dayOffset.toString().padStart(2, '0')}/${monthOffset}/2025`;
+      // Distribute ads across the last 30 days and slightly beyond
+      const daysAgo = (index * 1.5) % 45; // 0 to 44 days ago
+      const dateObj = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+      const firstSeen = formatDDMMYYYY(dateObj);
+
+      const dimensions = t.format === 'image' 
+        ? (index % 3 === 0 ? '1200 x 628 px' : index % 3 === 1 ? '1080 x 1080 px' : '300 x 250 px')
+        : undefined;
 
       const item: TransparencyAdItem = {
         id: adId,
@@ -84,8 +113,12 @@ export function generateBrandAds(
         format: t.format,
         platform: t.platform,
         firstSeen: firstSeen,
-        lastSeen: 'Đang chạy hôm nay',
+        firstSeenTimestamp: dateObj.getTime(),
+        daysAgo: Math.round(daysAgo),
+        lastSeen: daysAgo <= 7 ? 'Đang chạy hôm nay' : `${Math.round(daysAgo)} ngày trước`,
         category: t.category,
+        impressionsEstimate: `${(30 + (index % 12) * 15).toLocaleString('vi-VN')}k+ lượt tiếp cận`,
+        adDimensions: dimensions,
         intel: {
           campaignGoal: t.intelGoal,
           psychologicalHook: t.intelHook,
@@ -112,7 +145,8 @@ export function generateBrandAds(
           highlightPill: t.highlightPill,
           photoType: t.photoType,
           duration: t.format === 'video' ? `0:${30 + (index % 25)}` : undefined,
-          imageUrl: img
+          imageUrl: img,
+          videoScript: t.format === 'video' ? `Video chia sẻ thực tế quy trình ${t.serviceName} từ bác sĩ chuyên khoa. Lời thoại tự nhiên, minh bạch chi phí và hình ảnh cận cảnh trang thiết bị phòng mổ đạt chuẩn quốc tế.` : undefined
         };
       }
 
@@ -132,5 +166,6 @@ export function generateBrandAds(
     }
   }
 
-  return result;
+  // Sort initially newest to oldest
+  return result.sort((a, b) => (b.firstSeenTimestamp || 0) - (a.firstSeenTimestamp || 0));
 }

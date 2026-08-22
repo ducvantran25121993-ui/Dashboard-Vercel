@@ -1065,8 +1065,9 @@ const INITIAL_DISCOVERED_ADS: DiscoveredAd[] = [
 export const CompetitorWebDiffScanner: React.FC = () => {
   // Modes: 
   // 1. 'google_transparency': Kết Nối Google Ads Transparency Center (Real-Time 100% chính thức)
-  // 2. 'url_scanner': Dán Link Web Đối Chiếu CŨ vs MỚI
-  const [activeMode, setActiveMode] = useState<'google_transparency' | 'url_scanner'>('google_transparency');
+  // 2. 'auto_radar': AI Săn Tìm & Tự Động Phân Tích Quảng Cáo
+  // 3. 'url_scanner': Dán Link Web Đối Chiếu CŨ vs MỚI
+  const [activeMode, setActiveMode] = useState<'google_transparency' | 'auto_radar' | 'url_scanner'>('google_transparency');
 
   // Google Transparency Center State
   const [customDomainInput, setCustomDomainInput] = useState<string>('');

@@ -8,6 +8,11 @@ export interface TransparencyAdItem {
   platform: 'Google Search' | 'YouTube' | 'Google Display Network' | 'Performance Max';
   firstSeen: string;
   lastSeen: string;
+  firstSeenTimestamp?: number;
+  daysAgo?: number;
+  isNewDetected?: boolean;
+  impressionsEstimate?: string;
+  adDimensions?: string;
   category: 'implant' | 'ortho' | 'porcelain' | 'general';
   
   // Media / Visual Ad Configuration
@@ -22,6 +27,7 @@ export interface TransparencyAdItem {
     photoType?: 'harvard_group' | 'doctor_guide' | 'aligner_girl' | 'viet_kieu_smile' | 'big4_trust' | 'surgery_room' | 'senior_couple' | 'porcelain_smile';
     duration?: string;
     imageUrl?: string;
+    videoScript?: string;
   };
 
   // Search Text Ad Configuration
