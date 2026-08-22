@@ -45,6 +45,7 @@ import {
   MonitorPlay
 } from 'lucide-react';
 import { GoogleAdsTransparencyCenter } from './GoogleAdsTransparencyCenter';
+import { CompetitorLinkMonitorScanner } from './CompetitorLinkMonitorScanner';
 import { CompetitorDiffItem, INITIAL_COMPETITOR_DIFFS } from '../data/competitorDiffs';
 
 // Verified Top Dental Chains on Google Ads in Vietnam
@@ -1312,18 +1313,18 @@ export const CompetitorWebDiffScanner: React.FC = () => {
             <span>GOOGLE ADS TRANSPARENCY CENTER</span>
           </button>
 
-          {/* TAB 2: URL DEEP SCANNER */}
+          {/* TAB 2: URL DEEP SCANNER & MONITORED LINKS */}
           <button
             type="button"
             onClick={() => setActiveMode('url_scanner')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap ${
               activeMode === 'url_scanner'
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30 ring-2 ring-indigo-400/50'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Globe className="w-4 h-4" />
-            <span>DÁN LINK WEBSITE QUÉT CŨ vs MỚI</span>
+            <Globe className="w-4 h-4 text-indigo-300" />
+            <span>QUÉT & LƯU LINK ĐỐI THỦ (AUTO DIFF & BANNER SCANNER)</span>
           </button>
         </div>
 
@@ -1857,232 +1858,11 @@ export const CompetitorWebDiffScanner: React.FC = () => {
 )}
 
       {/* ========================================================================= */}
-      {/* CHẾ ĐỘ 3: DÁN LINK WEBSITE QUÉT CỤ THỂ (URL DEEP SCANNER)                  */}
+      {/* CHẾ ĐỘ 3: QUÉT & LƯU LINK ĐỐI THỦ (AUTO DIFF & BANNER SCANNER)             */}
       {/* ========================================================================= */}
       {activeMode === 'url_scanner' && (
-        <div className="space-y-6 animate-fadeIn">
-          {/* SCANNER INPUT HERO BOX */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 border-2 border-indigo-500/50 shadow-2xl space-y-4 relative overflow-hidden ring-1 ring-cyan-400/30">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
-            
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/40 shrink-0">
-                  <Globe className="w-7 h-7 animate-pulse" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                      DÁN LINK WEBSITE / LANDING PAGE ĐỐI THỦ ĐỂ AI QUÉT THAY ĐỔI
-                    </h3>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 animate-pulse">
-                      So Sánh Đối Chiếu CŨ vs MỚI
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-300 mt-0.5">
-                    Dán bất kỳ link website, bảng giá, ưu đãi nào vào ô bên dưới. AI sẽ quét và báo cáo trực tiếp: <strong>Bảng giá thay đổi, Banner/Ảnh mới, Popup, Khuyến mãi, Cam kết y khoa</strong>.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* INPUT FORM */}
-            <form onSubmit={handleScanUrl} className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-3 pt-2 bg-slate-950/80 p-4 rounded-2xl border border-indigo-500/30">
-              <div className="md:col-span-4">
-                <label className="block text-xs font-bold text-indigo-300 mb-1">1. Tên Nha Khoa (Tùy chọn)</label>
-                <input
-                  type="text"
-                  value={inputName}
-                  onChange={e => setInputName(e.target.value)}
-                  placeholder="VD: Nha Khoa Kim, Nha Khoa Paris..."
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 shadow-inner"
-                />
-              </div>
-
-              <div className="md:col-span-6">
-                <label className="block text-xs font-bold text-cyan-300 mb-1">
-                  2. Dán Link Website / Bảng Giá / Khuyến Mãi <span className="text-rose-400">*</span>
-                </label>
-                <div className="relative">
-                  <Globe className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="url"
-                    required
-                    value={inputUrl}
-                    onChange={e => setInputUrl(e.target.value)}
-                    placeholder="Dán link vào đây: https://nhakhoadoithu.com/bang-gia-implant..."
-                    className="w-full bg-slate-900 border border-cyan-500/60 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 shadow-inner ring-1 ring-cyan-500/30"
-                  />
-                </div>
-              </div>
-
-              <div className="md:col-span-2 flex items-end">
-                <button
-                  type="submit"
-                  disabled={isScanning}
-                  className="w-full h-[42px] rounded-xl bg-gradient-to-r from-indigo-600 via-cyan-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white font-black text-xs shadow-lg shadow-cyan-950/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-                >
-                  {isScanning ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>AI Đang Quét...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 text-cyan-200" />
-                      <span>AI Quét Ngay</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-
-            {/* Quick Link Presets */}
-            <div className="flex items-center gap-1.5 flex-wrap pt-1 text-xs text-slate-400">
-              <span className="font-bold text-slate-300">Hoặc bấm thử nhanh link đối thủ:</span>
-              {PRESET_URLS.map((p, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    setInputName(p.name);
-                    setInputUrl(p.url);
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-900/60 text-slate-300 hover:text-cyan-300 border border-slate-700 hover:border-cyan-500/50 transition-colors cursor-pointer text-xs"
-                >
-                  {p.name}
-                </button>
-              ))}
-            </div>
-
-            {/* Success Alert Banner */}
-            {scanSuccessMessage && (
-              <div className="p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span className="font-semibold">{scanSuccessMessage}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Filter & Search Bar for Diffs */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-950/90 border border-slate-800 text-xs">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-slate-400 font-bold flex items-center gap-1">
-                <Tag className="w-3.5 h-3.5 text-indigo-400" /> Phân loại thay đổi:
-              </span>
-              {[
-                { id: 'all', label: `Tất cả (${diffs.length})` },
-                { id: 'pricing', label: 'Bảng giá (Price Diff)' },
-                { id: 'promotion', label: 'Khuyến mãi & Ưu đãi' },
-                { id: 'banner', label: 'Banner & Ảnh mới' },
-                { id: 'popup', label: 'Popup quảng cáo' },
-                { id: 'text', label: 'Văn bản & Cam kết' }
-              ].map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3 py-1.5 rounded-xl font-semibold transition-all text-xs cursor-pointer ${
-                    selectedCategory === cat.id
-                      ? 'bg-indigo-600 text-white font-bold shadow-md shadow-indigo-600/30'
-                      : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="relative min-w-[220px]">
-              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchFilter}
-                onChange={e => setSearchFilter(e.target.value)}
-                placeholder="Tìm tên nha khoa, từ khóa..."
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-          </div>
-
-          {/* LIST OF DETECTED CHANGES (CŨ VS MỚI DIFF CARDS) */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <span>Danh Sách Đối Chiếu Thay Đổi Đối Thủ (CŨ VS MỚI)</span>
-                <span className="text-[10px] px-2 py-0.2 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">
-                  {diffs.length} mục
-                </span>
-              </h4>
-              <span className="text-[11px] text-slate-500">Tự động cập nhật & phân tích chiến lược</span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              {diffs.map(item => (
-                <div 
-                  key={item.id}
-                  className="p-5 rounded-3xl bg-slate-950/90 border border-slate-800 hover:border-indigo-500/50 shadow-xl space-y-4 transition-all"
-                >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-800/80">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
-                        <DollarSign className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-bold text-white text-sm">{item.competitorName}</span>
-                          <span className="text-slate-500 text-xs">•</span>
-                          <a 
-                            href={item.url} 
-                            target="_blank" 
-                            rel="noreferrer"
-                            className="text-cyan-400 hover:underline text-xs flex items-center gap-1 font-mono"
-                          >
-                            <span>{item.domain}</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        </div>
-                        <div className="text-xs text-slate-300 font-semibold mt-0.5">
-                          {item.title}
-                        </div>
-                      </div>
-                    </div>
-
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-300 border border-rose-500/30">
-                      {item.diffBadge}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="p-3.5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-1">
-                      <div className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">
-                        Dữ Liệu Cũ Trước Đây:
-                      </div>
-                      <p className="text-xs text-slate-300 line-through decoration-rose-400/80">
-                        {item.oldValue}
-                      </p>
-                    </div>
-
-                    <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 space-y-1">
-                      <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                        Dữ Liệu Mới Phát Hiện:
-                      </div>
-                      <p className="text-xs font-bold text-emerald-300">
-                        {item.newValue}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 text-xs">
-                    <div className="font-bold text-cyan-400 flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5" /> Đề Xuất Phản Công Cho Tâm Đức Smile:
-                    </div>
-                    <p className="text-slate-300 leading-relaxed">{item.counterAction}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="animate-fadeIn">
+          <CompetitorLinkMonitorScanner />
         </div>
       )}
     </div>
