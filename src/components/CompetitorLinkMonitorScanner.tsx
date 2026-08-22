@@ -863,7 +863,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                  HỆ THỐNG QUÉT & LƯU LINK ĐỐI THỦ (AUTO DIFF & BANNER SCANNER)
+                QUÉT URL (AUTO)
                 </h3>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
