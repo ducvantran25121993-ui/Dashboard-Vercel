@@ -26,7 +26,10 @@ import {
   Check,
   Radio,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Edit3,
+  Save,
+  X
 } from 'lucide-react';
 
 export interface MonitoredSnapshot {
@@ -226,6 +229,14 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
   const [autoScanEnabled, setAutoScanEnabled] = useState<boolean>(true);
   const [countdown, setCountdown] = useState<number>(300); // 5 minutes periodic mock
   const [showNotificationDrawer, setShowNotificationDrawer] = useState<boolean>(false);
+  const [showSavedLinksManager, setShowSavedLinksManager] = useState<boolean>(false);
+
+  // Inline editing state for modifying saved links directly
+  const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
+  const [editName, setEditName] = useState<string>('');
+  const [editUrl, setEditUrl] = useState<string>('');
+  const [editCategory, setEditCategory] = useState<'implant' | 'ortho' | 'cosmetic' | 'general' | 'all'>('implant');
+  const [editSavedToast, setEditSavedToast] = useState<string | null>(null);
 
   // Save to localStorage
   useEffect(() => {
@@ -520,6 +531,52 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
     }
   };
 
+  // Start editing a link directly
+  const handleStartEdit = (item: MonitoredLink) => {
+    setEditingLinkId(item.id);
+    setEditName(item.name);
+    setEditUrl(item.url);
+    setEditCategory(item.category);
+  };
+
+  // Save edited link details
+  const handleSaveEdit = (linkId: string, triggerScanAfterSave: boolean = false) => {
+    if (!editUrl.trim()) return;
+    const cleanUrl = editUrl.trim().startsWith('http') ? editUrl.trim() : 'https://' + editUrl.trim();
+    const domain = cleanUrl.replace(/^https?:\/\//, '').split('/')[0];
+    const name = editName.trim() || `Nha Khoa (${domain})`;
+
+    setMonitoredLinks(prev => prev.map(l => {
+      if (l.id === linkId) {
+        const urlChanged = l.url !== cleanUrl;
+        return {
+          ...l,
+          name,
+          url: cleanUrl,
+          category: editCategory,
+          status: urlChanged ? 'Unchanged' : l.status,
+          changeMessage: urlChanged ? 'Đã đổi link mới - sẵn sàng quét lại' : l.changeMessage,
+          lastData: urlChanged ? undefined : l.lastData,
+          previousData: urlChanged ? undefined : l.previousData
+        };
+      }
+      return l;
+    }));
+
+    setEditingLinkId(null);
+    setEditSavedToast(`Đã lưu thay đổi link cho "${name}" thành công!`);
+    setTimeout(() => setEditSavedToast(null), 3500);
+
+    if (triggerScanAfterSave) {
+      setTimeout(() => handleScanSingleLink(linkId), 300);
+    }
+  };
+
+  // Cancel editing link
+  const handleCancelEdit = () => {
+    setEditingLinkId(null);
+  };
+
   // Delete a link
   const handleDeleteLink = (id: string) => {
     setMonitoredLinks(prev => prev.filter(l => l.id !== id));
@@ -634,12 +691,26 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
               className="relative px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
             >
               <Bell className="w-4 h-4 text-cyan-400" />
-              <span>Thông Báo Thay Đổi</span>
+              <span>Thông Báo</span>
               {unreadNotifsCount > 0 && (
                 <span className="w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] font-bold flex items-center justify-center animate-pulse">
                   {unreadNotifsCount}
                 </span>
               )}
+            </button>
+
+            {/* Saved Links Manager Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowSavedLinksManager(!showSavedLinksManager)}
+              className={`px-3.5 py-2.5 rounded-xl border font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all ${
+                showSavedLinksManager
+                  ? 'bg-cyan-600 text-white border-cyan-400 shadow-lg shadow-cyan-600/30'
+                  : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 border-cyan-500/40'
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              <span>Kho Link Đã Lưu ({monitoredLinks.length})</span>
             </button>
 
             {/* Quick Link Import/Export & Presets */}
@@ -842,6 +913,198 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         </div>
       )}
 
+      {/* TOAST ALERT WHEN LINK IS EDITED & SAVED */}
+      {editSavedToast && (
+        <div className="p-4 rounded-2xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 text-xs flex items-center justify-between gap-3 shadow-xl animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            <span className="font-bold">{editSavedToast}</span>
+          </div>
+          <span className="text-[11px] text-emerald-400/80">Tự động đồng bộ LocalStorage</span>
+        </div>
+      )}
+
+      {/* COMPREHENSIVE SAVED LINKS MANAGER (KHO LƯU TRỮ LINK ĐỐI THỦ) */}
+      {showSavedLinksManager && (
+        <div className="p-5 rounded-3xl bg-slate-950/95 border-2 border-cyan-500/40 shadow-2xl space-y-4 animate-fadeIn">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center font-bold">
+                <Layers className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-black text-white flex items-center gap-2">
+                  <span>KHO LƯU TRỮ LINK ĐỐI THỦ (CLICK ĐỂ SỬA TRỰC TIẾP)</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                    {monitoredLinks.length} đường link
+                  </span>
+                </h4>
+                <p className="text-[11px] text-slate-400">
+                  Tất cả các link bên dưới đã được lưu vào bộ nhớ. Bạn có thể bấm vào nút <strong>"Sửa"</strong> trên từng link để đổi URL bất kỳ lúc nào.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowSavedLinksManager(false)}
+              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold cursor-pointer border border-slate-800"
+            >
+              Đóng Kho Link ✕
+            </button>
+          </div>
+
+          {/* Links Quick Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-800 text-slate-400 text-[11px] font-bold uppercase bg-slate-900/60">
+                  <th className="py-2.5 px-3">Tên Đối Thủ & Dịch Vụ</th>
+                  <th className="py-2.5 px-3">Đường Link URL (Click để sửa)</th>
+                  <th className="py-2.5 px-3 text-center">Trạng Thái</th>
+                  <th className="py-2.5 px-3 text-right">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {monitoredLinks.map(link => {
+                  const isEditingThis = editingLinkId === link.id;
+
+                  return (
+                    <tr key={link.id} className="hover:bg-slate-900/40 transition-colors">
+                      <td className="py-3 px-3 font-semibold text-white">
+                        {isEditingThis ? (
+                          <input
+                            type="text"
+                            value={editName}
+                            onChange={e => setEditName(e.target.value)}
+                            className="w-full bg-slate-900 border border-cyan-500 rounded-lg px-2.5 py-1 text-xs text-white"
+                          />
+                        ) : (
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span>{link.name}</span>
+                              <button
+                                onClick={() => handleStartEdit(link)}
+                                className="text-slate-500 hover:text-cyan-400 p-0.5"
+                                title="Sửa tên"
+                              >
+                                <Edit3 className="w-3 h-3" />
+                              </button>
+                            </div>
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              {link.category === 'implant' ? 'Implant' : link.category === 'ortho' ? 'Niềng Răng' : link.category === 'cosmetic' ? 'Răng Sứ' : 'Nha Khoa'}
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-3 px-3">
+                        {isEditingThis ? (
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              type="url"
+                              value={editUrl}
+                              onChange={e => setEditUrl(e.target.value)}
+                              className="w-full bg-slate-900 border border-cyan-500 rounded-lg px-2.5 py-1 text-xs text-cyan-300 font-mono"
+                              placeholder="https://..."
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleStartEdit(link)}
+                              title="Click để sửa link này"
+                              className="text-cyan-400 hover:text-cyan-300 hover:underline font-mono text-left truncate max-w-xs sm:max-w-md group flex items-center gap-1 cursor-pointer"
+                            >
+                              <span className="truncate">{link.url}</span>
+                              <Edit3 className="w-3 h-3 text-slate-500 group-hover:text-cyan-400 shrink-0" />
+                            </button>
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="Mở link trong tab mới"
+                              className="text-slate-500 hover:text-white p-1"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                          link.status === 'Changed'
+                            ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                            : 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
+                        }`}>
+                          {link.status === 'Changed' ? '🔴 Đã Thay Đổi' : '🟢 Chưa Thay Đổi'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        {isEditingThis ? (
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={handleCancelEdit}
+                              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold cursor-pointer"
+                            >
+                              ✕ Hủy
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSaveEdit(link.id, false)}
+                              className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 shadow cursor-pointer"
+                            >
+                              <Save className="w-3 h-3" />
+                              <span>Lưu</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSaveEdit(link.id, true)}
+                              className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow cursor-pointer"
+                              title="Lưu xong quét lại trang này ngay"
+                            >
+                              <Zap className="w-3 h-3" />
+                              <span>Lưu & Quét</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleStartEdit(link)}
+                              className="px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                            >
+                              <Edit3 className="w-3 h-3" />
+                              <span>Sửa Link</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleScanSingleLink(link.id)}
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 cursor-pointer"
+                              title="Quét lại link này"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteLink(link.id)}
+                              className="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-950/60 text-slate-500 hover:text-rose-400 border border-slate-800 cursor-pointer"
+                              title="Xóa link"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* DIRECT QUICK-PASTE & SAVE BAR */}
       <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 space-y-2">
         <div className="flex items-center justify-between">
@@ -967,83 +1230,211 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 }`}
               >
                 {/* Header Row */}
-                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
-                  <div className="flex items-start sm:items-center gap-3">
-                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center text-white font-bold text-sm shadow-md shrink-0 ${
-                      item.status === 'Changed'
-                        ? 'bg-gradient-to-tr from-rose-600 to-orange-500 shadow-rose-600/30 animate-pulse'
-                        : 'bg-gradient-to-tr from-indigo-600 to-cyan-600'
-                    }`}>
-                      {item.status === 'Changed' ? (
-                        <AlertTriangle className="w-5 h-5" />
-                      ) : (
-                        <Globe className="w-5 h-5" />
-                      )}
+                {editingLinkId === item.id ? (
+                  /* INLINE EDIT FORM FOR THIS CARD */
+                  <div className="p-4 rounded-2xl bg-indigo-950/80 border-2 border-cyan-400 space-y-3 animate-fadeIn pb-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-cyan-300 flex items-center gap-1.5">
+                        <Edit3 className="w-4 h-4 text-cyan-300 animate-pulse" />
+                        <span>ĐANG SỬA THÔNG TIN & LINK ĐỐI THỦ:</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+                        title="Đóng"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
 
-                    <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-bold text-white text-sm sm:text-base">{item.name}</h4>
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
-                          item.status === 'Changed'
-                            ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse'
-                            : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                        }`}>
-                          {item.status === 'Changed' ? '🔴 ĐÃ THAY ĐỔI' : '🟢 CHƯA THAY ĐỔI'}
-                        </span>
-                        <span className="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 text-[10px] font-mono">
-                          {item.category === 'implant' ? 'Trồng Răng Implant' : item.category === 'ortho' ? 'Niềng Răng' : item.category === 'cosmetic' ? 'Răng Sứ' : 'Nha Khoa'}
-                        </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                      <div className="sm:col-span-4">
+                        <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                          1. Tên Nha Khoa / Trang Web:
+                        </label>
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={e => setEditName(e.target.value)}
+                          placeholder="VD: Nha Khoa Kim..."
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 shadow-inner"
+                        />
                       </div>
 
-                      <div className="flex items-center gap-2 flex-wrap text-xs text-slate-400 mt-1">
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-cyan-400 hover:underline flex items-center gap-1 font-mono"
+                      <div className="sm:col-span-5">
+                        <label className="text-[11px] font-bold text-cyan-300 block mb-1">
+                          2. Đường Link URL Cần Theo Dõi (Click để sửa):
+                        </label>
+                        <input
+                          type="url"
+                          value={editUrl}
+                          onChange={e => setEditUrl(e.target.value)}
+                          placeholder="https://nhakhoa.com/bang-gia..."
+                          className="w-full bg-slate-900 border border-cyan-500 rounded-xl px-3 py-2 text-xs text-cyan-200 focus:outline-none focus:border-cyan-300 font-mono shadow-inner ring-1 ring-cyan-500/30"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-3">
+                        <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                          3. Nhóm Dịch Vụ:
+                        </label>
+                        <select
+                          value={editCategory}
+                          onChange={e => setEditCategory(e.target.value as any)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-400"
                         >
-                          <span className="truncate max-w-[280px] sm:max-w-md">{item.url}</span>
-                          <ExternalLink className="w-3 h-3 shrink-0" />
-                        </a>
-                        <span>•</span>
-                        <span className="text-slate-400">Quét lần cuối: <strong className="text-slate-300">{item.lastScanTime}</strong></span>
+                          <option value="implant">Trồng Răng Implant</option>
+                          <option value="ortho">Niềng Răng - Chỉnh Nha</option>
+                          <option value="cosmetic">Răng Sứ Thẩm Mỹ</option>
+                          <option value="general">Nha Khoa Tổng Quát</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1 text-xs">
+                      <span className="text-[11px] text-slate-400">
+                        * Khi đổi link mới, hệ thống sẽ tự động lưu vào LocalStorage và sẵn sàng quét lại.
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 font-semibold cursor-pointer transition-colors"
+                        >
+                          ✕ Hủy Bỏ
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveEdit(item.id, false)}
+                          className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/30 cursor-pointer transition-all"
+                        >
+                          <Save className="w-3.5 h-3.5" />
+                          <span>💾 Lưu Link</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveEdit(item.id, true)}
+                          className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/30 cursor-pointer transition-all"
+                        >
+                          <Zap className="w-3.5 h-3.5" />
+                          <span>⚡ Lưu & Quét Ngay</span>
+                        </button>
                       </div>
                     </div>
                   </div>
+                ) : (
+                  /* NORMAL CARD HEADER VIEW */
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+                    <div className="flex items-start sm:items-center gap-3">
+                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center text-white font-bold text-sm shadow-md shrink-0 ${
+                        item.status === 'Changed'
+                          ? 'bg-gradient-to-tr from-rose-600 to-orange-500 shadow-rose-600/30 animate-pulse'
+                          : 'bg-gradient-to-tr from-indigo-600 to-cyan-600'
+                      }`}>
+                        {item.status === 'Changed' ? (
+                          <AlertTriangle className="w-5 h-5" />
+                        ) : (
+                          <Globe className="w-5 h-5" />
+                        )}
+                      </div>
 
-                  {/* Actions on Card */}
-                  <div className="flex items-center gap-2 w-full lg:w-auto justify-end">
-                    <button
-                      type="button"
-                      onClick={() => handleScanSingleLink(item.id)}
-                      disabled={isScanningThis || isScanningAll}
-                      className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isScanningThis ? 'animate-spin' : ''}`} />
-                      <span>{isScanningThis ? 'Đang quét...' : 'Quét Lại'}</span>
-                    </button>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <button
+                            type="button"
+                            onClick={() => handleStartEdit(item)}
+                            title="Click để sửa tên nha khoa"
+                            className="font-bold text-white text-sm sm:text-base hover:text-cyan-300 transition-colors flex items-center gap-1 cursor-pointer text-left group"
+                          >
+                            <span>{item.name}</span>
+                            <Edit3 className="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setExpandedLinkId(isExpanded ? null : item.id)}
-                      className="px-3.5 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/40 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>{isExpanded ? 'Thu Gọn' : 'So Sánh Diff'}</span>
-                      {isExpanded ? <ChevronUp className="w-3.5 h-3.5 ml-0.5" /> : <ChevronDown className="w-3.5 h-3.5 ml-0.5" />}
-                    </button>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
+                            item.status === 'Changed'
+                              ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse'
+                              : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                          }`}>
+                            {item.status === 'Changed' ? '🔴 ĐÃ THAY ĐỔI' : '🟢 CHƯA THAY ĐỔI'}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 text-[10px] font-mono">
+                            {item.category === 'implant' ? 'Trồng Răng Implant' : item.category === 'ortho' ? 'Niềng Răng' : item.category === 'cosmetic' ? 'Răng Sứ' : 'Nha Khoa'}
+                          </span>
+                        </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteLink(item.id)}
-                      title="Xóa link khỏi danh sách theo dõi"
-                      className="p-2 rounded-xl bg-slate-900 hover:bg-rose-950/60 text-slate-500 hover:text-rose-400 border border-slate-800 transition-colors cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                        {/* Interactive Click-to-edit URL bar */}
+                        <div className="flex items-center gap-2 flex-wrap text-xs text-slate-400 mt-1">
+                          <div className="inline-flex items-center gap-1.5 bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-lg px-2.5 py-0.5 transition-all">
+                            <button
+                              type="button"
+                              onClick={() => handleStartEdit(item)}
+                              title="Click vào đây để sửa đường link URL này trực tiếp"
+                              className="text-cyan-400 hover:text-cyan-300 font-mono truncate max-w-[240px] sm:max-w-md flex items-center gap-1 cursor-pointer"
+                            >
+                              <span className="truncate">{item.url}</span>
+                              <Edit3 className="w-3 h-3 text-slate-500 hover:text-cyan-300 ml-1 shrink-0" />
+                            </button>
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="Mở đường link này trong tab mới"
+                              className="text-slate-500 hover:text-white p-0.5 shrink-0"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                          <span>•</span>
+                          <span className="text-slate-400">Quét lần cuối: <strong className="text-slate-300">{item.lastScanTime}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions on Card */}
+                    <div className="flex items-center gap-2 w-full lg:w-auto justify-end">
+                      {/* Direct Edit Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleStartEdit(item)}
+                        className="px-3.5 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/40 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                        title="Sửa đường link hoặc tên đối thủ"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-indigo-400" />
+                        <span>Sửa Link</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleScanSingleLink(item.id)}
+                        disabled={isScanningThis || isScanningAll}
+                        className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isScanningThis ? 'animate-spin' : ''}`} />
+                        <span>{isScanningThis ? 'Đang quét...' : 'Quét Lại'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setExpandedLinkId(isExpanded ? null : item.id)}
+                        className="px-3.5 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/40 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>{isExpanded ? 'Thu Gọn' : 'So Sánh Diff'}</span>
+                        {isExpanded ? <ChevronUp className="w-3.5 h-3.5 ml-0.5" /> : <ChevronDown className="w-3.5 h-3.5 ml-0.5" />}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteLink(item.id)}
+                        title="Xóa link khỏi danh sách theo dõi"
+                        className="p-2 rounded-xl bg-slate-900 hover:bg-rose-950/60 text-slate-500 hover:text-rose-400 border border-slate-800 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Change Message Notice */}
                 {item.changeMessage && (
