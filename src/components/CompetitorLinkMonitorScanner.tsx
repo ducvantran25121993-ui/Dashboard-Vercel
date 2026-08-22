@@ -1904,6 +1904,54 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
 
                   return (
                     <div className="mt-4 pt-4 border-t border-slate-800/80 space-y-4 animate-fadeIn">
+                      {/* DIRECT SPECIFIC ARTICLE LINK HIGHLIGHT BAR */}
+                      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-950/70 via-indigo-950/60 to-slate-900 border border-cyan-500/40 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs shadow-lg">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-8 h-8 rounded-xl bg-cyan-600/30 border border-cyan-400/40 flex items-center justify-center shrink-0 text-cyan-300">
+                            <Globe className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-[11px] font-bold text-cyan-300 uppercase tracking-wider block">
+                              📍 LINK BÀI VIẾT / TRANG ĐÍCH ĐANG THEO DÕI THAY ĐỔI CỤ THỂ:
+                            </span>
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="font-mono text-xs text-white hover:text-cyan-300 underline font-semibold truncate block"
+                              title="Bấm để mở trực tiếp trang web bài viết này"
+                            >
+                              {item.url}
+                            </a>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(item.url);
+                              setCopiedSnippetId(`url_${item.id}`);
+                              setTimeout(() => setCopiedSnippetId(null), 2500);
+                            }}
+                            className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                          >
+                            {copiedSnippetId === `url_${item.id}` ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                            <span>{copiedSnippetId === `url_${item.id}` ? 'Đã Copy Link!' : 'Copy Link'}</span>
+                          </button>
+
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-cyan-600/30 cursor-pointer transition-all"
+                          >
+                            <span>🔗 Mở Bài Viết Thực Tế</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                      </div>
+
                       {/* DIFF NAVIGATION SUB-TABS */}
                       <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-slate-900 border border-slate-800">
                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -1971,14 +2019,25 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                       {/* 1. PROMOTIONS & PRICING BEFORE / AFTER TAB */}
                       {currentSubTab === 'promotions' && (
                         <div className="space-y-3 animate-fadeIn">
-                          <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-950/40 via-cyan-950/30 to-slate-900 border border-emerald-500/40 flex items-center justify-between text-xs">
+                          <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-950/40 via-cyan-950/30 to-slate-900 border border-emerald-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                             <span className="font-bold text-emerald-300 flex items-center gap-1.5">
                               <Gift className="w-4 h-4 text-emerald-400" />
                               <span>ĐỐI CHIẾU MỨC GIÁ & ƯU ĐÃI KHUYẾN MÃI THỰC TẾ TRÊN WEBSITE:</span>
                             </span>
-                            <span className="text-[11px] text-slate-400">
-                              Phát hiện <strong className="text-emerald-300">{currentPromos.length} gói dịch vụ</strong> vừa điều chỉnh ưu đãi
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[11px] text-slate-400">
+                                Phát hiện <strong className="text-emerald-300">{currentPromos.length} gói dịch vụ</strong> vừa điều chỉnh ưu đãi
+                              </span>
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-2.5 py-1 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 font-bold text-[11px] flex items-center gap-1"
+                              >
+                                <span>Xem Vị Trí Trên Bài Viết</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
                           </div>
 
                           <div className="grid grid-cols-1 gap-3">
@@ -1995,7 +2054,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                                     <h5 className="font-bold text-white text-sm">{promo.service}</h5>
                                   </div>
 
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 flex-wrap">
                                     {promo.diffPercent && (
                                       <span className="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold text-xs flex items-center gap-1">
                                         <TrendingDown className="w-3.5 h-3.5" />
@@ -2005,6 +2064,16 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                                     <span className="px-2.5 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-black text-xs">
                                       {promo.newDiscount || 'Ưu đãi mới'}
                                     </span>
+                                    <a
+                                      href={item.url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-[11px] font-bold flex items-center gap-1"
+                                      title="Mở trực tiếp link trang web để xem bảng giá này"
+                                    >
+                                      <span>Xem bài viết thật</span>
+                                      <ExternalLink className="w-3 h-3" />
+                                    </a>
                                   </div>
                                 </div>
 
@@ -2074,14 +2143,25 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                       {/* 2. BANNERS & IMAGES BEFORE / AFTER TAB (VISUAL DIFF) */}
                       {currentSubTab === 'banners' && (
                         <div className="space-y-4 animate-fadeIn">
-                          <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                          <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                             <span className="font-bold text-cyan-300 flex items-center gap-1.5">
                               <ImageIcon className="w-4 h-4 text-cyan-400" />
                               <span>SO SÁNH BANNER & HÌNH ẢNH THỰC TẾ TRÊN WEBSITE (VISUAL IMAGE DIFF):</span>
                             </span>
-                            <span className="text-[11px] text-slate-400">
-                              Click vào ảnh để phóng to kiểm tra chi tiết
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[11px] text-slate-400">
+                                Click vào ảnh để phóng to kiểm tra chi tiết
+                              </span>
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-2.5 py-1 rounded-lg bg-indigo-950 hover:bg-indigo-900 border border-indigo-500/40 text-cyan-300 font-bold text-[11px] flex items-center gap-1"
+                              >
+                                <span>Mở Trang Chứa Banner</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2100,27 +2180,52 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                                 {beforeImages.map((bImg, bIdx) => (
                                   <div
                                     key={bIdx}
-                                    className="relative group rounded-xl overflow-hidden border border-rose-500/30 bg-slate-950"
+                                    className="relative group rounded-xl overflow-hidden border border-rose-500/30 bg-slate-950 space-y-2 p-2"
                                   >
-                                    <img
-                                      src={bImg}
-                                      alt={`Banner Cũ ${bIdx + 1}`}
-                                      className="w-full h-36 object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                                      referrerPolicy="no-referrer"
-                                    />
-                                    <div className="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                      <button
-                                        type="button"
-                                        onClick={() => setLightboxImage({ src: bImg, title: `Banner Cũ #${bIdx + 1} - ${item.name}`, subtitle: 'Ảnh banner trước khi đối thủ thay đổi', type: 'before' })}
-                                        className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-rose-300 font-bold text-xs border border-rose-500/50 flex items-center gap-1 cursor-pointer shadow-lg"
-                                      >
-                                        <Maximize2 className="w-3.5 h-3.5" />
-                                        <span>Phóng To</span>
-                                      </button>
+                                    <div className="relative rounded-lg overflow-hidden">
+                                      <img
+                                        src={bImg}
+                                        alt={`Banner Cũ ${bIdx + 1}`}
+                                        className="w-full h-36 object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                        referrerPolicy="no-referrer"
+                                      />
+                                      <div className="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                        <button
+                                          type="button"
+                                          onClick={() => setLightboxImage({ src: bImg, title: `Banner Cũ #${bIdx + 1} - ${item.name}`, subtitle: `Ảnh banner trước khi đối thủ thay đổi trên trang: ${item.url}`, type: 'before' })}
+                                          className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-rose-300 font-bold text-xs border border-rose-500/50 flex items-center gap-1 cursor-pointer shadow-lg"
+                                        >
+                                          <Maximize2 className="w-3.5 h-3.5" />
+                                          <span>Phóng To Xem</span>
+                                        </button>
+                                      </div>
+                                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-rose-950/90 text-[10px] font-bold text-rose-300 border border-rose-500/40">
+                                        Ảnh Cũ #{bIdx + 1} (Đã Thay)
+                                      </span>
                                     </div>
-                                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-rose-950/90 text-[10px] font-bold text-rose-300 border border-rose-500/40">
-                                      Ảnh Cũ #{bIdx + 1} (Đã Thay)
-                                    </span>
+
+                                    {/* Direct links footer for each old banner */}
+                                    <div className="flex items-center justify-between text-[11px] pt-1 text-slate-400">
+                                      <a
+                                        href={item.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-cyan-400 hover:underline flex items-center gap-1 truncate max-w-[180px]"
+                                        title={`Xem bài viết chứa banner này: ${item.url}`}
+                                      >
+                                        <Globe className="w-3 h-3 shrink-0" />
+                                        <span className="truncate">Bài viết: {item.url}</span>
+                                      </a>
+                                      <a
+                                        href={bImg}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-rose-300 hover:underline flex items-center gap-0.5 font-mono shrink-0"
+                                      >
+                                        <span>File ảnh</span>
+                                        <ExternalLink className="w-2.5 h-2.5" />
+                                      </a>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -2142,38 +2247,64 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                                 {afterImages.map((aImg, aIdx) => (
                                   <div
                                     key={aIdx}
-                                    className="relative group rounded-xl overflow-hidden border-2 border-emerald-500/40 bg-slate-950 shadow-md"
+                                    className="relative group rounded-xl overflow-hidden border-2 border-emerald-500/40 bg-slate-950 shadow-md p-2 space-y-2"
                                   >
-                                    <img
-                                      src={aImg}
-                                      alt={`Banner Mới ${aIdx + 1}`}
-                                      className="w-full h-36 object-cover transition-transform duration-300 group-hover:scale-105"
-                                      referrerPolicy="no-referrer"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
-                                      <div className="flex items-center justify-between">
-                                        <button
-                                          type="button"
-                                          onClick={() => setLightboxImage({ src: aImg, title: `Banner Mới #${aIdx + 1} - ${item.name}`, subtitle: 'Banner vừa được đối thủ tung ra trên website', type: 'after' })}
-                                          className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 cursor-pointer shadow"
-                                        >
-                                          <Maximize2 className="w-3 h-3" />
-                                          <span>Phóng To Xem</span>
-                                        </button>
-                                        <a
-                                          href={aImg}
-                                          target="_blank"
-                                          rel="noreferrer"
-                                          className="text-[10px] text-cyan-300 hover:underline truncate font-mono flex items-center gap-1 bg-slate-950/80 px-2 py-1 rounded-lg border border-slate-700"
-                                        >
-                                          <span>Link Gốc</span>
-                                          <ExternalLink className="w-2.5 h-2.5" />
-                                        </a>
+                                    <div className="relative rounded-lg overflow-hidden">
+                                      <img
+                                        src={aImg}
+                                        alt={`Banner Mới ${aIdx + 1}`}
+                                        className="w-full h-36 object-cover transition-transform duration-300 group-hover:scale-105"
+                                        referrerPolicy="no-referrer"
+                                      />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
+                                        <div className="flex items-center justify-between">
+                                          <button
+                                            type="button"
+                                            onClick={() => setLightboxImage({ src: aImg, title: `Banner Mới #${aIdx + 1} - ${item.name}`, subtitle: `Banner vừa được đối thủ tung ra trên bài viết: ${item.url}`, type: 'after' })}
+                                            className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 cursor-pointer shadow"
+                                          >
+                                            <Maximize2 className="w-3 h-3" />
+                                            <span>Phóng To Xem</span>
+                                          </button>
+                                          <a
+                                            href={aImg}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-[10px] text-cyan-300 hover:underline truncate font-mono flex items-center gap-1 bg-slate-950/80 px-2 py-1 rounded-lg border border-slate-700"
+                                          >
+                                            <span>Link File Ảnh</span>
+                                            <ExternalLink className="w-2.5 h-2.5" />
+                                          </a>
+                                        </div>
                                       </div>
+                                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-emerald-600 text-[10px] font-black text-white border border-emerald-400 shadow">
+                                        ✨ Banner Mới #{aIdx + 1}
+                                      </span>
                                     </div>
-                                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-emerald-600 text-[10px] font-black text-white border border-emerald-400 shadow">
-                                      ✨ Banner Mới #{aIdx + 1}
-                                    </span>
+
+                                    {/* Direct links footer for each new banner */}
+                                    <div className="flex items-center justify-between text-[11px] pt-1 text-slate-300">
+                                      <a
+                                        href={item.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-emerald-400 hover:underline font-bold flex items-center gap-1 truncate max-w-[200px]"
+                                        title={`Mở bài viết đối thủ chứa banner này: ${item.url}`}
+                                      >
+                                        <Globe className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                        <span className="truncate">🔗 Mở bài viết: {item.url}</span>
+                                        <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                                      </a>
+                                      <a
+                                        href={aImg}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-cyan-300 hover:underline flex items-center gap-0.5 font-mono shrink-0 text-[10px]"
+                                      >
+                                        <span>Xem ảnh gốc</span>
+                                        <ExternalLink className="w-2.5 h-2.5" />
+                                      </a>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -2185,6 +2316,22 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                       {/* 3. TEXT WORD-BY-WORD DIFF TAB */}
                       {currentSubTab === 'text' && (
                         <div className="space-y-4 animate-fadeIn">
+                          <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                            <span className="font-bold text-purple-300 flex items-center gap-1.5">
+                              <FileText className="w-4 h-4 text-purple-400" />
+                              <span>ĐỐI CHIẾU TỪNG CÂU TỪ VĂN BẢN (TRƯỚC VS SAU):</span>
+                            </span>
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-1 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-purple-500/40 text-purple-200 font-bold text-xs flex items-center gap-1"
+                            >
+                              <span>Mở bài viết gốc đối chiếu</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* CŨ (PREVIOUS DATA) */}
                             <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
@@ -2217,9 +2364,20 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                               <p className="text-xs font-semibold text-emerald-200 leading-relaxed bg-slate-950/80 p-3 rounded-xl border border-emerald-500/30 shadow-inner">
                                 {afterText}
                               </p>
-                              <span className="text-[10px] text-emerald-400 font-bold block">
-                                * Hệ thống đã phát hiện các từ khóa giảm giá, trợ giá và quà tặng mới được cập nhật trên website.
-                              </span>
+                              <div className="flex items-center justify-between pt-1">
+                                <span className="text-[10px] text-emerald-400 font-bold">
+                                  * Hệ thống đã phát hiện các từ khóa giảm giá, trợ giá và quà tặng mới được cập nhật trên website.
+                                </span>
+                                <a
+                                  href={item.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-cyan-300 text-[11px] underline font-bold flex items-center gap-1"
+                                >
+                                  <span>Xem trên website</span>
+                                  <ExternalLink className="w-2.5 h-2.5" />
+                                </a>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -2242,7 +2400,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                             <div className="space-y-2 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
                               <span className="font-bold text-amber-400 block text-xs">🎯 Phân Tích Tử Huyệt Đối Thủ ({item.name}):</span>
                               <p className="text-slate-300 leading-relaxed text-xs">
-                                Đối thủ vừa giảm giá sâu để kích cầu, nhưng quy mô phòng khám tập trung ở các thành phố lớn và thường có chi phí phát sinh phụ kiện ngoài gói. Tâm Đức Smile sở hữu lợi thế 17 chi nhánh phủ khắp các tỉnh Miền Tây (Cần Thơ, Tiền Giang, Cà Mau...), miễn phí xe đưa đón và cam kết bảo hành trọn gói không phát sinh.
+                                Đối thủ vừa giảm giá sâu để kích cầu trên bài viết ({item.url}), nhưng quy mô phòng khám tập trung ở các thành phố lớn và thường có chi phí phát sinh phụ kiện ngoài gói. Tâm Đức Smile sở hữu lợi thế 17 chi nhánh phủ khắp các tỉnh Miền Tây (Cần Thơ, Tiền Giang, Cà Mau...), miễn phí xe đưa đón và cam kết bảo hành trọn gói không phát sinh.
                               </p>
                             </div>
 
@@ -2467,7 +2625,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                   rel="noreferrer"
                   className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs flex items-center gap-1 border border-slate-700 cursor-pointer"
                 >
-                  <span>Mở Tab Mới</span>
+                  <span>Mở File Ảnh</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
                 <button
@@ -2489,17 +2647,29 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
-              <span className="font-mono">
-                {lightboxImage.type === 'before' ? '🔴 Phiên bản hình ảnh trong cơ sở dữ liệu cũ' : '🟢 Phiên bản hình ảnh mới nhất vừa được phát hiện'}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400 pt-2 border-t border-slate-800">
+              <span className="font-mono text-[11px] text-cyan-300">
+                {lightboxImage.type === 'before' ? '🔴 Bản ghi hình ảnh trong cơ sở dữ liệu cũ trước khi thay đổi' : '🟢 Phiên bản hình ảnh mới nhất vừa được phát hiện trên website'}
               </span>
-              <button
-                type="button"
-                onClick={() => setLightboxImage(null)}
-                className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold cursor-pointer"
-              >
-                Đóng
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(lightboxImage.src);
+                    alert('Đã copy đường dẫn ảnh vào Clipboard!');
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold cursor-pointer"
+                >
+                  Copy Link Ảnh
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLightboxImage(null)}
+                  className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold cursor-pointer"
+                >
+                  Đóng
+                </button>
+              </div>
             </div>
           </div>
         </div>
