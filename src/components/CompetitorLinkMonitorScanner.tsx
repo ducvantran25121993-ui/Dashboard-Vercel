@@ -939,7 +939,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
             {/* Scan All Now Button */}
             <button
               type="button"
-              onClick={performAutoScan}
+              onClick={() => performAutoScan()}
               disabled={isScanningAll}
               className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/30 cursor-pointer transition-all disabled:opacity-50"
             >
@@ -993,15 +993,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
             <div className="flex-1">
               <div className="text-[11px] text-cyan-300 font-bold flex items-center gap-1.5">
-                <span>Báo Thức Quét 24h</span>
-                <button
-                  type="button"
-                  onClick={() => setShowIntervalSelectModal(true)}
-                  className="px-2 py-0.5 rounded bg-cyan-950 text-[10px] text-cyan-300 border border-cyan-700/50 hover:bg-cyan-900/60 transition-colors font-bold cursor-pointer"
-                  title="Chọn chu kỳ quét tự động"
-                >
-                  ⚙️ {getIntervalLabel(autoScanInterval)}
-                </button>
+                <span>Báo Thức Định Kỳ</span>
               </div>
               <div className="text-xs font-bold text-slate-200 mt-1 flex items-center gap-1.5 font-mono">
                 <Clock className="w-3.5 h-3.5 text-cyan-400" />
@@ -1011,7 +1003,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
             <button
               type="button"
               onClick={() => setAutoScanEnabled(!autoScanEnabled)}
-              title={autoScanEnabled ? 'Tạm dừng báo thức quét ngầm 24h' : 'Kích hoạt báo thức quét ngầm 24h'}
+              title={autoScanEnabled ? 'Tạm dừng báo thức quét ngầm' : 'Kích hoạt báo thức quét ngầm'}
               className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors cursor-pointer shrink-0 ml-2 ${
                 autoScanEnabled ? 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30' : 'bg-slate-800 text-slate-500 hover:text-slate-300'
               }`}

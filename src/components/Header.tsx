@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, DollarSign, TrendingUp, Building2, BarChart2, Lock, KeyRound, ShieldCheck, Users, Menu } from 'lucide-react';
+import { Calendar, DollarSign, TrendingUp, Building2, BarChart2, Lock, KeyRound, ShieldCheck, Users, Menu, Sliders } from 'lucide-react';
 import { MonthTab, DisplayUnit } from '../types';
 
 interface HeaderProps {
@@ -10,6 +10,7 @@ interface HeaderProps {
   userRole?: 'admin' | 'staff' | null;
   onLockDashboard?: () => void;
   onChangePassword?: () => void;
+  onOpenTabPermissions?: () => void;
   onToggleSidebar?: () => void;
 }
 
@@ -21,6 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
   userRole,
   onLockDashboard,
   onChangePassword,
+  onOpenTabPermissions,
   onToggleSidebar,
 }) => {
   const months: { id: MonthTab; label: string }[] = [
@@ -116,8 +118,18 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
-            {/* Change Pass & Lock buttons */}
+            {/* Change Pass, Permissions & Lock buttons */}
             <div className="flex items-center gap-1.5 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
+              {onOpenTabPermissions && userRole === 'admin' && (
+                <button
+                  onClick={onOpenTabPermissions}
+                  className="px-2.5 py-1 text-xs font-semibold text-cyan-300 hover:text-white bg-cyan-950/40 hover:bg-cyan-900/60 border border-cyan-800/40 rounded-lg flex items-center gap-1 transition-all"
+                  title="Cài đặt phân quyền tab cho Nhân viên"
+                >
+                  <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="hidden sm:inline">Phân Quyền Tab</span>
+                </button>
+              )}
               {onChangePassword && userRole === 'admin' && (
                 <button
                   onClick={onChangePassword}
