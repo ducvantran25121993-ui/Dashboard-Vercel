@@ -1324,7 +1324,7 @@ export const CompetitorWebDiffScanner: React.FC = () => {
             }`}
           >
             <Globe className="w-4 h-4 text-indigo-300" />
-            <span>QUÉT & LƯU LINK ĐỐI THỦ (AUTO DIFF & BANNER SCANNER)</span>
+            <span>THEO DÕI ĐỐI THỦ (AUTO)</span>
           </button>
         </div>
 
