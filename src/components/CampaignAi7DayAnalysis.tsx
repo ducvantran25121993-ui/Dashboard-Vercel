@@ -85,13 +85,27 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
     return (propLocationData && propLocationData.length > 0) ? propLocationData : generateMockLocationData();
   }, [propLocationData]);
 
-  // Compute 7-day date window (last 7 completed days ending yesterday)
+  // Compute 7-day date window (last 7 completed days ending yesterday or matching latest available record)
   const dateWindows = useMemo(() => {
-    const now = new Date();
-    const endCurrent = new Date(now);
-    endCurrent.setDate(endCurrent.getDate() - 1);
-    endCurrent.setHours(23, 59, 59, 999);
+    let latestDate: Date = new Date();
+    latestDate.setDate(latestDate.getDate() - 1); // default yesterday
+    latestDate.setHours(23, 59, 59, 999);
 
+    if (dailyRecords && dailyRecords.length > 0) {
+      let maxTime = 0;
+      dailyRecords.forEach(r => {
+        const { dateObj } = normalizeDate(r.date || r.dateFormatted);
+        if (dateObj && !isNaN(dateObj.getTime()) && dateObj.getTime() > maxTime) {
+          maxTime = dateObj.getTime();
+        }
+      });
+      if (maxTime > 0) {
+        latestDate = new Date(maxTime);
+        latestDate.setHours(23, 59, 59, 999);
+      }
+    }
+
+    const endCurrent = new Date(latestDate);
     const startCurrent = new Date(endCurrent);
     startCurrent.setDate(startCurrent.getDate() - 6);
     startCurrent.setHours(0, 0, 0, 0);
@@ -110,15 +124,26 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
       return `${dd}/${mm}`;
     };
 
+    const toIsoStr = (d: Date) => {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
     return {
       currentStart: startCurrent,
       currentEnd: endCurrent,
+      currentStartIso: toIsoStr(startCurrent),
+      currentEndIso: toIsoStr(endCurrent),
       currentLabel: `${formatShort(startCurrent)} - ${formatShort(endCurrent)}`,
       prevStart: startPrev,
       prevEnd: endPrev,
+      prevStartIso: toIsoStr(startPrev),
+      prevEndIso: toIsoStr(endPrev),
       prevLabel: `${formatShort(startPrev)} - ${formatShort(endPrev)}`,
     };
-  }, []);
+  }, [dailyRecords]);
 
   // Filter daily records for current 7 days vs previous 7 days
   const { current7DaysRecords, prev7DaysRecords } = useMemo(() => {
@@ -126,12 +151,14 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
     const prevList: DailyCampaignRecord[] = [];
 
     dailyRecords.forEach((rec) => {
-      const { dateObj } = normalizeDate(rec.date || rec.dateFormatted);
-      if (!dateObj) return;
+      const { dateIso, dateObj } = normalizeDate(rec.date || rec.dateFormatted);
+      if (!dateObj && !dateIso) return;
 
-      if (dateObj >= dateWindows.currentStart && dateObj <= dateWindows.currentEnd) {
+      const compIso = dateIso || (dateObj ? `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}` : '');
+
+      if (compIso >= dateWindows.currentStartIso && compIso <= dateWindows.currentEndIso) {
         currentList.push(rec);
-      } else if (dateObj >= dateWindows.prevStart && dateObj <= dateWindows.prevEnd) {
+      } else if (compIso >= dateWindows.prevStartIso && compIso <= dateWindows.prevEndIso) {
         prevList.push(rec);
       }
     });
@@ -144,18 +171,20 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
 
   // Aggregate metrics for Current 7 days
   const currentMetrics = useMemo(() => {
-    const totalSpent = current7DaysRecords.reduce((s, r) => s + r.spent, 0);
-    const totalConversions = Math.round(current7DaysRecords.reduce((s, r) => s + r.leads, 0));
-    const totalClicks = current7DaysRecords.reduce((s, r) => s + r.clicks, 0);
-    const totalImpressions = current7DaysRecords.reduce((s, r) => s + r.impressions, 0);
-    const avgCpa = totalConversions > 0 ? Math.round(totalSpent / totalConversions) : 0;
+    const totalSpent = current7DaysRecords.reduce((s, r) => s + (r.spent || 0), 0);
+    const rawConversions = current7DaysRecords.reduce((s, r) => s + (r.leads || 0), 0);
+    const totalConversions = Math.round(rawConversions);
+    const totalClicks = current7DaysRecords.reduce((s, r) => s + (r.clicks || 0), 0);
+    const totalImpressions = current7DaysRecords.reduce((s, r) => s + (r.impressions || 0), 0);
+    const avgCpa = rawConversions > 0 ? Math.round(totalSpent / rawConversions) : (totalConversions > 0 ? Math.round(totalSpent / totalConversions) : 0);
     const avgCpc = totalClicks > 0 ? Math.round(totalSpent / totalClicks) : 0;
     const avgCtr = totalImpressions > 0 ? `${((totalClicks / totalImpressions) * 100).toFixed(2)}%` : '0.00%';
-    const avgConvRate = totalClicks > 0 ? `${((totalConversions / totalClicks) * 100).toFixed(2)}%` : '0.00%';
+    const avgConvRate = totalClicks > 0 ? `${((rawConversions / totalClicks) * 100).toFixed(2)}%` : '0.00%';
 
     return {
       totalSpent,
       totalConversions,
+      rawConversions,
       totalClicks,
       totalImpressions,
       avgCpa,
@@ -167,15 +196,17 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
 
   // Aggregate metrics for Previous 7 days
   const prevMetrics = useMemo(() => {
-    const totalSpent = prev7DaysRecords.reduce((s, r) => s + r.spent, 0);
-    const totalConversions = Math.round(prev7DaysRecords.reduce((s, r) => s + r.leads, 0));
-    const totalClicks = prev7DaysRecords.reduce((s, r) => s + r.clicks, 0);
-    const totalImpressions = prev7DaysRecords.reduce((s, r) => s + r.impressions, 0);
-    const avgCpa = totalConversions > 0 ? Math.round(totalSpent / totalConversions) : 0;
+    const totalSpent = prev7DaysRecords.reduce((s, r) => s + (r.spent || 0), 0);
+    const rawConversions = prev7DaysRecords.reduce((s, r) => s + (r.leads || 0), 0);
+    const totalConversions = Math.round(rawConversions);
+    const totalClicks = prev7DaysRecords.reduce((s, r) => s + (r.clicks || 0), 0);
+    const totalImpressions = prev7DaysRecords.reduce((s, r) => s + (r.impressions || 0), 0);
+    const avgCpa = rawConversions > 0 ? Math.round(totalSpent / rawConversions) : (totalConversions > 0 ? Math.round(totalSpent / totalConversions) : 0);
 
     return {
       totalSpent,
       totalConversions,
+      rawConversions,
       totalClicks,
       totalImpressions,
       avgCpa,
@@ -736,7 +767,8 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
                   cpaDiffPct <= 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
                 }`}>
-                  {cpaDiffPct <= 0 ? 'Tối ưu hơn' : 'Tăng giá'}
+                  {cpaDiffPct <= 0 ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
+                  {Math.abs(cpaDiffPct).toFixed(1)}% {cpaDiffPct <= 0 ? 'Tối ưu' : 'Tăng'}
                 </span>
               </div>
               <p className="text-lg font-black text-amber-300">{currentMetrics.avgCpa.toLocaleString('vi-VN')} đ</p>
