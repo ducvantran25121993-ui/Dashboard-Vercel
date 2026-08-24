@@ -784,9 +784,11 @@ app.post('/api/scan-links-engine', async (req, res) => {
         parsedBaseUrl = targetUrl;
       }
 
+      let finalFetchedUrl = targetUrl;
+
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
 
         const response = await fetch(targetUrl, {
           headers: {
@@ -795,6 +797,7 @@ app.post('/api/scan-links-engine', async (req, res) => {
             'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
             'Cache-Control': 'no-cache'
           },
+          redirect: 'follow',
           signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -802,6 +805,13 @@ app.post('/api/scan-links-engine', async (req, res) => {
         if (response.ok) {
           html = await response.text();
           fetchSuccess = true;
+          if (response.url) {
+            finalFetchedUrl = response.url;
+            try {
+              const u = new URL(response.url);
+              parsedBaseUrl = `${u.protocol}//${u.host}`;
+            } catch {}
+          }
         }
       } catch (err: any) {
         console.warn(`Could not direct fetch ${targetUrl}:`, err.message);
@@ -826,14 +836,16 @@ app.post('/api/scan-links-engine', async (req, res) => {
       if (fetchSuccess && html) {
         let match;
         while ((match = ogImgRegex.exec(html)) !== null) {
-          rawImages.push(match[1].trim());
+          if (match[1]) rawImages.push(match[1].trim());
         }
         while ((match = imgRegex.exec(html)) !== null) {
-          const rawSrc = match[1].split(' ')[0].split(',')[0].trim();
-          rawImages.push(rawSrc);
+          if (match[1]) {
+            const rawSrc = match[1].split(' ')[0].split(',')[0].trim();
+            rawImages.push(rawSrc);
+          }
         }
         while ((match = bgRegex.exec(html)) !== null) {
-          rawImages.push(match[1].trim());
+          if (match[1]) rawImages.push(match[1].trim());
         }
       }
 
@@ -857,6 +869,8 @@ app.post('/api/scan-links-engine', async (req, res) => {
           !lower.includes('1x1') &&
           !lower.includes('pixel') &&
           !lower.includes('tracking') &&
+          !lower.includes('facebook.com/tr') &&
+          !lower.includes('google-analytics') &&
           (lower.includes('.jpg') || lower.includes('.jpeg') || lower.includes('.png') || lower.includes('.webp') || lower.includes('/uploads/') || lower.includes('/images/') || lower.includes('/media/') || lower.includes('cdn'))
         ) {
           realImages.push(finalUrl);
@@ -890,16 +904,15 @@ app.post('/api/scan-links-engine', async (req, res) => {
 
       // Check if real text has specific dental procedures
       if (lowerText.includes('implant') || targetUrl.includes('implant')) {
-        // Extract real mentions from text
         const hasDoctor = cleanText.match(/(?:bác sĩ|bs\.?|thạc sĩ|tiến sĩ)\s+([A-ZÀ-Ỹa-zà-ỹ\s]{3,30})/i);
         const doctorName = hasDoctor ? hasDoctor[1].trim() : 'Đội ngũ bác sĩ chuyên khoa';
         const hasYearExp = cleanText.match(/(\d+)\s+năm\s+(?:kinh nghiệm|làm nghề)/i);
-        const expLabel = hasYearExp ? `${hasYearExp[1]} năm kinh nghiệm y khoa` : 'Chuyên sâu Implant';
+        const expLabel = hasYearExp ? `${hasYearExp[1]} năm kinh nghiệm y khoa` : 'Chuyên sâu Cấy ghép Implant';
 
         detectedPromos.push({
-          service: 'Cấy Ghép Răng Implant & Phục Hình',
-          oldPrice: 'Liên hệ tư vấn / Giá niêm yết',
-          newPrice: 'Thăm khám & Chụp phim 3D chuyên sâu',
+          service: 'Cấy Ghép Răng Implant & Phục Hình Mất Răng',
+          oldPrice: 'Liên hệ tư vấn / Bảng giá niêm yết',
+          newPrice: 'Thăm khám chuyên sâu & Chụp phim CT 3D ConeBeam',
           oldDiscount: 'Bảng giá phòng khám',
           newDiscount: '✅ Trực tiếp khám với ' + doctorName,
           diffPercent: 'Xác thực từ website thật',
@@ -934,40 +947,57 @@ app.post('/api/scan-links-engine', async (req, res) => {
         });
       }
 
-      // Check text hash / comparison to see if real changes occurred
-      const previousText = item.previousData?.text || item.lastData?.text || '';
-      const previousImgs = item.previousData?.images || item.lastData?.images || [];
-      
-      const isFirstScan = !item.lastData;
-      const textDiffers = previousText && cleanText ? Math.abs(cleanText.length - previousText.length) > 50 || cleanText.substring(0, 300) !== previousText.substring(0, 300) : false;
-      const imagesDiffer = previousImgs.length > 0 && realImages.length > 0 ? (realImages[0] !== previousImgs[0] || realImages.length !== previousImgs.length) : false;
+      // Check text / images comparison to determine REAL change
+      const previousSnapshot = item.lastData;
+      const isFirstScan = !previousSnapshot;
 
-      const isChanged = isFirstScan ? true : (textDiffers || imagesDiffer);
-      
+      let isChanged = false;
+      let textDiffers = false;
+      let imagesDiffer = false;
+
+      if (!isFirstScan && previousSnapshot) {
+        const previousText = previousSnapshot.text || '';
+        const previousImgs = previousSnapshot.images || [];
+
+        // Check if images actually changed
+        if (realImages.length > 0 && previousImgs.length > 0) {
+          const currentFirst = realImages[0];
+          const prevFirst = previousImgs[0];
+          const hasDifferentFirst = currentFirst !== prevFirst;
+          const lengthDiff = Math.abs(realImages.length - previousImgs.length);
+          if (hasDifferentFirst || lengthDiff > 0) {
+            imagesDiffer = true;
+          }
+        }
+
+        // Check if text changed significantly
+        if (cleanText && previousText) {
+          const lengthChange = Math.abs(cleanText.length - previousText.length);
+          if (lengthChange > 60 || cleanText.substring(0, 200) !== previousText.substring(0, 200)) {
+            textDiffers = true;
+          }
+        }
+
+        isChanged = imagesDiffer || textDiffers;
+      }
+
       let changeMessage = '';
       if (isFirstScan) {
-        changeMessage = `✅ Đã quét & bóc tách thành công ${realImages.length} hình ảnh thật & nội dung trực tiếp từ website!`;
-      } else if (textDiffers || imagesDiffer) {
-        changeMessage = `⚡ Phát hiện thay đổi thực tế trên trang: ${realImages.length} ảnh & nội dung bài viết vừa cập nhật!`;
+        changeMessage = `✅ Đã nạp thành công ${realImages.length} hình ảnh & nội dung thực tế từ website!`;
+      } else if (isChanged) {
+        changeMessage = `⚡ Phát hiện thay đổi thực tế trên trang: ${realImages.length} ảnh & nội dung vừa cập nhật!`;
       } else {
         changeMessage = `✅ Website đang duy trì nội dung thực tế ổn định (Đã đối chiếu trực tiếp từ URL live)`;
       }
 
       const currentSnapshot = {
-        text: cleanText || `[Dữ liệu quét trực tiếp từ ${domainName}] ${pageTitle || targetUrl}: Nội dung thực tế đang được duy trì ổn định trên trang.`,
-        images: realImages.slice(0, 8),
+        text: cleanText || (previousSnapshot?.text) || `[Dữ liệu quét trực tiếp từ ${domainName}] ${pageTitle || targetUrl}: Nội dung thực tế đang được duy trì ổn định trên trang.`,
+        images: realImages.length > 0 ? realImages.slice(0, 10) : (previousSnapshot?.images || []),
         promotions: detectedPromos,
         scannedAt: new Date().toISOString()
       };
 
-      const previousSnapshot = item.lastData || {
-        text: `[Bản lưu trước đó của ${domainName}] Dữ liệu hệ thống đã lưu trữ từ lần kiểm tra trước.`,
-        images: realImages.slice(1, 5),
-        promotions: detectedPromos,
-        scannedAt: new Date(Date.now() - 86400000 * 2).toISOString()
-      };
-
-      if (isChanged && isFirstScan) {
+      if (isChanged && !isFirstScan) {
         detectedAlerts.push({
           id: 'alert_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
           url: targetUrl,
@@ -985,9 +1015,9 @@ app.post('/api/scan-links-engine', async (req, res) => {
         status: isChanged ? 'Changed' : 'Unchanged',
         lastScanTime: 'Vừa xong (' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ')',
         changeMessage,
-        previousData: previousSnapshot,
+        previousData: isChanged ? previousSnapshot : (item.previousData || previousSnapshot),
         lastData: currentSnapshot,
-        newImagesCount: realImages.length,
+        newImagesCount: isChanged ? (realImages.length > (previousSnapshot?.images?.length || 0) ? realImages.length - (previousSnapshot?.images?.length || 0) : 1) : 0,
         textChanged: textDiffers
       });
     }

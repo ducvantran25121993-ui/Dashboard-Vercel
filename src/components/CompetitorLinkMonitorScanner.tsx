@@ -147,19 +147,20 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   {
     id: 'link-2',
     name: 'Nha Khoa Kim - Hệ Thống Nha Khoa Chuẩn ISO',
-    url: 'https://nhakhoakim.com/bang-gia-implant',
+    url: 'https://nhakhoakim.com/',
     category: 'implant',
     scanFrequency: 'weekly',
-    status: 'Changed',
+    status: 'Unchanged',
     lastScanTime: 'Hôm nay, 08:30',
-    changeMessage: '🖼️ Đã bóc tách bảng giá và hình ảnh thực tế từ nhakhoakim.com',
-    newImagesCount: 3,
-    textChanged: true,
+    changeMessage: '✅ Đã xác thực hình ảnh & dịch vụ thực tế từ website nhakhoakim.com',
+    newImagesCount: 0,
+    textChanged: false,
     lastData: {
       text: 'Hệ thống Nha Khoa Kim - Tiêu chuẩn ISO 9001:2015 và chứng nhận quốc tế GCR Hoa Kỳ. Trồng răng Implant an toàn với phòng phẫu thuật vô trùng khép kín 1 chiều.',
       images: [
-        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-rang-nhu-the-nao.png',
-        'https://implantsaigon.com/wp-content/uploads/2026/07/21-nam-lam-nghe-1024x454.png'
+        'https://nhakhoakim.com/wp-content/uploads/2019/05/Banner_DichVu-01-2-1.jpg',
+        'https://nhakhoakim.com/wp-content/uploads/2017/12/12-1.jpg',
+        'https://nhakhoakim.com/wp-content/themes/kimdental-child/assets/images/bg-tet-2022-mobile.gif'
       ],
       promotions: [
         {
@@ -173,28 +174,26 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
         }
       ],
       scannedAt: new Date().toISOString()
-    },
-    previousData: {
-      text: 'Nha Khoa Kim: Hệ thống phòng khám chuyên khoa Răng Hàm Mặt toàn quốc.',
-      images: ['https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-rang-nhu-the-nao.png'],
-      scannedAt: new Date(Date.now() - 7 * 86400000).toISOString()
     }
   },
   {
     id: 'link-3',
     name: 'Nha Khoa Paris - Niềng Răng & Chỉnh Nha Tiêu Chuẩn Pháp',
-    url: 'https://nhakhoaparis.vn/khuyen-mai-nieng-rang',
+    url: 'https://nhakhoaparis.vn/',
     category: 'ortho',
     scanFrequency: 'weekly',
-    status: 'Changed',
+    status: 'Unchanged',
     lastScanTime: 'Hôm nay, 07:15',
-    changeMessage: '📝 Đã bóc tách nội dung chương trình niềng răng từ nhakhoaparis.vn',
-    newImagesCount: 2,
-    textChanged: true,
+    changeMessage: '✅ Đã xác thực hình ảnh & dịch vụ thực tế từ website nhakhoaparis.vn',
+    newImagesCount: 0,
+    textChanged: false,
     lastData: {
       text: 'Nha Khoa Paris - Tiêu chuẩn Pháp với công nghệ niềng răng 3D Speed giúp dịch chuyển răng nhanh và êm ái. Hệ thống máy quét hàm Itero 5D xem trước kết quả nụ cười.',
       images: [
-        'https://implantsaigon.com/wp-content/uploads/2026/07/text-cong-nghe-tien-tien.png'
+        'https://nhakhoaparis.vn/wp-content/webp-express/webp-images/uploads/2026/06/ctkmt626-mb.jpg.webp',
+        'https://nhakhoaparis.vn/wp-content/webp-express/webp-images/themes/ParisBrand2024/Module/Home/outstanding_pr_2_0_0/images/outstanding-img1.jpg.webp',
+        'https://nhakhoaparis.vn/wp-content/webp-express/webp-images/themes/ParisBrand2024/Module/Home/outstanding_pr_2_0_0/images/outstanding-img2.jpg.webp',
+        'https://nhakhoaparis.vn/wp-content/uploads/2024/08/t1-bg-m.jpg'
       ],
       promotions: [
         {
@@ -213,18 +212,22 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   {
     id: 'link-4',
     name: 'Dr. Care Implant - Nha Khoa Trồng Răng Không Đau',
-    url: 'https://drcareimplant.com/uu-dai-implant',
+    url: 'https://drcareimplant.com/trong-rang-gia-co-dinh-gia-bao-nhieu-tien-62',
     category: 'implant',
     scanFrequency: 'weekly',
-    status: 'Changed',
+    status: 'Unchanged',
     lastScanTime: 'Hôm qua, 18:00',
-    changeMessage: '🖼️ Đã bóc tách liệu pháp trồng răng chuyên sâu người trung niên',
-    newImagesCount: 2,
-    textChanged: true,
+    changeMessage: '✅ Đã xác thực hình ảnh & nội dung thực tế từ website drcareimplant.com',
+    newImagesCount: 0,
+    textChanged: false,
     lastData: {
       text: 'Dr. Care Implant Clinic - Nha khoa chuyên sâu trồng răng Implant dành riêng cho người trung niên và cao tuổi tại Việt Nam. Liệu pháp trồng răng không đau với 12 bước nghiêm ngặt.',
       images: [
-        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-3-rang-tro-len.png'
+        'https://drcareimplant.com/upload/image/article/fb/2025/08/30/4dc4f7bb12521e86e2725b065e398804.jpg',
+        'https://drcareimplant.com/upload/image/article/content/CTV%20-%20Chi/trong-rang-su-co-dinh/trong-rang-su-co-dinh-la-gi.jpg',
+        'https://drcareimplant.com/upload/image/article/content/CTV%20-%20Chi/phuong-phap-trong-rang-su-nao-tot-nhat-hien-nay.jpg',
+        'https://drcareimplant.com/upload/image/article/content/CTV%20-%20Chi/lam-rang-gia-co-dinh-bang-cay-ghep-implant.jpg',
+        'https://drcareimplant.com/frontend/images/bs-vu-desk.png'
       ],
       promotions: [
         {
@@ -242,38 +245,42 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   },
   {
     id: 'link-5',
-    name: 'Nha Khoa I-DENT - Chuyên Khoa Cấy Ghép Implant',
-    url: 'https://nhakhoaident.com/trong-rang-implant',
+    name: 'Nha Khoa Peace Dentistry - Hệ Thống Nha Khoa Uy Tín',
+    url: 'https://nhakhoapeace.vn/',
     category: 'implant',
     scanFrequency: 'weekly',
     status: 'Unchanged',
     lastScanTime: 'Vừa quét',
-    changeMessage: '✅ Đã xác thực nội dung thực tế trên website (Dữ liệu ổn định)',
+    changeMessage: '✅ Đã xác thực hình ảnh & dịch vụ thực tế từ website nhakhoapeace.vn',
     newImagesCount: 0,
     textChanged: false,
     lastData: {
-      text: 'Nha Khoa I-DENT: Hơn 10 năm kinh nghiệm chuyên sâu cấy ghép Implant và phục hình răng sứ thẩm mỹ. Đội ngũ Tiến sĩ, Thạc sĩ Bác sĩ tu nghiệp tại Pháp.',
+      text: 'Peace Dentistry - Hệ thống nha khoa tiêu chuẩn quốc tế với đội ngũ bác sĩ Răng Hàm Mặt giàu kinh nghiệm, trang thiết bị đồng bộ hiện đại.',
       images: [
-        'https://implantsaigon.com/wp-content/uploads/2026/06/tinh-trang-mat-rang-nguyen-ham.png'
+        'https://nhakhoapeace.vn/wp-content/uploads/2026/01/banner-trang-chu-thang-1-2026-mobile.jpg',
+        'https://nhakhoapeace.vn/wp-content/uploads/2026/06/banner-khuyen-mai-chao-he-2026-mobile.jpg',
+        'https://nhakhoapeace.vn/wp-content/uploads/2023/06/doi-ngu-bac-si-gioi.jpg'
       ],
       scannedAt: new Date().toISOString()
     }
   },
   {
     id: 'link-6',
-    name: 'Nha Khoa Parkway - Chuyên Gia Niềng Răng Trong Suốt',
-    url: 'https://nhakhoaparkway.com/invisalign',
-    category: 'ortho',
+    name: 'Nha Khoa Anna - Thẩm Mỹ & Phục Hình Răng',
+    url: 'https://nhakhoaanna.com/dich-vu/bang-gia-dich-vu-tong-quat/',
+    category: 'cosmetic',
     scanFrequency: 'weekly',
-    status: 'Changed',
+    status: 'Unchanged',
     lastScanTime: 'Vừa quét',
-    changeMessage: '🖼️ Đã bóc tách thông tin hạng mức Invisalign Black Diamond',
-    newImagesCount: 1,
-    textChanged: true,
+    changeMessage: '✅ Đã xác thực hình ảnh & bảng giá thực tế từ website nhakhoaanna.com',
+    newImagesCount: 0,
+    textChanged: false,
     lastData: {
-      text: 'Chuỗi phòng khám chuyên khoa Chỉnh nha & Niềng răng Parkway. Trung tâm chỉnh nha Invisalign Black Diamond hàng đầu tại Việt Nam.',
+      text: 'Nha Khoa Anna - Chuỗi hệ thống nha khoa phục hình và thẩm mỹ nụ cười hàng đầu tại TP.HCM. Bảng giá niêm yết minh bạch các dịch vụ tổng quát và chuyên sâu.',
       images: [
-        'https://implantsaigon.com/wp-content/uploads/2026/07/text-cong-nghe-tien-tien.png'
+        'https://nhakhoaanna.com/wp-content/uploads/2025/12/bang-gia-dich-vu-tong-quat-anna-khong-so-lieu.webp',
+        'https://nhakhoaanna.com/wp-content/uploads/2025/12/doi-ngu-bac-si-169.png',
+        'https://nhakhoaanna.com/wp-content/uploads/2025/12/logo-anna-dental.png'
       ],
       scannedAt: new Date().toISOString()
     }
@@ -289,10 +296,10 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // If parsed is array and contains old mock data or doesn't have implantsaigon as top link, refresh with real presets
         if (Array.isArray(parsed) && parsed.length > 0) {
           const hasOldMock = parsed.some(p => p.lastData?.images?.some((img: string) => img.includes('unsplash.com')));
-          if (!hasOldMock) {
+          const hasMismatchedImages = parsed.some(p => p.id !== 'link-1' && p.lastData?.images?.some((img: string) => img.includes('implantsaigon.com')));
+          if (!hasOldMock && !hasMismatchedImages) {
             return parsed;
           }
         }
