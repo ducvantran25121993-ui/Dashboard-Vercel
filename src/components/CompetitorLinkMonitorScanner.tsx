@@ -1177,15 +1177,6 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={handleLoad20PresetLinks}
-                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer transition-all"
-                title="Nạp ngay danh sách 20 nha khoa đối thủ hàng đầu Việt Nam"
-              >
-                <Zap className="w-3.5 h-3.5" />
-                <span>⚡ Nạp Đầy Đủ 20 Đối Thủ Hàng Đầu</span>
-              </button>
-              <button
-                type="button"
                 onClick={() => setShowSavedLinksManager(false)}
                 className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold cursor-pointer border border-slate-800"
               >
@@ -2430,41 +2421,29 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
                 <button
                   type="button"
-                  onClick={handleLoad20PresetLinks}
-                  className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
-                  title="Nạp nhanh 20 nha khoa đối thủ hàng đầu Việt Nam"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs cursor-pointer transition-colors"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>⚡ Nạp Sẵn 20 Đối Thủ Hàng Đầu</span>
+                  Hủy Bỏ
                 </button>
-
-                <div className="flex items-center justify-end gap-2.5 w-full sm:w-auto">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs cursor-pointer transition-colors"
-                  >
-                    Hủy Bỏ
-                  </button>
-                  <button
-                    type="button"
-                    onClick={e => handleAddLink(e, false)}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-bold text-xs shadow cursor-pointer transition-colors flex items-center gap-1.5"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>💾 Lưu Vào Kho</span>
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-black text-xs shadow-lg shadow-indigo-600/30 cursor-pointer transition-all flex items-center gap-1.5"
-                  >
-                    <Zap className="w-4 h-4" />
-                    <span>⚡ Lưu Vào Kho & Quét Ngay</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={e => handleAddLink(e, false)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-bold text-xs shadow cursor-pointer transition-colors flex items-center gap-1.5"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>💾 Lưu Vào Kho</span>
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-black text-xs shadow-lg shadow-indigo-600/30 cursor-pointer transition-all flex items-center gap-1.5"
+                >
+                  <Zap className="w-4 h-4" />
+                  <span>⚡ Lưu Vào Kho & Quét Ngay</span>
+                </button>
               </div>
             </form>
           </div>
