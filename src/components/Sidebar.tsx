@@ -212,9 +212,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <p className="text-xs font-semibold text-slate-200 truncate">
                     {userRole === 'admin' ? 'Quản Trị Viên' : 'Nhân Viên'}
                   </p>
-                  <p className="text-[10px] text-slate-400">
-                    {userRole === 'admin' ? 'Toàn quyền hệ thống' : 'Quyền xem giới hạn'}
-                  </p>
                 </div>
               </div>
               <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
