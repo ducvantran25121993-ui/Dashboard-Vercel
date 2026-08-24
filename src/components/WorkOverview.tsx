@@ -314,181 +314,206 @@ export const WorkOverview: React.FC<WorkOverviewProps> = ({
         </div>
       </div>
 
-      {/* 1. Quick Work Category Cards */}
-      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-6 shadow-xl space-y-4">
-        <div className="flex items-center justify-between">
+      {/* 1. Quick Work Category Cards - 2 Rows Professional Layout */}
+      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-6 shadow-xl space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-800/80">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
-              <Layers className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-sm">
+              <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Phân Chia Tab Công Việc</h3>
-              <p className="text-xs text-slate-400">Chọn nhanh luồng làm việc chuyên biệt</p>
+              <h3 className="text-base font-bold text-white tracking-tight">Phân Chia Tab Công Việc</h3>
+              <p className="text-xs text-slate-400">Chọn nhanh luồng làm việc chuyên biệt theo 2 nhóm chức năng</p>
+            </div>
+          </div>
+          <span className="text-[11px] font-medium text-slate-400 bg-slate-800/60 px-3 py-1 rounded-full border border-slate-700/60 self-start sm:self-auto">
+            6 Phân Hệ Vận Hành & Tăng Trưởng
+          </span>
+        </div>
+
+        {/* DÒNG 1: QUẢN TRỊ DOANH THU & CHIẾN DỊCH CHUYỂN ĐỔI */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/50" />
+            <span className="text-xs font-bold uppercase tracking-wider text-cyan-300/90">
+              Nhóm 1: Quản Trị Doanh Thu, Phễu & Chiến Dịch Quảng Cáo
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
+            {/* Card 1: Google Ads Dashboard */}
+            <div
+              onClick={() => onNavigateToTab('google_ads')}
+              className="group p-5 rounded-2xl bg-gradient-to-b from-slate-800/70 to-slate-900/90 hover:from-slate-800 hover:to-slate-850 border border-slate-700/70 hover:border-cyan-400/60 cursor-pointer transition-all duration-200 shadow-lg hover:shadow-cyan-500/10 relative overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="w-11 h-11 rounded-xl bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                    Live Sheet
+                  </span>
+                </div>
+                <h4 className="text-base font-bold text-white mt-3.5 group-hover:text-cyan-300 transition-colors">
+                  Google Ads Dashboard
+                </h4>
+                <p className="text-xs leading-relaxed text-slate-400 mt-1.5 line-clamp-2">
+                  Báo cáo chi phí (VAT), doanh thu từng tháng, data dịch vụ ngày và thống kê khách Việt Kiều.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-cyan-400 group-hover:text-cyan-300">
+                <span>Mở bảng dữ liệu</span>
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+            </div>
+
+            {/* Card 2: Lead & Phễu Chuyển Đổi */}
+            <div
+              onClick={() => onNavigateToTab('leads_funnel')}
+              className="group p-5 rounded-2xl bg-gradient-to-b from-slate-800/70 to-slate-900/90 hover:from-slate-800 hover:to-slate-850 border border-slate-700/70 hover:border-blue-400/60 cursor-pointer transition-all duration-200 shadow-lg hover:shadow-blue-500/10 relative overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="w-11 h-11 rounded-xl bg-blue-500/15 text-blue-400 border border-blue-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Users2 className="w-5 h-5" />
+                  </div>
+                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">
+                    Phễu Sales
+                  </span>
+                </div>
+                <h4 className="text-base font-bold text-white mt-3.5 group-hover:text-blue-300 transition-colors">
+                  Lead & Phễu Chuyển Đổi
+                </h4>
+                <p className="text-xs leading-relaxed text-slate-400 mt-1.5 line-clamp-2">
+                  Theo dõi hành trình khách hàng từ lúc bấm quảng cáo đến khi tư vấn, chốt hẹn và đến phòng khám.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-blue-400 group-hover:text-blue-300">
+                <span>Xem phân tích phễu</span>
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+            </div>
+
+            {/* Card 3: Chiến Dịch Quảng Cáo */}
+            <div
+              onClick={() => onNavigateToTab('campaigns')}
+              className="group p-5 rounded-2xl bg-gradient-to-b from-slate-800/70 to-slate-900/90 hover:from-slate-800 hover:to-slate-850 border border-slate-700/70 hover:border-amber-400/60 cursor-pointer transition-all duration-200 shadow-lg hover:shadow-amber-500/10 relative overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="w-11 h-11 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Megaphone className="w-5 h-5" />
+                  </div>
+                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                    Active Ads
+                  </span>
+                </div>
+                <h4 className="text-base font-bold text-white mt-3.5 group-hover:text-amber-300 transition-colors">
+                  Chiến Dịch Quảng Cáo
+                </h4>
+                <p className="text-xs leading-relaxed text-slate-400 mt-1.5 line-clamp-2">
+                  Chiến dịch Google Search, Performance Max, Youtube & Mạng hiển thị theo từng tỉnh thành.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300">
+                <span>Quản lý chiến dịch</span>
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 pt-2">
-          {/* Card 1: Google Ads */}
-          <div
-            onClick={() => onNavigateToTab('google_ads')}
-            className="group p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-cyan-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                  Live Sheet
-                </span>
-              </div>
-              <h4 className="text-base font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors">
-                Google Ads Dashboard
-              </h4>
-              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                Báo cáo chi phí (VAT), doanh thu từng tháng, data dịch vụ ngày và thống kê Việt Kiều.
-              </p>
-            </div>
-            <div className="mt-4 flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform">
-              <span>Mở bảng dữ liệu</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
-            </div>
+        {/* DÒNG 2: ĐỐI THỦ CẠNH TRANH, SÁNG TẠO & TRÍ TUỆ AI */}
+        <div className="space-y-3 pt-1">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-purple-400 shadow-sm shadow-purple-400/50" />
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-300/90">
+              Nhóm 2: Radar Đối Thủ, Sáng Kiến Mới & Trí Tuệ Nhân Tạo AI
+            </span>
           </div>
 
-          {/* Card 2: Lead & Phễu */}
-          <div
-            onClick={() => onNavigateToTab('leads_funnel')}
-            className="group p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-blue-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center">
-                  <Users2 className="w-5 h-5" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
+            {/* Card 4: Theo dõi đối thủ */}
+            <div
+              onClick={() => onNavigateToTab('competitor')}
+              className="group p-5 rounded-2xl bg-gradient-to-b from-slate-800/70 to-slate-900/90 hover:from-slate-800 hover:to-slate-850 border border-slate-700/70 hover:border-indigo-400/60 cursor-pointer transition-all duration-200 shadow-lg hover:shadow-indigo-500/10 relative overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="w-11 h-11 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Swords className="w-5 h-5" />
+                  </div>
+                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                    Radar AI
+                  </span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">
-                  Phễu Sales
-                </span>
+                <h4 className="text-base font-bold text-white mt-3.5 group-hover:text-indigo-300 transition-colors">
+                  Theo Dõi Đối Thủ
+                </h4>
+                <p className="text-xs leading-relaxed text-slate-400 mt-1.5 line-clamp-2">
+                  Auction insights, radar mẫu quảng cáo, so sánh bảng giá và chiến lược phản công đè đối thủ.
+                </p>
               </div>
-              <h4 className="text-base font-bold text-white mt-3 group-hover:text-blue-300 transition-colors">
-                Lead & Phễu Chuyển Đổi
-              </h4>
-              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                Theo dõi hành trình khách hàng từ lúc bấm quảng cáo đến khi tư vấn và đặt lịch khám.
-              </p>
+              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-indigo-400 group-hover:text-indigo-300">
+                <span>Xem radar đối thủ</span>
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
             </div>
-            <div className="mt-4 flex items-center text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform">
-              <span>Xem phân tích</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
-            </div>
-          </div>
 
-          {/* Card 3: Chiến dịch */}
-          <div
-            onClick={() => onNavigateToTab('campaigns')}
-            className="group p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-amber-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
-                  <Megaphone className="w-5 h-5" />
+            {/* Card 5: Sáng Tạo & Đổi Mới */}
+            <div
+              onClick={() => onNavigateToTab('innovation')}
+              className="group p-5 rounded-2xl bg-gradient-to-b from-slate-800/70 to-slate-900/90 hover:from-slate-800 hover:to-slate-850 border border-slate-700/70 hover:border-purple-400/60 cursor-pointer transition-all duration-200 shadow-lg hover:shadow-purple-500/10 relative overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="w-11 h-11 rounded-xl bg-purple-500/15 text-purple-400 border border-purple-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Lightbulb className="w-5 h-5" />
+                  </div>
+                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-400/30">
+                    AI Gợi Ý
+                  </span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">
-                  Active
-                </span>
+                <h4 className="text-base font-bold text-white mt-3.5 group-hover:text-purple-300 transition-colors">
+                  Sáng Tạo & Đổi Mới
+                </h4>
+                <p className="text-xs leading-relaxed text-slate-400 mt-1.5 line-clamp-2">
+                  Khám phá ý tưởng mới: Livestream, mini-tool nụ cười, tối ưu Google Ads & kịch bản đón kiều bào.
+                </p>
               </div>
-              <h4 className="text-base font-bold text-white mt-3 group-hover:text-amber-300 transition-colors">
-                Chiến Dịch Quảng Cáo
-              </h4>
-              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                Chiến dịch Google Search, Performance Max, Youtube & Mạng hiển thị theo khu vực.
-              </p>
+              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-purple-400 group-hover:text-purple-300">
+                <span>Mở phòng thử nghiệm</span>
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
             </div>
-            <div className="mt-4 flex items-center text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform">
-              <span>Quản lý chiến dịch</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
-            </div>
-          </div>
 
-          {/* Card 4: Theo dõi đối thủ */}
-          <div
-            onClick={() => onNavigateToTab('competitor')}
-            className="group p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-indigo-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
-                  <Swords className="w-5 h-5" />
+            {/* Card 6: Trợ Lý AI Copilot */}
+            <div
+              onClick={() => onNavigateToTab('ai_agent')}
+              className="group p-5 rounded-2xl bg-gradient-to-b from-slate-800/80 via-indigo-950/40 to-slate-900/95 hover:from-slate-800 hover:to-indigo-950/60 border border-indigo-500/40 hover:border-cyan-400/70 cursor-pointer transition-all duration-200 shadow-lg hover:shadow-cyan-500/15 relative overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center shadow-lg shadow-cyan-500/10 group-hover:scale-105 transition-transform">
+                    <Bot className="w-5 h-5 text-cyan-300" />
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all ${currentAiBadge.color}`}>
+                    {currentAiBadge.shortName}
+                  </span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
-                  Radar AI
-                </span>
+                <h4 className="text-base font-bold text-white mt-3.5 group-hover:text-cyan-300 transition-colors flex items-center gap-1.5">
+                  Trợ Lý AI
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0 animate-pulse" />
+                </h4>
+                <p className="text-xs leading-relaxed text-slate-400 mt-1.5 line-clamp-2">
+                  Chat trực tiếp với AI thông minh phân tích số liệu thực tế, tối ưu Ads & kịch bản Telesales tự động.
+                </p>
               </div>
-              <h4 className="text-base font-bold text-white mt-3 group-hover:text-indigo-300 transition-colors">
-                Theo Dõi Đối Thủ
-              </h4>
-              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                Auction insights, radar mẫu quảng cáo, so sánh bảng giá và chiến lược phản công đè đối thủ.
-              </p>
-            </div>
-            <div className="mt-4 flex items-center text-xs font-semibold text-indigo-400 group-hover:translate-x-1 transition-transform">
-              <span>Xem phân tích đối thủ</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
-            </div>
-          </div>
-
-          {/* Card 5: Sáng kiến & Sáng Tạo */}
-          <div
-            onClick={() => onNavigateToTab('innovation')}
-            className="group p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-purple-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center">
-                  <Lightbulb className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-400/30">
-                  AI Gợi Ý
-                </span>
+              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-cyan-400 group-hover:text-cyan-300">
+                <span>Trò chuyện cùng AI</span>
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </div>
-              <h4 className="text-base font-bold text-white mt-3 group-hover:text-purple-300 transition-colors">
-               Sáng Tạo & Đổi Mới
-              </h4>
-              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                Khám phá ý tưởng mới: Livestream, mini-tool nụ cười, tối ưu Google Ads.
-              </p>
-            </div>
-            <div className="mt-4 flex items-center text-xs font-semibold text-purple-400 group-hover:translate-x-1 transition-transform">
-              <span>Mở phòng thử nghiệm</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
-            </div>
-          </div>
-
-          {/* Card 6: AI Agent Copilot */}
-          <div
-            onClick={() => onNavigateToTab('ai_agent')}
-            className="group p-4 rounded-xl bg-gradient-to-b from-slate-800/80 to-indigo-950/40 hover:bg-slate-800 border border-indigo-500/30 hover:border-cyan-400/60 cursor-pointer transition-all shadow-md relative overflow-hidden flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center shadow-lg shadow-cyan-500/10">
-                  <Bot className="w-5 h-5 text-cyan-300" />
-                </div>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-all ${currentAiBadge.color}`}>
-                  {currentAiBadge.shortName}
-                </span>
-              </div>
-              <h4 className="text-base font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors flex items-center gap-1.5">
-                Trợ Lý AI
-                <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              </h4>
-              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                Chat trực tiếp với AI thông minh phân tích số liệu thực tế, tối ưu Ads & kịch bản Telesales.
-              </p>
-            </div>
-            <div className="mt-4 flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform">
-              <span>Trò chuyện cùng AI</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
             </div>
           </div>
         </div>
