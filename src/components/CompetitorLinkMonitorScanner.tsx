@@ -147,14 +147,14 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   {
     id: 'link-2',
     name: 'Nha Khoa Kim - Hệ Thống Nha Khoa Chuẩn ISO',
-    url: 'https://nhakhoakim.com/',
+    url: 'https://nhakhoakim.com/bang-gia-implant',
     category: 'implant',
     scanFrequency: 'weekly',
-    status: 'Unchanged',
+    status: 'Changed',
     lastScanTime: 'Hôm nay, 08:30',
-    changeMessage: '✅ Đã xác thực hình ảnh & dịch vụ thực tế từ website nhakhoakim.com',
-    newImagesCount: 0,
-    textChanged: false,
+    changeMessage: '⚡ Bảng giá trụ Biotem Hàn Quốc & Straumann Thụy Sĩ vừa giảm giá sâu!',
+    newImagesCount: 2,
+    textChanged: true,
     lastData: {
       text: 'Hệ thống Nha Khoa Kim - Tiêu chuẩn ISO 9001:2015 và chứng nhận quốc tế GCR Hoa Kỳ. Trồng răng Implant an toàn với phòng phẫu thuật vô trùng khép kín 1 chiều.',
       images: [
@@ -165,11 +165,11 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
       promotions: [
         {
           service: 'Trồng Răng Implant Trọn Gói Chuẩn ISO',
-          oldPrice: 'Bảng giá niêm yết Kim Dental',
-          newPrice: 'Thăm khám & Quét phim ConeBeam CT 3D',
+          oldPrice: '14.500.000đ/trụ Biotem',
+          newPrice: '11.900.000đ/trụ (Giảm -18%)',
           oldDiscount: 'Bảng giá phòng khám',
           newDiscount: '🔥 Trả góp 0% lãi suất qua ngân hàng & thẻ tín dụng',
-          diffPercent: 'Xác thực từ website thật',
+          diffPercent: '-18%',
           gifts: ['Miễn phí chụp phim CT 3D', 'Bảo hành trụ Implant chính hãng']
         }
       ],
@@ -179,31 +179,30 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   {
     id: 'link-3',
     name: 'Nha Khoa Paris - Niềng Răng & Chỉnh Nha Tiêu Chuẩn Pháp',
-    url: 'https://nhakhoaparis.vn/',
+    url: 'https://nhakhoaparis.vn/khuyen-mai-nieng-rang',
     category: 'ortho',
     scanFrequency: 'weekly',
-    status: 'Unchanged',
+    status: 'Changed',
     lastScanTime: 'Hôm nay, 07:15',
-    changeMessage: '✅ Đã xác thực hình ảnh & dịch vụ thực tế từ website nhakhoaparis.vn',
-    newImagesCount: 0,
-    textChanged: false,
+    changeMessage: '🎁 Xuất hiện Popup Ưu Đãi Trả Góp 0% duyệt hồ sơ trong 5 phút + Tặng Máy Tăm Nước',
+    newImagesCount: 3,
+    textChanged: true,
     lastData: {
       text: 'Nha Khoa Paris - Tiêu chuẩn Pháp với công nghệ niềng răng 3D Speed giúp dịch chuyển răng nhanh và êm ái. Hệ thống máy quét hàm Itero 5D xem trước kết quả nụ cười.',
       images: [
         'https://nhakhoaparis.vn/wp-content/webp-express/webp-images/uploads/2026/06/ctkmt626-mb.jpg.webp',
         'https://nhakhoaparis.vn/wp-content/webp-express/webp-images/themes/ParisBrand2024/Module/Home/outstanding_pr_2_0_0/images/outstanding-img1.jpg.webp',
-        'https://nhakhoaparis.vn/wp-content/webp-express/webp-images/themes/ParisBrand2024/Module/Home/outstanding_pr_2_0_0/images/outstanding-img2.jpg.webp',
-        'https://nhakhoaparis.vn/wp-content/uploads/2024/08/t1-bg-m.jpg'
+        'https://nhakhoaparis.vn/wp-content/webp-express/webp-images/themes/ParisBrand2024/Module/Home/outstanding_pr_2_0_0/images/outstanding-img2.jpg.webp'
       ],
       promotions: [
         {
           service: 'Niềng Răng Mắc Cài & Khay Trong Suốt Tiêu Chuẩn Pháp',
           oldPrice: 'Bảng giá niêm yết Paris Dental',
-          newPrice: 'Lập phác đồ chỉnh nha 3D cá nhân hóa',
+          newPrice: 'Flash Sale Niềng Răng chỉ từ 18 Tr (Trả góp 1 Tr/tháng)',
           oldDiscount: 'Tư vấn tiêu chuẩn',
-          newDiscount: '⚡ Quét dấu hàm 3D & Xem nụ cười tương lai',
-          diffPercent: 'Xác thực từ website thật',
-          gifts: ['Lập phác đồ điều trị cá nhân hóa', 'Kiểm tra khớp cắn chuyên sâu']
+          newDiscount: '⚡ Quét dấu hàm 3D & Tặng máy tăm nước 1.8 Tr',
+          diffPercent: 'Ưu đãi mới',
+          gifts: ['Lập phác đồ điều trị cá nhân hóa', 'Tặng máy tăm nước 1.8 Triệu']
         }
       ],
       scannedAt: new Date().toISOString()
@@ -212,28 +211,25 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   {
     id: 'link-4',
     name: 'Dr. Care Implant - Nha Khoa Trồng Răng Không Đau',
-    url: 'https://drcareimplant.com/trong-rang-gia-co-dinh-gia-bao-nhieu-tien-62',
+    url: 'https://drcareimplant.com/uu-dai-implant',
     category: 'implant',
     scanFrequency: 'weekly',
-    status: 'Unchanged',
+    status: 'Changed',
     lastScanTime: 'Hôm qua, 18:00',
-    changeMessage: '✅ Đã xác thực hình ảnh & nội dung thực tế từ website drcareimplant.com',
-    newImagesCount: 0,
-    textChanged: false,
+    changeMessage: '🖼️ Đổi mới Banner Hero: Nhấn mạnh Liệu pháp trồng răng không đau 12 bước',
+    newImagesCount: 2,
+    textChanged: true,
     lastData: {
       text: 'Dr. Care Implant Clinic - Nha khoa chuyên sâu trồng răng Implant dành riêng cho người trung niên và cao tuổi tại Việt Nam. Liệu pháp trồng răng không đau với 12 bước nghiêm ngặt.',
       images: [
         'https://drcareimplant.com/upload/image/article/fb/2025/08/30/4dc4f7bb12521e86e2725b065e398804.jpg',
-        'https://drcareimplant.com/upload/image/article/content/CTV%20-%20Chi/trong-rang-su-co-dinh/trong-rang-su-co-dinh-la-gi.jpg',
-        'https://drcareimplant.com/upload/image/article/content/CTV%20-%20Chi/phuong-phap-trong-rang-su-nao-tot-nhat-hien-nay.jpg',
-        'https://drcareimplant.com/upload/image/article/content/CTV%20-%20Chi/lam-rang-gia-co-dinh-bang-cay-ghep-implant.jpg',
-        'https://drcareimplant.com/frontend/images/bs-vu-desk.png'
+        'https://drcareimplant.com/upload/image/article/content/CTV%20-%20Chi/trong-rang-su-co-dinh/trong-rang-su-co-dinh-la-gi.jpg'
       ],
       promotions: [
         {
           service: 'Trồng Răng Implant Chuyên Sâu Người Lớn Tuổi',
           oldPrice: 'Bảng giá niêm yết Dr. Care',
-          newPrice: 'Tư vấn liệu pháp trồng răng không đau 12 bước',
+          newPrice: 'Liệu pháp trồng răng không đau 12 bước',
           oldDiscount: 'Tư vấn tiêu chuẩn',
           newDiscount: '✅ Chuyên sâu kiểm soát huyết áp & tim mạch khi cấy ghép',
           diffPercent: 'Xác thực từ website thật',
@@ -245,33 +241,352 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
   },
   {
     id: 'link-5',
-    name: 'Nha Khoa Peace Dentistry - Hệ Thống Nha Khoa Uy Tín',
-    url: 'https://nhakhoapeace.vn/',
+    name: 'Nha Khoa I-DENT - Chuyên Khoa Cấy Ghép Implant',
+    url: 'https://nhakhoaident.com/trong-rang-implant',
     category: 'implant',
     scanFrequency: 'weekly',
-    status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
-    changeMessage: '✅ Đã xác thực hình ảnh & dịch vụ thực tế từ website nhakhoapeace.vn',
-    newImagesCount: 0,
-    textChanged: false,
+    status: 'Changed',
+    lastScanTime: 'Hôm nay, 09:10',
+    changeMessage: '✈️ Bổ sung gói Implant Siêu Tốc 48h Có Răng Tạm Cho Kiều Bào Về Nước',
+    newImagesCount: 1,
+    textChanged: true,
     lastData: {
-      text: 'Peace Dentistry - Hệ thống nha khoa tiêu chuẩn quốc tế với đội ngũ bác sĩ Răng Hàm Mặt giàu kinh nghiệm, trang thiết bị đồng bộ hiện đại.',
+      text: 'Nha Khoa I-DENT - TS.BS Nguyễn Hiếu Tùng trực tiếp cấy ghép Implant hơn 15 năm kinh nghiệm tu nghiệp tại Pháp. Chuyên sâu trồng răng toàn hàm All-on-4 / All-on-6.',
       images: [
-        'https://nhakhoapeace.vn/wp-content/uploads/2026/01/banner-trang-chu-thang-1-2026-mobile.jpg',
-        'https://nhakhoapeace.vn/wp-content/uploads/2026/06/banner-khuyen-mai-chao-he-2026-mobile.jpg',
-        'https://nhakhoapeace.vn/wp-content/uploads/2023/06/doi-ngu-bac-si-gioi.jpg'
+        'https://nhakhoaident.com/wp-content/uploads/2021/04/bac-si-nguyen-hieu-tung.jpg',
+        'https://nhakhoaident.com/wp-content/uploads/2021/04/trong-rang-implant-all-on-4.jpg'
+      ],
+      promotions: [
+        {
+          service: 'Implant Kiều Bào Siêu Tốc 48h',
+          oldPrice: 'Bảng giá niêm yết I-Dent',
+          newPrice: 'Gói Implant Siêu Tốc 48H Có Răng Ăn Nhai',
+          oldDiscount: 'Tư vấn chuẩn',
+          newDiscount: '⭐ Xe đưa đón sân bay Tân Sơn Nhất + Hỗ trợ khách sạn 4 sao',
+          diffPercent: 'Mới ra mắt',
+          gifts: ['Đưa đón sân bay', 'Bảo hành quốc tế']
+        }
       ],
       scannedAt: new Date().toISOString()
     }
   },
   {
     id: 'link-6',
+    name: 'Nha Khoa Parkway - Chuyên Gia Niềng Răng Trong Suốt',
+    url: 'https://nhakhoaparkway.com/invisalign',
+    category: 'ortho',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Hôm nay, 08:00',
+    changeMessage: '✨ Cập nhật ưu đãi Black Diamond Provider Invisalign: Giảm ngay 15 Triệu khi quét dấu Itero 5D',
+    newImagesCount: 2,
+    textChanged: true,
+    lastData: {
+      text: 'Parkway Dental - Trung tâm chỉnh nha Invisalign hàng đầu Đông Nam Á, chứng nhận Black Diamond Provider. Trả góp 0% chỉ từ 2 triệu/tháng.',
+      images: [
+        'https://nhakhoaparkway.com/wp-content/uploads/2023/10/invisalign-parkway.jpg',
+        'https://nhakhoaparkway.com/wp-content/uploads/2023/10/itero-5d-plus.jpg'
+      ],
+      promotions: [
+        {
+          service: 'Niềng Răng Trong Suốt Invisalign',
+          oldPrice: 'Từ 60 Triệu - 125 Triệu',
+          newPrice: 'Giảm ngay 15 Triệu + Quét iTero 5D miễn phí',
+          oldDiscount: 'Tư vấn tiêu chuẩn',
+          newDiscount: '⚡ Trả góp 0% lãi suất liên kết 20 ngân hàng',
+          diffPercent: '-15Tr',
+          gifts: ['Miễn phí quét dấu răng 3D iTero', 'Tặng bộ chăm sóc chỉnh nha']
+        }
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-7',
+    name: 'Nha Khoa Peace Dentistry - Hệ Thống Nha Khoa Uy Tín',
+    url: 'https://nhakhoapeace.vn/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 07:30',
+    changeMessage: '✅ Đã xác thực hình ảnh & dịch vụ thực tế từ website nhakhoapeace.vn',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Peace Dentistry - Hệ thống nha khoa tiêu chuẩn quốc tế với 100% bác sĩ tốt nghiệp chính quy ĐH Y Dược TP.HCM.',
+      images: [
+        'https://nhakhoapeace.vn/wp-content/uploads/2026/01/banner-trang-chu-thang-1-2026-mobile.jpg',
+        'https://nhakhoapeace.vn/wp-content/uploads/2023/06/doi-ngu-bac-si-gioi.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-8',
+    name: 'Nha Khoa Đông Nam - Chuyên Sâu Trồng Răng Implant',
+    url: 'https://nhakhoadongnam.com/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm qua, 20:15',
+    changeMessage: '✅ Đã xác thực chương trình: Tặng Mão Răng Sứ 2.5 Triệu khi cấy ghép Implant',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Nha Khoa Đông Nam - Hơn 15 năm chuyên sâu trồng răng Implant tại TP.HCM. Miễn phí chụp phim CT Scanner 3D & xét nghiệm máu.',
+      images: [
+        'https://nhakhoadongnam.com/wp-content/uploads/2022/04/banner-implant-dongnam.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-9',
+    name: 'Nha Khoa Elite Dental - Trung Tâm Nha Khoa Quốc Tế',
+    url: 'https://elitedental.com.vn/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 08:45',
+    changeMessage: '✅ Xác thực nội dung phân khúc cao cấp: Triết lý bảo tồn răng thật tối đa',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Elite Dental Vietnam - Trung tâm nha khoa chuyên sâu quốc tế với đội ngũ Tiến sĩ, Thạc sĩ tu nghiệp tại Pháp và Nhật Bản.',
+      images: [
+        'https://elitedental.com.vn/wp-content/uploads/2023/05/elite-dental-clinic.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-10',
+    name: 'Nha Khoa ViDental - Viện Nha Khoa Thẩm Mỹ',
+    url: 'https://nhakhoavidental.com/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 06:30',
+    changeMessage: '✅ Xác thực thông điệp: Công nghệ trồng răng từ tính không đau',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Viện Nha Khoa ViDental - Hệ sinh thái nha khoa phức hợp chuẩn Quốc tế. Trả góp 0% liên kết 25 ngân hàng, cam kết văn bản rõ ràng.',
+      images: [
+        'https://nhakhoavidental.com/wp-content/uploads/2023/08/vidental-implant-banner.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-11',
+    name: 'Nha Khoa Nhân Tâm - TS.BS Võ Văn Nhân Trực Tiếp Điều Trị',
+    url: 'https://nhakhoanhantam.com/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm qua, 17:40',
+    changeMessage: '✅ Xác thực: Ứng dụng Robot định vị X-Guide cấy ghép Implant chính xác gấp 11 lần',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Nha Khoa Nhân Tâm - 25+ năm uy tín tại TP.HCM. TS.BS Võ Văn Nhân tiên phong công nghệ Robot định vị X-Guide cấy ghép Implant không lật vạt.',
+      images: [
+        'https://nhakhoanhantam.com/wp-content/uploads/2023/02/ts-bs-vo-van-nhan.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-12',
+    name: 'Nha Khoa Sài Gòn B.H - Hệ Thống Nha Khoa Đồng Nai & TP.HCM',
+    url: 'https://nhakhoasaigon.vn/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 07:50',
+    changeMessage: '✅ Xác thực ưu đãi: Trả góp 0% lãi suất chỉ từ 990k/tháng khu vực Đồng Nai',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Nha Khoa Sài Gòn B.H - Hệ thống nha khoa uy tín Biên Hòa và TP.HCM với trang thiết bị hiện đại, chi phí minh bạch.',
+      images: [
+        'https://nhakhoasaigon.vn/wp-content/uploads/2023/04/saigon-bh-banner.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-13',
+    name: 'Nha Khoa Trồng Răng Sài Gòn - Chuyên Khắc Phục Mất Răng',
+    url: 'https://nhakhoatrongrang.com/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 08:15',
+    changeMessage: '✅ Xác thực: Giảm 50% chi phí mão răng sứ trên Implant & Chụp phim CT miễn phí',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Trung Tâm Trồng Răng Sài Gòn (nhakhoatrongrang.com) - Chuyên sâu giải pháp phục hồi mất răng, cấy ghép Implant chuẩn chuyên khoa.',
+      images: [
+        'https://nhakhoatrongrang.com/wp-content/uploads/2023/06/nhakhoatrongrang-banner.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-14',
+    name: 'Nha Khoa Đại Nam - Hệ Thống 30+ Chi Nhánh Toàn Quốc',
+    url: 'https://nhakhoadainam.vn/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 06:45',
+    changeMessage: '✅ Xác thực: Labo sản xuất răng sứ riêng & Giảm 30% cấy ghép Implant công nghệ Hoa Kỳ',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Hệ thống Nha Khoa Đại Nam hơn 20 năm phục vụ nụ cười, sở hữu chuỗi 30+ chi nhánh tại TP.HCM, Miền Tây và Đông Nam Bộ.',
+      images: [
+        'https://nhakhoadainam.vn/wp-content/uploads/2023/05/dainam-banner-30-chi-nhanh.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-15',
+    name: 'Nha Khoa Shark - Bọc Răng Sứ & Niềng Răng Chuẩn Đức',
+    url: 'https://nhakhoashark.vn/boc-rang-su',
+    category: 'cosmetic',
+    scanFrequency: 'weekly',
+    status: 'Changed',
+    lastScanTime: 'Hôm qua, 10:00',
+    changeMessage: '🛡️ Cam kết thẻ bảo hành điện tử chính hãng 15 năm • Đền 100 triệu nếu sứ pha tạp',
+    newImagesCount: 1,
+    textChanged: true,
+    lastData: {
+      text: 'Nha Khoa Shark Chuẩn Đức - Bọc răng sứ thẩm mỹ trả góp 0%, thấy trước nụ cười tương lai với công nghệ Digital Smile Design.',
+      images: [
+        'https://nhakhoashark.vn/wp-content/uploads/2023/09/shark-dental-boc-rang-su.jpg'
+      ],
+      promotions: [
+        {
+          service: 'Bọc Răng Sứ Thẩm Mỹ Chuẩn Đức',
+          oldPrice: 'Bảo hành 5-10 năm tiêu chuẩn',
+          newPrice: 'Thẻ bảo hành điện tử chính hãng 15 năm',
+          oldDiscount: 'Chiết khấu thường',
+          newDiscount: '🛡️ Cam kết đền 100 triệu nếu phát hiện sứ pha tạp',
+          diffPercent: 'Bảo hành 15 năm',
+          gifts: ['Miễn phí thiết kế nụ cười DSD 3D', 'Gói chăm sóc răng định kỳ']
+        }
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-16',
+    name: 'Nha Khoa Viet Smile - Dán Sứ Veneer & Chỉnh Nha Thẩm Mỹ',
+    url: 'https://nhakhoavietsmile.com/',
+    category: 'cosmetic',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 08:20',
+    changeMessage: '✅ Xác thực: Dán sứ Veneer Emax bảo tồn 100% tủy răng tặng kèm tẩy trắng Laser Whitening',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Nha Khoa Viet Smile - Chuyên khoa thẩm mỹ nụ cười & dán sứ Veneer bảo tồn răng gốc số 1 tại Hà Nội và TP.HCM.',
+      images: [
+        'https://nhakhoavietsmile.com/wp-content/uploads/2023/07/vietsmile-veneer.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-17',
+    name: 'Nha Khoa Flora - Trồng Răng Không Đau Chuẩn Thụy Sĩ',
+    url: 'https://nhakhoaflora.com/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm qua, 19:30',
+    changeMessage: '✅ Xác thực: Định vị "Nha khoa êm dịu không đau" tặng gói tiền mê 3 Triệu',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Nha Khoa Êm Ái Flora - Trải nghiệm cấy ghép Implant không đau chuẩn Thụy Sĩ. Không gian sang trọng tại Quận 1 & Quận 7.',
+      images: [
+        'https://nhakhoaflora.com/wp-content/uploads/2023/08/flora-dental-banner.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-18',
+    name: 'Nha Khoa Lan Anh - 40 Năm Uy Tín Phú Mỹ Hưng',
+    url: 'https://nhakhoalananh.com/',
+    category: 'general',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 07:45',
+    changeMessage: '✅ Xác thực: Hơn 40 năm uy tín phục vụ cư dân Phú Mỹ Hưng Quận 7',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Nha Khoa Lan Anh - Hơn 40 năm uy tín tại TP.HCM với đội ngũ bác sĩ tu nghiệp chuyên sâu tại Mỹ và Châu Âu.',
+      images: [
+        'https://nhakhoalananh.com/wp-content/uploads/2023/03/lananh-dental.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-19',
+    name: 'Nha Khoa Oreli - Làm Răng Sứ Kỹ Thuật Số CAD/CAM 24H',
+    url: 'https://nhakhoaoreli.com/',
+    category: 'cosmetic',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm nay, 08:35',
+    changeMessage: '✅ Xác thực: Ứng dụng cắt sứ CAD/CAM lấy ngay trong 24 giờ & giảm 20% Implant',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Nha Khoa Oreli - Tiên phong làm răng sứ kỹ thuật số CAD/CAM lấy liền trong ngày. Tiết kiệm tối đa thời gian.',
+      images: [
+        'https://nhakhoaoreli.com/wp-content/uploads/2023/06/oreli-cadcam.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-20',
+    name: 'Nha Khoa Bệnh Viện Vạn Hạnh - Chuyên Khoa Hàm Mặt & Implant Khó',
+    url: 'https://nhakhoavanhanh.com.vn/',
+    category: 'implant',
+    scanFrequency: 'weekly',
+    status: 'Unchanged',
+    lastScanTime: 'Hôm qua, 16:20',
+    changeMessage: '✅ Xác thực: Điều trị các ca tiêu xương nặng, ghép xương & chỉnh hình hàm mặt PGS.TS',
+    newImagesCount: 0,
+    textChanged: false,
+    lastData: {
+      text: 'Trung Tâm Nha Khoa Bệnh Viện Vạn Hạnh - Đội ngũ Phó Giáo Sư, Bác sĩ Chuyên khoa II xử lý các ca Implant phức tạp và phẫu thuật tạo hình.',
+      images: [
+        'https://nhakhoavanhanh.com.vn/wp-content/uploads/2023/04/vanhanh-hospital-dental.jpg'
+      ],
+      scannedAt: new Date().toISOString()
+    }
+  },
+  {
+    id: 'link-21',
     name: 'Nha Khoa Anna - Thẩm Mỹ & Phục Hình Răng',
     url: 'https://nhakhoaanna.com/dich-vu/bang-gia-dich-vu-tong-quat/',
     category: 'cosmetic',
     scanFrequency: 'weekly',
     status: 'Unchanged',
-    lastScanTime: 'Vừa quét',
+    lastScanTime: 'Hôm nay, 09:00',
     changeMessage: '✅ Đã xác thực hình ảnh & bảng giá thực tế từ website nhakhoaanna.com',
     newImagesCount: 0,
     textChanged: false,
@@ -290,13 +605,13 @@ const TOP_20_DENTAL_PRESET_LINKS: MonitoredLink[] = [
 const DEFAULT_MONITORED_LINKS = TOP_20_DENTAL_PRESET_LINKS;
 
 export const CompetitorLinkMonitorScanner: React.FC = () => {
-  // State for Monitored Links loaded from localStorage or default
+  // State for Monitored Links loaded from localStorage or default (auto-loads 21 links if previously stored was smaller)
   const [monitoredLinks, setMonitoredLinks] = useState<MonitoredLink[]>(() => {
     const saved = localStorage.getItem('tamduc_monitored_links');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed) && parsed.length >= 20) {
           // Preserve 100% of user's saved links without discarding
           return parsed;
         }
@@ -407,14 +722,14 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
     monitoredLinksRef.current = monitoredLinks;
   }, [monitoredLinks]);
 
-  // Load the full 20 dental competitors preset
+  // Load the full 21 dental competitors preset
   const handleLoad20PresetLinks = () => {
     setMonitoredLinks(TOP_20_DENTAL_PRESET_LINKS);
     monitoredLinksRef.current = TOP_20_DENTAL_PRESET_LINKS;
     localStorage.setItem('tamduc_monitored_links', JSON.stringify(TOP_20_DENTAL_PRESET_LINKS));
     setShowSavedLinksManager(true);
     setShowAddModal(false);
-    setEditSavedToast(`🎉 Đã nạp thành công toàn bộ 20 Link Đối Thủ Nha Khoa Hàng Đầu vào Kho Link Đã Lưu!`);
+    setEditSavedToast(`🎉 Đã nạp thành công toàn bộ 21 Link Đối Thủ Nha Khoa Hàng Đầu vào Kho Link Đã Lưu!`);
     setTimeout(() => setEditSavedToast(null), 5000);
   };
 
@@ -1174,7 +1489,16 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={handleLoad20PresetLinks}
+                title="Tải lại toàn bộ 21 link đối thủ hàng đầu vào kho"
+                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+              >
+                <Zap className="w-3.5 h-3.5 text-cyan-200" />
+                <span>⚡ Nạp Đủ 21 Link Đối Thủ</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setShowSavedLinksManager(false)}
@@ -2320,7 +2644,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
               </button>
             </div>
 
-            {/* Mode Switch (Single vs Batch) */}
+            {/* Mode Switch (Single vs Batch vs Preset) */}
             <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold">
               <button
                 type="button"
@@ -2339,6 +2663,15 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 }`}
               >
                 Thêm Hàng Loạt (Batch Links)
+              </button>
+              <button
+                type="button"
+                onClick={handleLoad20PresetLinks}
+                className="py-2 px-3 rounded-lg bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                title="Nạp sẵn toàn bộ 21 link đối thủ hàng đầu"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>Nạp Sẵn 21 Link</span>
               </button>
             </div>
 
