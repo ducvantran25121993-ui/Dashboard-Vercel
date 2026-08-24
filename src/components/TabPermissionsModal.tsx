@@ -119,12 +119,8 @@ export const ALL_WORKSPACE_TABS: TabConfig[] = [
 export const DEFAULT_STAFF_ALLOWED_TABS: SidebarTab[] = [
   'overview',
   'google_ads',
-  'leads_funnel',
   'campaigns',
   'competitor',
-  'sales_copilot',
-  'consultation',
-  'decision_board',
   'innovation',
   'ai_agent',
 ];
