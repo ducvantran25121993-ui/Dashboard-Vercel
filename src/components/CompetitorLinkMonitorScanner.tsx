@@ -1489,16 +1489,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={handleLoad20PresetLinks}
-                title="Tải lại toàn bộ 21 link đối thủ hàng đầu vào kho"
-                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
-              >
-                <Zap className="w-3.5 h-3.5 text-cyan-200" />
-                <span>⚡ Nạp Đủ 21 Link Đối Thủ</span>
-              </button>
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setShowSavedLinksManager(false)}
@@ -2644,7 +2635,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
               </button>
             </div>
 
-            {/* Mode Switch (Single vs Batch vs Preset) */}
+            {/* Mode Switch (Single vs Batch) */}
             <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold">
               <button
                 type="button"
@@ -2663,15 +2654,6 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 }`}
               >
                 Thêm Hàng Loạt (Batch Links)
-              </button>
-              <button
-                type="button"
-                onClick={handleLoad20PresetLinks}
-                className="py-2 px-3 rounded-lg bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
-                title="Nạp sẵn toàn bộ 21 link đối thủ hàng đầu"
-              >
-                <Zap className="w-3.5 h-3.5" />
-                <span>Nạp Sẵn 21 Link</span>
               </button>
             </div>
 
