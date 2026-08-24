@@ -28,6 +28,29 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', hasGeminiKey: !!process.env.GEMINI_API_KEY });
 });
 
+// In-memory permissions store with default 6 allowed tabs
+let staffPermissionsStore = {
+  allowedTabs: ['overview', 'google_ads', 'campaigns', 'competitor', 'innovation', 'ai_agent'],
+  updatedAt: new Date().toISOString(),
+};
+
+// Permissions endpoints
+app.get('/api/permissions', (req, res) => {
+  res.json(staffPermissionsStore);
+});
+
+app.post('/api/permissions', (req, res) => {
+  const { allowedTabs } = req.body;
+  if (Array.isArray(allowedTabs)) {
+    staffPermissionsStore = {
+      allowedTabs,
+      updatedAt: new Date().toISOString(),
+    };
+    return res.json({ success: true, ...staffPermissionsStore });
+  }
+  return res.status(400).json({ error: 'Invalid allowedTabs array' });
+});
+
 // API endpoint to generate innovation initiatives
 app.post('/api/generate-initiatives', async (req, res) => {
   try {

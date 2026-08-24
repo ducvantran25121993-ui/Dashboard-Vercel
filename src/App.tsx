@@ -27,6 +27,7 @@ import {
   TabPermissionsModal,
   DEFAULT_STAFF_ALLOWED_TABS,
 } from './components/TabPermissionsModal';
+import { fetchPermissionsFromCloud } from './services/cloudPermissionsService';
 import {
   Menu,
   DollarSign,
@@ -152,6 +153,21 @@ export default function App() {
       // ignore
     }
   };
+
+  // Sync staff tab permissions from Cloud on app startup (supports all devices, mobile & incognito)
+  useEffect(() => {
+    let isMounted = true;
+    async function syncCloudPermissions() {
+      const cloudTabs = await fetchPermissionsFromCloud();
+      if (isMounted && cloudTabs && Array.isArray(cloudTabs) && cloudTabs.length > 0) {
+        setAllowedStaffTabs(cloudTabs);
+      }
+    }
+    syncCloudPermissions();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // If staff logs in and the active tab is not allowed, automatically switch to first available allowed tab
   useEffect(() => {
