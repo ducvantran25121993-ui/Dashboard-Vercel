@@ -297,14 +297,11 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const hasOldMock = parsed.some(p => p.lastData?.images?.some((img: string) => img.includes('unsplash.com')));
-          const hasMismatchedImages = parsed.some(p => p.id !== 'link-1' && p.lastData?.images?.some((img: string) => img.includes('implantsaigon.com')));
-          if (!hasOldMock && !hasMismatchedImages) {
-            return parsed;
-          }
+          // Preserve 100% of user's saved links without discarding
+          return parsed;
         }
       } catch (e) {
-        return DEFAULT_MONITORED_LINKS;
+        console.error('Error loading saved links from localStorage:', e);
       }
     }
     return DEFAULT_MONITORED_LINKS;
@@ -540,11 +537,13 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         if (data.links && Array.isArray(data.links)) {
           setMonitoredLinks(prevList => {
             const updated = prevList.map((item) => {
-              const newScanned = data.links.find((l: any) => l.id === item.id);
+              const newScanned = data.links.find((l: any) => l.id === item.id || (l.url && item.url && l.url.trim().toLowerCase() === item.url.trim().toLowerCase()));
               if (newScanned) {
                 return {
+                  ...item,
                   ...newScanned,
-                  previousData: item.lastData || newScanned.previousData
+                  name: item.name || newScanned.name,
+                  previousData: item.lastData || newScanned.previousData || item.previousData
                 };
               }
               return item;
@@ -611,7 +610,9 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           const updatedItem = data.links[0];
           setMonitoredLinks(prev => {
             const next = prev.map(l => l.id === linkId ? {
+              ...l,
               ...updatedItem,
+              name: l.name || updatedItem.name,
               previousData: l.lastData || l.previousData
             } : l);
             monitoredLinksRef.current = next;
@@ -637,7 +638,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
     }
   };
 
-  // Add a new link
+  // Add a new link (Preserves 100% of links, never drops or resets)
   const handleAddLink = (e: React.FormEvent, triggerImmediateScan: boolean = true) => {
     e.preventDefault();
 
@@ -647,43 +648,68 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
       const domain = cleanUrl.replace(/^https?:\/\//, '').split('/')[0];
       const name = newLinkName.trim() || `Nha Khoa (${domain})`;
 
-      const newItem: MonitoredLink = {
-        id: 'link-' + Date.now(),
-        name,
-        url: cleanUrl,
-        category: newLinkCategory,
-        scanFrequency: newLinkFrequency,
-        status: 'Unchanged',
-        lastScanTime: 'Vừa thêm vào kho',
-        changeMessage: 'Đã lưu vào kho - Sẵn sàng quét tự động định kỳ'
-      };
+      // Check if this URL is already monitored to avoid unnecessary duplicate or drop
+      const existingIndex = monitoredLinksRef.current.findIndex(
+        l => l.url.trim().toLowerCase() === cleanUrl.toLowerCase()
+      );
 
-      const updated = [newItem, ...monitoredLinksRef.current];
+      let updated: MonitoredLink[];
+      let targetId: string;
+
+      if (existingIndex >= 0) {
+        // Update existing link and move to top
+        const existing = monitoredLinksRef.current[existingIndex];
+        targetId = existing.id;
+        const updatedItem: MonitoredLink = {
+          ...existing,
+          name: newLinkName.trim() || existing.name,
+          category: newLinkCategory,
+          scanFrequency: newLinkFrequency,
+        };
+        updated = [updatedItem, ...monitoredLinksRef.current.filter((_, idx) => idx !== existingIndex)];
+      } else {
+        targetId = 'link-' + Date.now();
+        const newItem: MonitoredLink = {
+          id: targetId,
+          name,
+          url: cleanUrl,
+          category: newLinkCategory,
+          scanFrequency: newLinkFrequency,
+          status: 'Unchanged',
+          lastScanTime: 'Vừa thêm vào kho',
+          changeMessage: 'Đã lưu cố định vào kho - Không bao giờ bị tụt link'
+        };
+        updated = [newItem, ...monitoredLinksRef.current];
+      }
+
       setMonitoredLinks(updated);
       monitoredLinksRef.current = updated;
       localStorage.setItem('tamduc_monitored_links', JSON.stringify(updated));
 
-      setJustAddedLinkId(newItem.id);
-      setTimeout(() => setJustAddedLinkId(null), 6000);
+      // Reset filters so the user immediately sees the newly added link on top
+      setFilterStatus('all');
+      setFilterCategory('all');
+      setSearchQuery('');
+
+      setJustAddedLinkId(targetId);
+      setTimeout(() => setJustAddedLinkId(null), 8000);
 
       setNewLinkName('');
       setNewLinkUrl('');
       setShowAddModal(false);
-      setShowSavedLinksManager(true); // Auto-open Kho Link to show the newly saved item
 
-      setEditSavedToast(`🎉 Đã tự động cập nhật & lưu "${name}" vào Kho Link Đã Lưu!`);
-      setTimeout(() => setEditSavedToast(null), 4000);
+      setEditSavedToast(`🎉 Đã lưu vĩnh viễn "${name}" vào hệ thống (Tổng: ${updated.length} link - Giữ nguyên không tụt)!`);
+      setTimeout(() => setEditSavedToast(null), 4500);
 
       // Auto trigger scan if requested
       if (triggerImmediateScan) {
-        setTimeout(() => handleScanSingleLink(newItem.id), 400);
+        setTimeout(() => handleScanSingleLink(targetId), 400);
       }
     } else {
       // Batch mode
       if (!batchLinksText.trim()) return;
       const rawLines = batchLinksText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
       const newItems: MonitoredLink[] = rawLines.map((line, idx) => {
-        // Strip out leading numbers like "1. ", "1/ ", "- "
         let cleanedLine = line.replace(/^[\d]+[\.\)\/\-]\s*/, '').replace(/^[-*•]\s*/, '').trim();
         let name = '';
         let url = cleanedLine;
@@ -707,7 +733,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           scanFrequency: newLinkFrequency,
           status: 'Unchanged',
           lastScanTime: 'Vừa thêm vào kho',
-          changeMessage: 'Đã lưu vào kho - Sẵn sàng quét tự động định kỳ'
+          changeMessage: 'Đã lưu cố định vào kho - Không bao giờ bị tụt link'
         };
       });
 
@@ -717,11 +743,15 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
         monitoredLinksRef.current = updated;
         localStorage.setItem('tamduc_monitored_links', JSON.stringify(updated));
 
+        // Reset filters so all new links appear
+        setFilterStatus('all');
+        setFilterCategory('all');
+        setSearchQuery('');
+
         setBatchLinksText('');
         setShowAddModal(false);
-        setShowSavedLinksManager(true); // Auto-open Kho Link to show all newly saved items
 
-        setEditSavedToast(`🎉 Đã tự động cập nhật ${newItems.length} link đối thủ vào Kho Link Đã Lưu (Tổng: ${updated.length} link)!`);
+        setEditSavedToast(`🎉 Đã lưu thành công ${newItems.length} link đối thủ vào kho (Tổng: ${updated.length} link - Đảm bảo giữ nguyên)!`);
         setTimeout(() => setEditSavedToast(null), 5000);
 
         // Trigger auto scan for newly added batch if requested
@@ -1331,14 +1361,22 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
       )}
 
       {/* DIRECT QUICK-PASTE & SAVE BAR */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 space-y-2">
-        <div className="flex items-center justify-between">
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          if (!newLinkUrl.trim()) return;
+          handleAddLink(e, true);
+        }}
+        className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 space-y-2.5"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
           <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
             <Plus className="w-4 h-4 text-cyan-400" />
             <span>Dán Nhanh Link Đối Thủ Cần Lưu & Quét:</span>
           </label>
-          <span className="text-[11px] text-slate-400">
-            Dữ liệu được <strong>tự động lưu vào trình duyệt (LocalStorage)</strong> vĩnh viễn
+          <span className="text-[11px] text-emerald-400 flex items-center gap-1">
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+            <span>Đã khóa tự động lưu (LocalStorage) - <strong>Giữ nguyên 100% link, không bao giờ tự ý tụt link</strong></span>
           </span>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-2">
@@ -1351,6 +1389,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
           />
           <input
             type="url"
+            required
             placeholder="Dán link website đối thủ (VD: https://nhakhoaident.com/bang-gia-implant)"
             value={newLinkUrl}
             onChange={e => setNewLinkUrl(e.target.value)}
@@ -1364,26 +1403,22 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                 handleAddLink(e as any, false);
               }}
               className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-bold text-xs shadow cursor-pointer whitespace-nowrap flex items-center justify-center gap-1.5 transition-colors"
-              title="Lưu link vào kho trình duyệt mà chưa cần quét ngay"
+              title="Lưu link vào kho trình duyệt và bảo toàn danh sách không bị tụt"
             >
               <Save className="w-4 h-4" />
               <span>💾 Lưu Vào Kho</span>
             </button>
             <button
-              type="button"
-              onClick={e => {
-                if (!newLinkUrl.trim()) return;
-                handleAddLink(e as any, true);
-              }}
+              type="submit"
               className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-black text-xs shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap transition-all"
-              title="Lưu link vào kho và bắt đầu quét so sánh ngay"
+              title="Lưu link cố định vào kho và bắt đầu quét so sánh ngay"
             >
               <Zap className="w-4 h-4" />
               <span>⚡ Lưu & Quét Ngay</span>
             </button>
           </div>
         </div>
-      </div>
+      </form>
 
       {/* FILTER & SEARCH BAR */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-4 rounded-2xl bg-slate-950/90 border border-slate-800 text-xs">
