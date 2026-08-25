@@ -6,6 +6,7 @@ import { Sidebar } from './components/Sidebar';
 import { WorkOverview } from './components/WorkOverview';
 import { InnovationView } from './components/InnovationView';
 import { AIAgentView } from './components/AIAgentView';
+import { AdminHubView } from './components/AdminHubView';
 import { LeadsFunnelView } from './components/LeadsFunnelView';
 import { CampaignsView } from './components/CampaignsView';
 import { CompetitorTrackingView } from './components/CompetitorTrackingView';
@@ -345,6 +346,21 @@ export default function App() {
               <div className="flex items-center gap-2">
                 {userRole === 'admin' && (
                   <button
+                    onClick={() => setActiveSidebarTab('admin_hub')}
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      activeSidebarTab === 'admin_hub'
+                        ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                        : 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/50 hover:bg-emerald-900/80'
+                    }`}
+                    title="Mở Trang Quản Trị Admin Master Hub"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="hidden md:inline">Quản Trị Admin</span>
+                  </button>
+                )}
+
+                {userRole === 'admin' && (
+                  <button
                     onClick={() => setIsTabPermissionsOpen(true)}
                     className="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-cyan-950/60 text-cyan-300 border border-cyan-800/50 hover:bg-cyan-900/80 transition-all flex items-center gap-1.5 cursor-pointer"
                     title="Phân quyền các tab cho Nhân viên"
@@ -476,6 +492,19 @@ export default function App() {
 
           {activeSidebarTab === 'ai_agent' && (
             <AIAgentView monthlyDatasets={monthlyDatasets} />
+          )}
+
+          {activeSidebarTab === 'admin_hub' && (
+            <AdminHubView
+              onOpenTabPermissions={() => setIsTabPermissionsOpen(true)}
+              onOpenChangePassword={() => setIsChangePasswordOpen(true)}
+              onNavigateToTab={setActiveSidebarTab}
+              currentSheetUrl={sheetUrl}
+              onUpdateSheetUrl={(newUrl) => {
+                setSheetUrl(newUrl);
+                loadSheetData(newUrl);
+              }}
+            />
           )}
 
           {activeSidebarTab === 'google_ads' && (

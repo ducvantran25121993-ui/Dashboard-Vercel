@@ -12,7 +12,8 @@ export type SidebarTab =
   | 'consultation'
   | 'decision_board'
   | 'innovation'
-  | 'ai_agent';
+  | 'ai_agent'
+  | 'admin_hub';
 
 export type DisplayUnit = 'full' | 'million' | 'billion';
 

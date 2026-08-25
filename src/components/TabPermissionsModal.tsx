@@ -118,6 +118,14 @@ export const ALL_WORKSPACE_TABS: TabConfig[] = [
     icon: Zap,
     badge: 'Gemini AI',
   },
+  {
+    id: 'admin_hub',
+    label: 'Trung Tâm Quản Trị Hệ Thống',
+    category: 'Báo Cáo & Quản Trị',
+    description: 'Điều hành người dùng, kết nối Google Sheets/API, cài đặt ngưỡng cảnh báo CPA và bot quét đối thủ.',
+    icon: ShieldCheck,
+    badge: 'Master Admin',
+  },
 ];
 
 export const DEFAULT_STAFF_ALLOWED_TABS: SidebarTab[] = [

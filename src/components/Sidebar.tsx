@@ -143,6 +143,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: currentAiBadge.shortName,
       badgeColor: currentAiBadge.color,
     },
+    {
+      id: 'admin_hub',
+      label: 'Quản Trị Admin',
+      icon: ShieldCheck,
+      badge: 'Master',
+      badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+    },
   ];
 
   return (
