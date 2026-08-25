@@ -152,6 +152,8 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
     'users' | 'emergency' | 'budget' | 'ai_governance' | 'backup' | 'connections' | 'thresholds' | 'crawler' | 'audit'
   >('users');
 
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'security' | 'campaigns' | 'system_ai'>('all');
+
   // Users State
   const [users, setUsers] = useState<AdminUser[]>(() => {
     try {
@@ -837,124 +839,341 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold border-b border-slate-800">
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('users')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'users'
-              ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>1. Người Dùng & Phân Quyền ({users.length})</span>
-        </button>
+      {/* Executive 3-Pillar Navigation Hub (No horizontal scrollbars, perfectly structured) */}
+      <div className="bg-slate-900/60 p-3 sm:p-4 rounded-3xl border border-slate-800/80 shadow-2xl space-y-3">
+        {/* Category Filter Pills & Realtime Indicator */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-1 border-b border-slate-800/70">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">Bộ Lọc:</span>
+            
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('all')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                selectedCategory === 'all'
+                  ? 'bg-slate-700 text-white shadow-md shadow-slate-900/50 ring-1 ring-slate-500/40'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Tất Cả (9 Công Cụ)</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('emergency')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'emergency'
-              ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30'
-              : 'text-slate-400 hover:text-rose-300 hover:bg-slate-900'
-          }`}
-        >
-          <AlertOctagon className="w-4 h-4 text-rose-400" />
-          <span>2. Nút Khẩn Cấp Ads (Kill-Switch)</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('security')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                selectedCategory === 'security'
+                  ? 'bg-emerald-950/90 text-emerald-300 border border-emerald-500/50 shadow-md shadow-emerald-950/40 ring-1 ring-emerald-400/30'
+                  : 'text-slate-400 hover:text-emerald-300 hover:bg-slate-800/60'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>1. Phân Quyền & Bảo Mật (3)</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('budget')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'budget'
-              ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30'
-              : 'text-slate-400 hover:text-amber-300 hover:bg-slate-900'
-          }`}
-        >
-          <DollarSign className="w-4 h-4 text-amber-400" />
-          <span>3. Ngân Sách 17 Chi Nhánh</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('campaigns')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                selectedCategory === 'campaigns'
+                  ? 'bg-rose-950/90 text-rose-300 border border-rose-500/50 shadow-md shadow-rose-950/40 ring-1 ring-rose-400/30'
+                  : 'text-slate-400 hover:text-rose-300 hover:bg-slate-800/60'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5 text-rose-400" />
+              <span>2. Điều Hành Ads & Ngân Sách (3)</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('ai_governance')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'ai_governance'
-              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-              : 'text-slate-400 hover:text-indigo-300 hover:bg-slate-900'
-          }`}
-        >
-          <Bot className="w-4 h-4 text-indigo-400" />
-          <span>4. Bộ Não & Quy Tắc Trợ Lý AI</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('system_ai')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                selectedCategory === 'system_ai'
+                  ? 'bg-indigo-950/90 text-indigo-300 border border-indigo-500/50 shadow-md shadow-indigo-950/40 ring-1 ring-indigo-400/30'
+                  : 'text-slate-400 hover:text-indigo-300 hover:bg-slate-800/60'
+              }`}
+            >
+              <Bot className="w-3.5 h-3.5 text-indigo-400" />
+              <span>3. Hệ Thống & Trí Tuệ AI (3)</span>
+            </button>
+          </div>
 
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('backup')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'backup'
-              ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30'
-              : 'text-slate-400 hover:text-teal-300 hover:bg-slate-900'
-          }`}
-        >
-          <RotateCcw className="w-4 h-4 text-teal-400" />
-          <span>5. Sao Lưu & Khôi Phục (Backup)</span>
-        </button>
+          <div className="hidden md:flex items-center gap-2 text-[11px] text-slate-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+            <span className="font-semibold text-slate-300">Admin Control Center</span>
+          </div>
+        </div>
 
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('connections')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'connections'
-              ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <Database className="w-4 h-4" />
-          <span>6. Nguồn Data & Kết Nối API</span>
-        </button>
+        {/* 3 Balanced Functional Pillars Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          {/* Pillar 1: Phân Quyền & Bảo Mật */}
+          {(selectedCategory === 'all' || selectedCategory === 'security') && (
+            <div className="p-3 rounded-2xl bg-slate-950/70 border border-emerald-950/60 flex flex-col gap-2">
+              <div className="flex items-center justify-between px-1 text-xs font-bold text-emerald-400">
+                <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Phân Quyền & Bảo Mật
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono">
+                  3 Tools
+                </span>
+              </div>
 
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('thresholds')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'thresholds'
-              ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <BellRing className="w-4 h-4" />
-          <span>7. Ngưỡng Cảnh Báo Ads & Lead</span>
-        </button>
+              <div className="grid grid-cols-1 gap-1.5">
+                {/* 1.1 Users & Roles */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('users')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'users'
+                      ? 'bg-cyan-950/80 text-white font-bold border-cyan-500/60 shadow-md shadow-cyan-950/50 ring-1 ring-cyan-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'users' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Nhân Sự & Quyền Tab</p>
+                      <p className="text-[10px] text-slate-400 truncate">Phân quyền chi tiết từng tab</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-cyan-500/10 text-cyan-300 border-cyan-500/30">
+                    {users.length} TK
+                  </span>
+                </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('crawler')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'crawler'
-              ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <Swords className="w-4 h-4" />
-          <span>8. Bot Quét Đối Thủ</span>
-        </button>
+                {/* 1.2 Backup & Restore */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('backup')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'backup'
+                      ? 'bg-teal-950/80 text-white font-bold border-teal-500/60 shadow-md shadow-teal-950/50 ring-1 ring-teal-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'backup' ? 'bg-teal-500/20 text-teal-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <RotateCcw className="w-4 h-4" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Sao Lưu & Khôi Phục</p>
+                      <p className="text-[10px] text-slate-400 truncate">Snapshot JSON toàn hệ thống</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-teal-500/10 text-teal-300 border-teal-500/30">
+                    1-Click
+                  </span>
+                </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveAdminSubTab('audit')}
-          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeAdminSubTab === 'audit'
-              ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <History className="w-4 h-4" />
-          <span>9. Nhật Ký Bảo Mật ({auditLogs.length})</span>
-        </button>
+                {/* 1.3 Audit Logs */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('audit')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'audit'
+                      ? 'bg-blue-950/80 text-white font-bold border-blue-500/60 shadow-md shadow-blue-950/50 ring-1 ring-blue-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'audit' ? 'bg-blue-500/20 text-blue-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <History className="w-4 h-4" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Nhật Ký Bảo Mật</p>
+                      <p className="text-[10px] text-slate-400 truncate">Lịch sử đăng nhập & thao tác</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-blue-500/10 text-blue-300 border-blue-500/30">
+                    {auditLogs.length} Logs
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Pillar 2: Điều Hành Ads & Ngân Sách */}
+          {(selectedCategory === 'all' || selectedCategory === 'campaigns') && (
+            <div className="p-3 rounded-2xl bg-slate-950/70 border border-rose-950/60 flex flex-col gap-2">
+              <div className="flex items-center justify-between px-1 text-xs font-bold text-rose-400">
+                <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                  <Zap className="w-3.5 h-3.5" />
+                  Điều Hành Ads & Ngân Sách
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-300 font-mono">
+                  3 Tools
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-1.5">
+                {/* 2.1 Emergency Ads Kill-Switch */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('emergency')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'emergency'
+                      ? 'bg-rose-950/80 text-white font-bold border-rose-500/60 shadow-md shadow-rose-950/50 ring-1 ring-rose-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'emergency' ? 'bg-rose-500/20 text-rose-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <AlertOctagon className="w-4 h-4 text-rose-400 animate-pulse" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Kill-Switch Khẩn Cấp Ads</p>
+                      <p className="text-[10px] text-slate-400 truncate">Cắt lỗ tức thì & radar click ảo</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-rose-500/10 text-rose-300 border-rose-500/30">
+                    Realtime
+                  </span>
+                </button>
+
+                {/* 2.2 Branch Budgets */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('budget')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'budget'
+                      ? 'bg-amber-950/80 text-white font-bold border-amber-500/60 shadow-md shadow-amber-950/50 ring-1 ring-amber-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'budget' ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <DollarSign className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Ngân Sách 17 Chi Nhánh</p>
+                      <p className="text-[10px] text-slate-400 truncate">Hạn mức chi tiêu & burn-rate</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-amber-500/10 text-amber-300 border-amber-500/30">
+                    17 Cơ Sở
+                  </span>
+                </button>
+
+                {/* 2.3 Thresholds */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('thresholds')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'thresholds'
+                      ? 'bg-orange-950/80 text-white font-bold border-orange-500/60 shadow-md shadow-orange-950/50 ring-1 ring-orange-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'thresholds' ? 'bg-orange-500/20 text-orange-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <BellRing className="w-4 h-4" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Ngưỡng Cảnh Báo Ads & Lead</p>
+                      <p className="text-[10px] text-slate-400 truncate">Trần CPA, CPL & tỷ lệ chuyển đổi</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-orange-500/10 text-orange-300 border-orange-500/30">
+                    Auto Alert
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Pillar 3: Hệ Thống & Trí Tuệ AI */}
+          {(selectedCategory === 'all' || selectedCategory === 'system_ai') && (
+            <div className="p-3 rounded-2xl bg-slate-950/70 border border-indigo-950/60 flex flex-col gap-2">
+              <div className="flex items-center justify-between px-1 text-xs font-bold text-indigo-400">
+                <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                  <Bot className="w-3.5 h-3.5" />
+                  Hệ Thống & Trí Tuệ AI
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-mono">
+                  3 Tools
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-1.5">
+                {/* 3.1 AI Governance */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('ai_governance')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'ai_governance'
+                      ? 'bg-indigo-950/80 text-white font-bold border-indigo-500/60 shadow-md shadow-indigo-950/50 ring-1 ring-indigo-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'ai_governance' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <Bot className="w-4 h-4 text-indigo-400" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Bộ Não & Prompt Trợ Lý AI</p>
+                      <p className="text-[10px] text-slate-400 truncate">System Prompt & chính sách giá</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-indigo-500/10 text-indigo-300 border-indigo-500/30">
+                    Gemini 3.7
+                  </span>
+                </button>
+
+                {/* 3.2 Data Connections */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('connections')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'connections'
+                      ? 'bg-sky-950/80 text-white font-bold border-sky-500/60 shadow-md shadow-sky-950/50 ring-1 ring-sky-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'connections' ? 'bg-sky-500/20 text-sky-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <Database className="w-4 h-4" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Nguồn Data & Kết Nối API</p>
+                      <p className="text-[10px] text-slate-400 truncate">Google Sheets, Ads API & Gemini</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-sky-500/10 text-sky-300 border-sky-500/30">
+                    3 Nguồn
+                  </span>
+                </button>
+
+                {/* 3.3 Competitor Crawler Bot */}
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminSubTab('crawler')}
+                  className={`p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border ${
+                    activeAdminSubTab === 'crawler'
+                      ? 'bg-violet-950/80 text-white font-bold border-violet-500/60 shadow-md shadow-violet-950/50 ring-1 ring-violet-400/40'
+                      : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${activeAdminSubTab === 'crawler' ? 'bg-violet-500/20 text-violet-300' : 'bg-slate-800 text-slate-400'}`}>
+                      <Swords className="w-4 h-4" />
+                    </div>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold truncate leading-snug">Bot Quét Đối Thủ</p>
+                      <p className="text-[10px] text-slate-400 truncate">Tracking 21 link đối thủ định kỳ</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 bg-violet-500/10 text-violet-300 border-violet-500/30">
+                    21 Link
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ========================================================================= */}
