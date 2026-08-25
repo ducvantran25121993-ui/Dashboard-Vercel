@@ -4,7 +4,7 @@ import {
   DollarSign, Target, MousePointerClick, Zap, RefreshCw, ChevronDown, 
   ChevronUp, ShieldCheck, ArrowRight, Layers, Sliders, Ban, FileText, 
   Copy, Check, Calendar, ArrowUpRight, Search, Globe, Tag, Sparkle,
-  Clock, MapPin, BarChart3, Filter, Award, XCircle
+  Clock, MapPin, BarChart3, Filter, Award, XCircle, ArrowUpDown, ArrowUp, ArrowDown
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { 
@@ -68,6 +68,8 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
   const [termSearchQuery, setTermSearchQuery] = useState('');
   const [kwFilter, setKwFilter] = useState<'lowQs' | 'all' | 'good' | 'avg'>('lowQs');
   const [kwSearchQuery, setKwSearchQuery] = useState('');
+  const [kwSortField, setKwSortField] = useState<'qualityScore' | 'cost' | 'leads' | 'cpa' | 'keyword' | 'adGroup' | 'landingExp' | 'adRelevance'>('qualityScore');
+  const [kwSortOrder, setKwSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const searchTerms = useMemo(() => {
     return (propSearchTerms && propSearchTerms.length > 0) ? propSearchTerms : generateMockSearchTerms();
@@ -2546,6 +2548,52 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                       return true;
                     });
 
+                    const handleKwSort = (field: 'qualityScore' | 'cost' | 'leads' | 'cpa' | 'keyword' | 'adGroup' | 'landingExp' | 'adRelevance') => {
+                      if (kwSortField === field) {
+                        setKwSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setKwSortField(field);
+                        if (field === 'qualityScore' || field === 'cpa') {
+                          setKwSortOrder('asc');
+                        } else if (field === 'cost' || field === 'leads') {
+                          setKwSortOrder('desc');
+                        } else {
+                          setKwSortOrder('asc');
+                        }
+                      }
+                    };
+
+                    const sortedKeywords = [...filteredKeywords].sort((a, b) => {
+                      let result = 0;
+                      if (kwSortField === 'qualityScore') {
+                        const numA = Number(a.qualityScore) || 0;
+                        const numB = Number(b.qualityScore) || 0;
+                        result = numA - numB;
+                      } else if (kwSortField === 'cost') {
+                        result = (Number(a.cost) || 0) - (Number(b.cost) || 0);
+                      } else if (kwSortField === 'leads') {
+                        result = (Number(a.leads) || 0) - (Number(b.leads) || 0);
+                      } else if (kwSortField === 'cpa') {
+                        const cpaA = a.cpa > 0 ? a.cpa : (kwSortOrder === 'asc' ? 999999999 : 0);
+                        const cpaB = b.cpa > 0 ? b.cpa : (kwSortOrder === 'asc' ? 999999999 : 0);
+                        result = cpaA - cpaB;
+                      } else if (kwSortField === 'landingExp' || kwSortField === 'adRelevance') {
+                        const getWeight = (str: string = '') => {
+                          if (str.includes('Trên') || str.toLowerCase().includes('above')) return 3;
+                          if (str.includes('Trung') || str.toLowerCase().includes('average')) return 2;
+                          return 1;
+                        };
+                        result = getWeight(a[kwSortField]) - getWeight(b[kwSortField]);
+                      } else if (kwSortField === 'keyword') {
+                        result = (a.keyword || '').localeCompare(b.keyword || '', 'vi');
+                      } else if (kwSortField === 'adGroup') {
+                        const textA = `${a.adGroup || ''} ${a.campaign || ''}`;
+                        const textB = `${b.adGroup || ''} ${b.campaign || ''}`;
+                        result = textA.localeCompare(textB, 'vi');
+                      }
+                      return kwSortOrder === 'asc' ? result : -result;
+                    });
+
                     return (
                       <>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
@@ -2614,9 +2662,9 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                         </div>
 
                         {/* Search & Filter Controls Bar */}
-                        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 bg-slate-950/70 p-2.5 rounded-2xl border border-slate-800">
+                        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 bg-slate-950/70 p-2.5 rounded-2xl border border-slate-800">
                           {/* Search Input */}
-                          <div className="relative flex-1 min-w-[200px]">
+                          <div className="relative flex-1 min-w-[220px]">
                             <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                             <input
                               type="text"
@@ -2635,76 +2683,248 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                             )}
                           </div>
 
-                          {/* Quick Filter Buttons */}
-                          <div className="flex items-center gap-1.5 overflow-x-auto text-xs">
-                            <button
-                              type="button"
-                              onClick={() => setKwFilter('lowQs')}
-                              className={`px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-1 cursor-pointer ${
-                                kwFilter === 'lowQs'
-                                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
-                                  : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 border border-rose-500/30'
-                              }`}
-                            >
-                              <AlertTriangle className="w-3 h-3" />
-                              <span>Điểm thấp ≤4/10 ({lowQsList.length})</span>
-                            </button>
+                          {/* Quick Filter Buttons & Sort Selectors */}
+                          <div className="flex flex-wrap items-center gap-2 text-xs">
+                            {/* Quick Filter Status Buttons */}
+                            <div className="flex items-center gap-1 overflow-x-auto">
+                              <button
+                                type="button"
+                                onClick={() => setKwFilter('lowQs')}
+                                className={`px-2.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-1 cursor-pointer ${
+                                  kwFilter === 'lowQs'
+                                    ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
+                                    : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 border border-rose-500/30'
+                                }`}
+                              >
+                                <AlertTriangle className="w-3 h-3" />
+                                <span>Điểm thấp ≤4/10 ({lowQsList.length})</span>
+                              </button>
 
-                            <button
-                              type="button"
-                              onClick={() => setKwFilter('all')}
-                              className={`px-3 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
-                                kwFilter === 'all'
-                                  ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-600/30'
-                                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                              }`}
-                            >
-                              Tất cả ({keywords.length})
-                            </button>
+                              <button
+                                type="button"
+                                onClick={() => setKwFilter('all')}
+                                className={`px-2.5 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
+                                  kwFilter === 'all'
+                                    ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-600/30'
+                                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                                }`}
+                              >
+                                Tất cả ({keywords.length})
+                              </button>
 
-                            <button
-                              type="button"
-                              onClick={() => setKwFilter('good')}
-                              className={`px-3 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
-                                kwFilter === 'good'
-                                  ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/30'
-                                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                              }`}
-                            >
-                              Điểm tốt 8-10 ({goodQsList.length})
-                            </button>
+                              <button
+                                type="button"
+                                onClick={() => setKwFilter('good')}
+                                className={`px-2.5 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
+                                  kwFilter === 'good'
+                                    ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/30'
+                                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                                }`}
+                              >
+                                Điểm tốt 8-10 ({goodQsList.length})
+                              </button>
 
-                            <button
-                              type="button"
-                              onClick={() => setKwFilter('avg')}
-                              className={`px-3 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
-                                kwFilter === 'avg'
-                                  ? 'bg-amber-600 text-white font-bold shadow-md shadow-amber-600/30'
-                                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                              }`}
-                            >
-                              Trung bình 5-7 ({avgQsList.length})
-                            </button>
+                              <button
+                                type="button"
+                                onClick={() => setKwFilter('avg')}
+                                className={`px-2.5 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap cursor-pointer ${
+                                  kwFilter === 'avg'
+                                    ? 'bg-amber-600 text-white font-bold shadow-md shadow-amber-600/30'
+                                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                                }`}
+                              >
+                                Trung bình 5-7 ({avgQsList.length})
+                              </button>
+                            </div>
+
+                            {/* Sắp Xếp Dữ Liệu Tăng/Giảm Dần (Sort Controls) */}
+                            <div className="flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded-xl border border-slate-800">
+                              <span className="text-slate-400 text-[11px] font-semibold whitespace-nowrap flex items-center gap-1">
+                                <ArrowUpDown className="w-3.5 h-3.5 text-cyan-400" />
+                                <span>Sắp xếp:</span>
+                              </span>
+                              <select
+                                value={kwSortField}
+                                onChange={(e) => {
+                                  const field = e.target.value as any;
+                                  setKwSortField(field);
+                                  if (field === 'cost' || field === 'leads') {
+                                    setKwSortOrder('desc');
+                                  } else if (field === 'qualityScore' || field === 'cpa') {
+                                    setKwSortOrder('asc');
+                                  } else {
+                                    setKwSortOrder('asc');
+                                  }
+                                }}
+                                className="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-xs text-cyan-300 font-bold focus:outline-none focus:border-cyan-500 cursor-pointer"
+                              >
+                                <option value="qualityScore">Quality Score (Điểm chất lượng)</option>
+                                <option value="leads">Số lượng Leads</option>
+                                <option value="cost">Chi phí tiêu hao (Cost)</option>
+                                <option value="cpa">Giá mỗi Lead (CPA)</option>
+                                <option value="keyword">Từ khóa (A - Z)</option>
+                                <option value="adGroup">Nhóm & Chiến dịch</option>
+                                <option value="landingExp">Trang đích (Landing Exp)</option>
+                                <option value="adRelevance">Độ liên quan mẫu QC</option>
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => setKwSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                                title={`Đang sắp xếp: ${kwSortOrder === 'asc' ? 'Tăng dần (Thấp → Cao / A → Z)' : 'Giảm dần (Cao → Thấp / Z → A)'}. Bấm để đổi`}
+                                className="px-2.5 py-1 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap shadow-sm"
+                              >
+                                {kwSortOrder === 'asc' ? (
+                                  <>
+                                    <ArrowUp className="w-3.5 h-3.5 text-cyan-400" />
+                                    <span>Tăng dần (↑)</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    <span>Giảm dần (↓)</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Keywords Table */}
+                        {/* Keywords Table with Interactive Sortable Headers */}
                         <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-xl">
                           <table className="w-full text-left text-xs border-collapse">
                             <thead>
-                              <tr className="bg-slate-900/90 border-b border-slate-800 text-slate-400">
-                                <th className="py-3 px-3.5 font-semibold">Từ Khóa (Keyword)</th>
-                                <th className="py-3 px-3 font-semibold">Nhóm & Chiến Dịch</th>
-                                <th className="py-3 px-2.5 font-semibold text-center">Quality Score</th>
-                                <th className="py-3 px-3 font-semibold">Trang Đích (Landing Exp)</th>
-                                <th className="py-3 px-3 font-semibold">Độ Liên Quan Mẫu QC</th>
-                                <th className="py-3 px-3 font-semibold text-right">Chi Phí</th>
-                                <th className="py-3 px-3 font-semibold text-right">Leads</th>
-                                <th className="py-3 px-3 font-semibold text-right">CPA</th>
+                              <tr className="bg-slate-900/90 border-b border-slate-800 text-slate-400 select-none">
+                                {/* Từ Khóa */}
+                                <th 
+                                  onClick={() => handleKwSort('keyword')}
+                                  className="py-3 px-3.5 font-semibold cursor-pointer hover:text-white hover:bg-slate-800/60 transition-colors group"
+                                  title="Bấm để sắp xếp theo Từ Khóa (A-Z hoặc Z-A)"
+                                >
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={kwSortField === 'keyword' ? 'text-cyan-300 font-bold' : ''}>Từ Khóa (Keyword)</span>
+                                    {kwSortField === 'keyword' ? (
+                                      kwSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-cyan-400" /> : <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    ) : (
+                                      <ArrowUpDown className="w-3 h-3 text-slate-600 group-hover:text-slate-400" />
+                                    )}
+                                  </div>
+                                </th>
+
+                                {/* Nhóm & Chiến Dịch */}
+                                <th 
+                                  onClick={() => handleKwSort('adGroup')}
+                                  className="py-3 px-3 font-semibold cursor-pointer hover:text-white hover:bg-slate-800/60 transition-colors group"
+                                  title="Bấm để sắp xếp theo Nhóm & Chiến Dịch"
+                                >
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={kwSortField === 'adGroup' ? 'text-cyan-300 font-bold' : ''}>Nhóm & Chiến Dịch</span>
+                                    {kwSortField === 'adGroup' ? (
+                                      kwSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-cyan-400" /> : <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    ) : (
+                                      <ArrowUpDown className="w-3 h-3 text-slate-600 group-hover:text-slate-400" />
+                                    )}
+                                  </div>
+                                </th>
+
+                                {/* Quality Score */}
+                                <th 
+                                  onClick={() => handleKwSort('qualityScore')}
+                                  className="py-3 px-2.5 font-semibold text-center cursor-pointer hover:text-white hover:bg-slate-800/60 transition-colors group"
+                                  title="Bấm để sắp xếp theo Quality Score (1-10)"
+                                >
+                                  <div className="flex items-center justify-center gap-1.5">
+                                    <span className={kwSortField === 'qualityScore' ? 'text-cyan-300 font-bold' : ''}>Quality Score</span>
+                                    {kwSortField === 'qualityScore' ? (
+                                      kwSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-cyan-400" /> : <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    ) : (
+                                      <ArrowUpDown className="w-3 h-3 text-slate-600 group-hover:text-slate-400" />
+                                    )}
+                                  </div>
+                                </th>
+
+                                {/* Trang Đích */}
+                                <th 
+                                  onClick={() => handleKwSort('landingExp')}
+                                  className="py-3 px-3 font-semibold cursor-pointer hover:text-white hover:bg-slate-800/60 transition-colors group"
+                                  title="Bấm để sắp xếp theo Trải nghiệm Trang Đích"
+                                >
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={kwSortField === 'landingExp' ? 'text-cyan-300 font-bold' : ''}>Trang Đích (Landing Exp)</span>
+                                    {kwSortField === 'landingExp' ? (
+                                      kwSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-cyan-400" /> : <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    ) : (
+                                      <ArrowUpDown className="w-3 h-3 text-slate-600 group-hover:text-slate-400" />
+                                    )}
+                                  </div>
+                                </th>
+
+                                {/* Độ Liên Quan */}
+                                <th 
+                                  onClick={() => handleKwSort('adRelevance')}
+                                  className="py-3 px-3 font-semibold cursor-pointer hover:text-white hover:bg-slate-800/60 transition-colors group"
+                                  title="Bấm để sắp xếp theo Độ Liên Quan Mẫu QC"
+                                >
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={kwSortField === 'adRelevance' ? 'text-cyan-300 font-bold' : ''}>Độ Liên Quan Mẫu QC</span>
+                                    {kwSortField === 'adRelevance' ? (
+                                      kwSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-cyan-400" /> : <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    ) : (
+                                      <ArrowUpDown className="w-3 h-3 text-slate-600 group-hover:text-slate-400" />
+                                    )}
+                                  </div>
+                                </th>
+
+                                {/* Chi Phí */}
+                                <th 
+                                  onClick={() => handleKwSort('cost')}
+                                  className="py-3 px-3 font-semibold text-right cursor-pointer hover:text-white hover:bg-slate-800/60 transition-colors group"
+                                  title="Bấm để sắp xếp theo Chi Phí"
+                                >
+                                  <div className="flex items-center justify-end gap-1.5">
+                                    <span className={kwSortField === 'cost' ? 'text-cyan-300 font-bold' : ''}>Chi Phí</span>
+                                    {kwSortField === 'cost' ? (
+                                      kwSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-cyan-400" /> : <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    ) : (
+                                      <ArrowUpDown className="w-3 h-3 text-slate-600 group-hover:text-slate-400" />
+                                    )}
+                                  </div>
+                                </th>
+
+                                {/* Leads */}
+                                <th 
+                                  onClick={() => handleKwSort('leads')}
+                                  className="py-3 px-3 font-semibold text-right cursor-pointer hover:text-white hover:bg-slate-800/60 transition-colors group"
+                                  title="Bấm để sắp xếp theo Số Lượng Leads"
+                                >
+                                  <div className="flex items-center justify-end gap-1.5">
+                                    <span className={kwSortField === 'leads' ? 'text-cyan-300 font-bold' : ''}>Leads</span>
+                                    {kwSortField === 'leads' ? (
+                                      kwSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-cyan-400" /> : <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    ) : (
+                                      <ArrowUpDown className="w-3 h-3 text-slate-600 group-hover:text-slate-400" />
+                                    )}
+                                  </div>
+                                </th>
+
+                                {/* CPA */}
+                                <th 
+                                  onClick={() => handleKwSort('cpa')}
+                                  className="py-3 px-3 font-semibold text-right cursor-pointer hover:text-white hover:bg-slate-800/60 transition-colors group"
+                                  title="Bấm để sắp xếp theo Chi Phí Trên Mỗi Lead (CPA)"
+                                >
+                                  <div className="flex items-center justify-end gap-1.5">
+                                    <span className={kwSortField === 'cpa' ? 'text-cyan-300 font-bold' : ''}>CPA</span>
+                                    {kwSortField === 'cpa' ? (
+                                      kwSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-cyan-400" /> : <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                                    ) : (
+                                      <ArrowUpDown className="w-3 h-3 text-slate-600 group-hover:text-slate-400" />
+                                    )}
+                                  </div>
+                                </th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-800/60">
-                              {filteredKeywords.length === 0 ? (
+                              {sortedKeywords.length === 0 ? (
                                 <tr>
                                   <td colSpan={8} className="py-8 text-center text-slate-500">
                                     <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-slate-600" />
@@ -2719,7 +2939,7 @@ export const CampaignAi7DayAnalysis: React.FC<CampaignAi7DayAnalysisProps> = ({
                                   </td>
                                 </tr>
                               ) : (
-                                filteredKeywords.map((k) => (
+                                sortedKeywords.map((k) => (
                                   <tr key={k.id} className="hover:bg-slate-900/50 transition-colors">
                                     <td className="py-3 px-3.5 font-bold text-white">
                                       <span className="font-mono text-cyan-300">{k.keyword}</span>
