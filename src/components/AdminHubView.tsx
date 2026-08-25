@@ -34,7 +34,19 @@ import {
   CheckSquare,
   Square,
   Shield,
-  Layers
+  Layers,
+  AlertOctagon,
+  DollarSign,
+  Download,
+  Upload,
+  Bot,
+  Flame,
+  Radio,
+  FileJson,
+  RotateCcw,
+  SlidersHorizontal,
+  Save,
+  HelpCircle
 } from 'lucide-react';
 import { SidebarTab } from '../types';
 import { ALL_WORKSPACE_TABS, TabConfig } from './TabPermissionsModal';
@@ -69,6 +81,36 @@ export const ROLE_LABEL_MAP: Record<string, string> = {
   custom: 'Tùy Chỉnh Phân Quyền Riêng (Custom Matrix)',
 };
 
+export interface BranchBudget {
+  id: string;
+  name: string;
+  allocatedMonthly: number; // in VND
+  spentThisMonth: number;   // in VND
+  status: 'normal' | 'warning' | 'critical';
+  autoPauseOnOverbudget: boolean;
+}
+
+export interface EmergencyCampaign {
+  id: string;
+  name: string;
+  branch: string;
+  status: 'running' | 'paused_emergency';
+  todaySpend: number;
+  todayCpa: number;
+  maxTargetCpa: number;
+  reason?: string;
+  clickSpike: boolean;
+}
+
+export interface AIPromptGovernance {
+  systemPromptCore: string;
+  consultationRules: string;
+  pricingPolicy: string;
+  temperature: number;
+  tokenConsumptionThisMonth: number;
+  maxMonthlyTokenBudget: number;
+}
+
 interface ThresholdConfig {
   implantMaxCpa: number;
   porcelainMaxCpa: number;
@@ -86,8 +128,8 @@ interface AuditLog {
   timestamp: string;
   userName: string;
   action: string;
-  category: 'auth' | 'data' | 'crawler' | 'config';
-  status: 'success' | 'warning' | 'info';
+  category: 'auth' | 'data' | 'crawler' | 'config' | 'emergency' | 'budget' | 'backup';
+  status: 'success' | 'warning' | 'info' | 'critical';
   details: string;
 }
 
@@ -107,7 +149,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
   onUpdateSheetUrl,
 }) => {
   const [activeAdminSubTab, setActiveAdminSubTab] = useState<
-    'users' | 'connections' | 'thresholds' | 'crawler' | 'audit'
+    'users' | 'emergency' | 'budget' | 'ai_governance' | 'backup' | 'connections' | 'thresholds' | 'crawler' | 'audit'
   >('users');
 
   // Users State
@@ -327,6 +369,270 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
       details: 'Đồng bộ thành công 17 chi nhánh và 9 tháng dữ liệu',
     },
   ]);
+
+  // 4 New Feature States
+  // 1. Emergency Kill-Switch & Fraud Radar
+  const [emergencyCampaigns, setEmergencyCampaigns] = useState<EmergencyCampaign[]>([
+    {
+      id: 'c-1',
+      name: '[Search] - Trồng Răng Implant Toàn Hàm All-on-4/6 - HCM',
+      branch: 'Bình Dương & HCM',
+      status: 'running',
+      todaySpend: 14250000,
+      todayCpa: 680000,
+      maxTargetCpa: 450000,
+      reason: 'CPA tăng vọt 51% so với ngưỡng trần (450k)',
+      clickSpike: true,
+    },
+    {
+      id: 'c-2',
+      name: '[Search] - Bọc Răng Sứ Thẩm Mỹ Emax/Cercon - Cần Thơ',
+      branch: 'Cần Thơ',
+      status: 'running',
+      todaySpend: 8900000,
+      todayCpa: 490000,
+      maxTargetCpa: 320000,
+      reason: 'Nghi vấn 12 click ảo từ cùng 1 dải IP 118.69.xxx trong đêm',
+      clickSpike: true,
+    },
+    {
+      id: 'c-3',
+      name: '[Search] - Niềng Răng Trong Suốt Invisalign - Đà Nẵng',
+      branch: 'Đà Nẵng',
+      status: 'running',
+      todaySpend: 6200000,
+      todayCpa: 310000,
+      maxTargetCpa: 380000,
+      reason: 'Hoạt động ổn định',
+      clickSpike: false,
+    },
+    {
+      id: 'c-4',
+      name: '[Performance Max] - Nhổ Răng Khôn Piezotome - Biên Hòa',
+      branch: 'Biên Hòa',
+      status: 'running',
+      todaySpend: 3450000,
+      todayCpa: 135000,
+      maxTargetCpa: 150000,
+      reason: 'Hiệu quả tốt',
+      clickSpike: false,
+    },
+  ]);
+
+  // 2. Branch Budget Allocator (17 Chi Nhánh Tâm Đức Smile)
+  const [branchBudgets, setBranchBudgets] = useState<BranchBudget[]>([
+    { id: 'b1', name: 'Bình Dương (Thuận An)', allocatedMonthly: 60000000, spentThisMonth: 52288250, status: 'warning', autoPauseOnOverbudget: true },
+    { id: 'b2', name: 'Biên Hòa (Đồng Nai)', allocatedMonthly: 50000000, spentThisMonth: 39698817, status: 'normal', autoPauseOnOverbudget: true },
+    { id: 'b3', name: 'Cần Thơ', allocatedMonthly: 45000000, spentThisMonth: 37356522, status: 'normal', autoPauseOnOverbudget: false },
+    { id: 'b4', name: 'Đà Nẵng', allocatedMonthly: 60000000, spentThisMonth: 54962580, status: 'warning', autoPauseOnOverbudget: true },
+    { id: 'b5', name: 'Tây Ninh', allocatedMonthly: 35000000, spentThisMonth: 31151138, status: 'warning', autoPauseOnOverbudget: false },
+    { id: 'b6', name: 'Quy Nhơn (Bình Định)', allocatedMonthly: 30000000, spentThisMonth: 27795381, status: 'normal', autoPauseOnOverbudget: false },
+    { id: 'b7', name: 'Bình Phước (Đồng Xoài)', allocatedMonthly: 25000000, spentThisMonth: 20375737, status: 'normal', autoPauseOnOverbudget: false },
+    { id: 'b8', name: 'Vũng Tàu', allocatedMonthly: 40000000, spentThisMonth: 33450000, status: 'normal', autoPauseOnOverbudget: true },
+    { id: 'b9', name: 'Tiền Giang (Mỹ Tho)', allocatedMonthly: 30000000, spentThisMonth: 28900000, status: 'warning', autoPauseOnOverbudget: true },
+    { id: 'b10', name: 'Long An (Tân An)', allocatedMonthly: 30000000, spentThisMonth: 22100000, status: 'normal', autoPauseOnOverbudget: false },
+    { id: 'b11', name: 'An Giang (Long Xuyên)', allocatedMonthly: 35000000, spentThisMonth: 36200000, status: 'critical', autoPauseOnOverbudget: true },
+    { id: 'b12', name: 'Kiên Giang (Rạch Giá)', allocatedMonthly: 30000000, spentThisMonth: 24500000, status: 'normal', autoPauseOnOverbudget: false },
+    { id: 'b13', name: 'Đồng Tháp (Cao Lãnh)', allocatedMonthly: 25000000, spentThisMonth: 19800000, status: 'normal', autoPauseOnOverbudget: false },
+    { id: 'b14', name: 'Bến Tre', allocatedMonthly: 25000000, spentThisMonth: 21300000, status: 'normal', autoPauseOnOverbudget: false },
+    { id: 'b15', name: 'Trà Vinh', allocatedMonthly: 20000000, spentThisMonth: 16500000, status: 'normal', autoPauseOnOverbudget: false },
+    { id: 'b16', name: 'Sóc Trăng', allocatedMonthly: 20000000, spentThisMonth: 18200000, status: 'warning', autoPauseOnOverbudget: false },
+    { id: 'b17', name: 'Cà Mau', allocatedMonthly: 25000000, spentThisMonth: 22400000, status: 'normal', autoPauseOnOverbudget: false },
+  ]);
+
+  // 3. AI Governance & Prompt Controls
+  const [aiGovernance, setAiGovernance] = useState<AIPromptGovernance>(() => {
+    try {
+      const saved = localStorage.getItem('dashboard_ai_governance');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      systemPromptCore: 'Bạn là Chuyên Gia Cố Vấn Tăng Trưởng & Giám Sát Chiến Dịch Google Ads kiêm Trợ Lý Sales Online Cấp Cao của Hệ Thống Nha Khoa Tâm Đức Smile (17 chi nhánh). Luôn phân tích dựa trên dữ liệu thực tế, tối ưu CPA, không nói chung chung.',
+      consultationRules: '- Luôn giải thích rõ công nghệ độc quyền (Chụp CT ConeBeam 3D, Cấy ghép không đau).\n- Nhấn mạnh chính sách trả góp 0% lãi suất và bảo hành chính hãng Thụy Sĩ/Hàn Quốc.\n- Khéo léo thúc đẩy khách để lại SĐT hoặc đặt lịch hẹn khám miễn phí tại chi nhánh gần nhất.',
+      pricingPolicy: '- Tuyệt đối không tự ý báo giá phá đáy thấp hơn bảng niêm yết.\n- Implant trọn gói chỉ từ 12.5tr (đã gồm trụ + Abutment).\n- Răng sứ thẩm mỹ từ 1.8tr/răng.',
+      temperature: 0.3,
+      tokenConsumptionThisMonth: 142850,
+      maxMonthlyTokenBudget: 500000,
+    };
+  });
+
+  // Toggle Emergency Pause
+  const handleToggleEmergencyCampaign = (id: string) => {
+    setEmergencyCampaigns(prev => prev.map(c => {
+      if (c.id === id) {
+        const nextStatus = c.status === 'running' ? 'paused_emergency' : 'running';
+        const actionText = nextStatus === 'paused_emergency' ? 'TẠM DỪNG KHẨN CẤP' : 'KÍCH HOẠT LẠI';
+        
+        // Add audit log
+        setAuditLogs(logs => [
+          {
+            id: `log-${Date.now()}`,
+            timestamp: 'Vừa xong',
+            userName: 'Trần Đức (Admin)',
+            action: `${actionText} chiến dịch ${c.name.slice(0, 30)}...`,
+            category: 'emergency',
+            status: nextStatus === 'paused_emergency' ? 'critical' : 'success',
+            details: `Chi nhánh ${c.branch} - CPA ghi nhận ${c.todayCpa.toLocaleString('vi-VN')} đ`,
+          },
+          ...logs
+        ]);
+
+        return { ...c, status: nextStatus };
+      }
+      return c;
+    }));
+
+    showNotification('Đã cập nhật trạng thái Kill-Switch chiến dịch Google Ads!');
+  };
+
+  // Pause all high CPA campaigns
+  const handleEmergencyPauseAllOverbudget = () => {
+    const overList = emergencyCampaigns.filter(c => c.todayCpa > c.maxTargetCpa && c.status === 'running');
+    if (overList.length === 0) {
+      showNotification('Không có chiến dịch nào vượt ngưỡng CPA cần tạm dừng!');
+      return;
+    }
+
+    setEmergencyCampaigns(prev => prev.map(c => {
+      if (c.todayCpa > c.maxTargetCpa) {
+        return { ...c, status: 'paused_emergency' };
+      }
+      return c;
+    }));
+
+    setAuditLogs(logs => [
+      {
+        id: `log-${Date.now()}`,
+        timestamp: 'Vừa xong',
+        userName: 'Trần Đức (Admin)',
+        action: `KÍCH HOẠT KILL-SWITCH TOÀN HỆ THỐNG: Tạm dừng ${overList.length} chiến dịch cháy ngân sách`,
+        category: 'emergency',
+        status: 'critical',
+        details: `Bảo vệ ngân sách khẩn cấp cho ${overList.map(o => o.branch).join(', ')}`,
+      },
+      ...logs
+    ]);
+
+    showNotification(`Đã kích hoạt Kill-Switch! Tạm dừng ${overList.length} chiến dịch vượt ngưỡng CPA.`);
+  };
+
+  // Update Branch Budget
+  const handleUpdateBranchBudget = (id: string, newAllocated: number, autoPause: boolean) => {
+    setBranchBudgets(prev => prev.map(b => {
+      if (b.id === id) {
+        const status = (b.spentThisMonth / newAllocated) > 1 ? 'critical' : (b.spentThisMonth / newAllocated) > 0.85 ? 'warning' : 'normal';
+        return { ...b, allocatedMonthly: newAllocated, autoPauseOnOverbudget: autoPause, status };
+      }
+      return b;
+    }));
+    showNotification('Đã lưu hạn mức ngân sách chi nhánh!');
+  };
+
+  // Save AI Governance
+  const handleSaveAiGovernance = () => {
+    localStorage.setItem('dashboard_ai_governance', JSON.stringify(aiGovernance));
+    setAuditLogs(logs => [
+      {
+        id: `log-${Date.now()}`,
+        timestamp: 'Vừa xong',
+        userName: 'Trần Đức (Admin)',
+        action: 'Cập nhật System Prompt & Chính sách AI Copilot',
+        category: 'config',
+        status: 'success',
+        details: 'Điều chỉnh quy tắc tư vấn giá và hành vi mô hình Gemini 3.7',
+      },
+      ...logs
+    ]);
+    showNotification('Đã lưu cấu hình Bộ Não & Quy Tắc Trợ Lý AI thành công!');
+  };
+
+  // Export Full Backup JSON
+  const handleExportBackup = () => {
+    const backupData = {
+      version: '2.5.0',
+      exportDate: new Date().toISOString(),
+      exportBy: 'Trần Đức (Super Admin)',
+      system: 'Nha Khoa Tâm Đức Smile - Marketing Management Hub',
+      users,
+      thresholds,
+      crawlerConfig: { interval: crawlerInterval, scanImages: crawlerScanImages, scanPrices: crawlerScanPrices, scanPromos: crawlerScanPromos },
+      branchBudgets,
+      aiGovernance,
+      auditLogsCount: auditLogs.length,
+    };
+
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tamducsmile_admin_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    setAuditLogs(logs => [
+      {
+        id: `log-${Date.now()}`,
+        timestamp: 'Vừa xong',
+        userName: 'Trần Đức (Admin)',
+        action: 'Xuất bản Snapshot Sao Lưu Hệ Thống (JSON Backup)',
+        category: 'backup',
+        status: 'info',
+        details: `Tải xuống cấu hình ${users.length} tài khoản và hạn mức 17 chi nhánh`,
+      },
+      ...logs
+    ]);
+
+    showNotification('Đã xuất file Snapshot sao lưu hệ thống thành công!');
+  };
+
+  // Import Backup JSON
+  const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        if (parsed.users) {
+          setUsers(parsed.users);
+          localStorage.setItem('dashboard_admin_users_list', JSON.stringify(parsed.users));
+        }
+        if (parsed.thresholds) {
+          setThresholds(parsed.thresholds);
+          localStorage.setItem('dashboard_thresholds_config', JSON.stringify(parsed.thresholds));
+        }
+        if (parsed.branchBudgets) {
+          setBranchBudgets(parsed.branchBudgets);
+        }
+        if (parsed.aiGovernance) {
+          setAiGovernance(parsed.aiGovernance);
+          localStorage.setItem('dashboard_ai_governance', JSON.stringify(parsed.aiGovernance));
+        }
+
+        setAuditLogs(logs => [
+          {
+            id: `log-${Date.now()}`,
+            timestamp: 'Vừa xong',
+            userName: 'Trần Đức (Admin)',
+            action: 'Khôi phục hệ thống từ file Snapshot Backup',
+            category: 'backup',
+            status: 'warning',
+            details: `Khôi phục cấu hình từ file ${file.name}`,
+          },
+          ...logs
+        ]);
+
+        showNotification('Đã khôi phục toàn bộ cấu hình từ bản sao lưu thành công!');
+      } catch (err) {
+        alert('File sao lưu không hợp lệ hoặc bị lỗi định dạng JSON!');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 
   const showNotification = (msg: string) => {
     setSaveSuccessMessage(msg);
@@ -548,6 +854,58 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
 
         <button
           type="button"
+          onClick={() => setActiveAdminSubTab('emergency')}
+          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminSubTab === 'emergency'
+              ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30'
+              : 'text-slate-400 hover:text-rose-300 hover:bg-slate-900'
+          }`}
+        >
+          <AlertOctagon className="w-4 h-4 text-rose-400" />
+          <span>2. Nút Khẩn Cấp Ads (Kill-Switch)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveAdminSubTab('budget')}
+          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminSubTab === 'budget'
+              ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30'
+              : 'text-slate-400 hover:text-amber-300 hover:bg-slate-900'
+          }`}
+        >
+          <DollarSign className="w-4 h-4 text-amber-400" />
+          <span>3. Ngân Sách 17 Chi Nhánh</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveAdminSubTab('ai_governance')}
+          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminSubTab === 'ai_governance'
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+              : 'text-slate-400 hover:text-indigo-300 hover:bg-slate-900'
+          }`}
+        >
+          <Bot className="w-4 h-4 text-indigo-400" />
+          <span>4. Bộ Não & Quy Tắc Trợ Lý AI</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveAdminSubTab('backup')}
+          className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminSubTab === 'backup'
+              ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30'
+              : 'text-slate-400 hover:text-teal-300 hover:bg-slate-900'
+          }`}
+        >
+          <RotateCcw className="w-4 h-4 text-teal-400" />
+          <span>5. Sao Lưu & Khôi Phục (Backup)</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveAdminSubTab('connections')}
           className={`py-3 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
             activeAdminSubTab === 'connections'
@@ -556,7 +914,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
           }`}
         >
           <Database className="w-4 h-4" />
-          <span>2. Nguồn Data & Kết Nối API</span>
+          <span>6. Nguồn Data & Kết Nối API</span>
         </button>
 
         <button
@@ -569,7 +927,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
           }`}
         >
           <BellRing className="w-4 h-4" />
-          <span>3. Cài Đặt Ngưỡng Cảnh Báo Ads & Lead</span>
+          <span>7. Ngưỡng Cảnh Báo Ads & Lead</span>
         </button>
 
         <button
@@ -582,7 +940,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
           }`}
         >
           <Swords className="w-4 h-4" />
-          <span>4. Cấu Hình Bot Quét Đối Thủ</span>
+          <span>8. Bot Quét Đối Thủ</span>
         </button>
 
         <button
@@ -595,7 +953,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
           }`}
         >
           <History className="w-4 h-4" />
-          <span>5. Nhật Ký Hệ Thống & Bảo Mật ({auditLogs.length})</span>
+          <span>9. Nhật Ký Bảo Mật ({auditLogs.length})</span>
         </button>
       </div>
 
@@ -755,7 +1113,439 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 2: DATA CONNECTIONS & APIS */}
+      {/* TAB 2: EMERGENCY ADS KILL-SWITCH & CLICK FRAUD RADAR */}
+      {/* ========================================================================= */}
+      {activeAdminSubTab === 'emergency' && (
+        <div className="space-y-6">
+          {/* Header & Kill-all Action */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-rose-950/30 border border-rose-800/50">
+            <div className="flex items-start gap-3">
+              <div className="p-3 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/40 shrink-0">
+                <AlertOctagon className="w-6 h-6 animate-pulse" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  Trung Tâm Cắt Lỗ Khẩn Cấp & Radar Click Ảo (Ads Emergency Kill-Switch)
+                </h3>
+                <p className="text-xs text-rose-200/80 mt-1 max-w-2xl">
+                  Cho phép Super Admin ngưng ngay lập tức các chiến dịch Google Ads đang bị click tặc, cắn tiền bất thường hoặc CPA vượt ngưỡng trần mà không cần đăng nhập Google Ads Console.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleEmergencyPauseAllOverbudget}
+              className="px-5 py-3 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-600/40 transition-all cursor-pointer whitespace-nowrap self-start sm:self-center"
+            >
+              <Power className="w-4 h-4" />
+              <span>KILL-SWITCH TOÀN DIỆN (Dừng Cháy Ngân Sách)</span>
+            </button>
+          </div>
+
+          {/* Quick Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span>Chiến Dịch Đang Chạy</span>
+                <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+              </div>
+              <p className="text-2xl font-bold text-white">
+                {emergencyCampaigns.filter(c => c.status === 'running').length} <span className="text-xs text-slate-400 font-normal">/ {emergencyCampaigns.length} chiến dịch</span>
+              </p>
+              <p className="text-[11px] text-emerald-400 mt-1">● Luồng tracking API trực tiếp</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span>Chiến Dịch Cảnh Báo Đỏ (CPA cao)</span>
+                <Flame className="w-4 h-4 text-rose-400" />
+              </div>
+              <p className="text-2xl font-bold text-rose-400">
+                {emergencyCampaigns.filter(c => c.todayCpa > c.maxTargetCpa).length} Chiến Dịch
+              </p>
+              <p className="text-[11px] text-rose-300 mt-1">Vượt ngưỡng CPA cam kết</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span>Radar Phát Hiện Click Ảo</span>
+                <Shield className="w-4 h-4 text-amber-400" />
+              </div>
+              <p className="text-2xl font-bold text-amber-300">1 Nghi Vấn IP</p>
+              <p className="text-[11px] text-slate-400 mt-1">Dải IP lặp lại khung giờ đêm</p>
+            </div>
+          </div>
+
+          {/* Campaign Table */}
+          <div className="bg-slate-950/80 border border-slate-800/80 rounded-3xl overflow-hidden shadow-xl">
+            <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <Radio className="w-4 h-4 text-rose-400" />
+                Danh Sách Chiến Dịch Giám Sát Thời Gian Thực (Live Stream)
+              </h4>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-900/90 text-slate-400 border-b border-slate-800 text-[11px] uppercase tracking-wider">
+                  <tr>
+                    <th className="py-3 px-4 font-semibold">Tên Chiến Dịch & Chi Nhánh</th>
+                    <th className="py-3 px-4 font-semibold text-right">Chi Phí Hôm Nay</th>
+                    <th className="py-3 px-4 font-semibold text-right">CPA Thực Tế / Trần</th>
+                    <th className="py-3 px-4 font-semibold">Tình Trạng & Cảnh Báo</th>
+                    <th className="py-3 px-4 font-semibold text-center">Trạng Thái</th>
+                    <th className="py-3 px-4 font-semibold text-right">Thao Tác Kill-Switch</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {emergencyCampaigns.map(c => {
+                    const isOver = c.todayCpa > c.maxTargetCpa;
+                    const isPaused = c.status === 'paused_emergency';
+
+                    return (
+                      <tr key={c.id} className={`hover:bg-slate-900/40 transition-colors ${isOver && !isPaused ? 'bg-rose-950/10' : ''}`}>
+                        <td className="py-3.5 px-4">
+                          <p className="font-bold text-white">{c.name}</p>
+                          <p className="text-[11px] text-cyan-400 font-medium mt-0.5">Khu vực: {c.branch}</p>
+                        </td>
+                        <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-200">
+                          {c.todaySpend.toLocaleString('vi-VN')} đ
+                        </td>
+                        <td className="py-3.5 px-4 text-right font-mono">
+                          <div className={`font-bold ${isOver ? 'text-rose-400' : 'text-emerald-400'}`}>
+                            {c.todayCpa.toLocaleString('vi-VN')} đ
+                          </div>
+                          <div className="text-[10px] text-slate-500">
+                            Trần: {c.maxTargetCpa.toLocaleString('vi-VN')} đ
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          {c.clickSpike ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[11px] font-bold">
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                              {c.reason}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 text-[11px]">
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              {c.reason}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3.5 px-4 text-center">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+                            isPaused
+                              ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                              : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                          }`}>
+                            {isPaused ? '✕ ĐÃ TẠM DỪNG (PAUSED)' : '● ĐANG HOẠT ĐỘNG'}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleEmergencyCampaign(c.id)}
+                            className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-sm ${
+                              isPaused
+                                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
+                                : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/30'
+                            }`}
+                          >
+                            <Power className="w-3.5 h-3.5" />
+                            <span>{isPaused ? 'Mở Lại Ads' : 'Cắt Lỗ Ngay'}</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 3: BRANCH BUDGET ALLOCATOR (17 CHI NHÁNH TÂM ĐỨC SMILE) */}
+      {/* ========================================================================= */}
+      {activeAdminSubTab === 'budget' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-amber-400" />
+                Quản Lý Hạn Mức & Phân Bổ Ngân Sách 17 Chi Nhánh
+              </h3>
+              <p className="text-xs text-slate-400">
+                Đặt hạn mức chi tiêu Ads hàng tháng cho từng cơ sở và kích hoạt chế độ tự động ngưng khi vượt trần (Burn-rate protection).
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-800 text-xs">
+              <span className="text-slate-400">Tổng ngân sách cấp:</span>
+              <span className="font-bold text-amber-400 font-mono text-sm">
+                {branchBudgets.reduce((acc, b) => acc + b.allocatedMonthly, 0).toLocaleString('vi-VN')} đ
+              </span>
+            </div>
+          </div>
+
+          {/* Branch Budget Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {branchBudgets.map(b => {
+              const percent = Math.min(100, Math.round((b.spentThisMonth / b.allocatedMonthly) * 100));
+              const isOver = b.spentThisMonth > b.allocatedMonthly;
+
+              return (
+                <div key={b.id} className="p-4 rounded-3xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 transition-all space-y-3 shadow-lg">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-white text-sm">{b.name}</h4>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                      isOver
+                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                        : percent > 85
+                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                        : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                    }`}>
+                      {isOver ? '✕ Vượt Hạn Mức' : `Đã dùng ${percent}%`}
+                    </span>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="space-y-1">
+                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          isOver ? 'bg-rose-500' : percent > 85 ? 'bg-amber-500' : 'bg-gradient-to-r from-cyan-500 to-emerald-500'
+                        }`}
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                      <span>Đã tiêu: {b.spentThisMonth.toLocaleString('vi-VN')} đ</span>
+                      <span>Hạn mức: {b.allocatedMonthly.toLocaleString('vi-VN')} đ</span>
+                    </div>
+                  </div>
+
+                  {/* Budget Modifier */}
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2 text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="checkbox"
+                        id={`auto-pause-${b.id}`}
+                        checked={b.autoPauseOnOverbudget}
+                        onChange={(e) => handleUpdateBranchBudget(b.id, b.allocatedMonthly, e.target.checked)}
+                        className="rounded border-slate-700 text-cyan-500 focus:ring-0 cursor-pointer"
+                      />
+                      <label htmlFor={`auto-pause-${b.id}`} className="text-[11px] text-slate-300 cursor-pointer select-none">
+                        Auto-pause khi quá trần
+                      </label>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newAlloc = prompt(`Nhập ngân sách mới cho ${b.name} (VNĐ):`, b.allocatedMonthly.toString());
+                        if (newAlloc && !isNaN(Number(newAlloc))) {
+                          handleUpdateBranchBudget(b.id, Number(newAlloc), b.autoPauseOnOverbudget);
+                        }
+                      }}
+                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white font-bold text-[11px] border border-slate-700 transition-colors cursor-pointer"
+                    >
+                      Sửa Ngân Sách
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 4: AI PROMPT GOVERNANCE & COPILOT BRAIN */}
+      {/* ========================================================================= */}
+      {activeAdminSubTab === 'ai_governance' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Bot className="w-4 h-4 text-indigo-400" />
+                Cấu Hình "Bộ Não" & Quy Tắc Trợ Lý AI (AI Governance)
+              </h3>
+              <p className="text-xs text-slate-400">
+                Thiết lập chỉ thị cốt lõi (System Prompt), quy tắc tư vấn nha khoa và hạn mức tiêu thụ Token của Gemini 3.7.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveAiGovernance}
+              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer self-start sm:self-center"
+            >
+              <Save className="w-4 h-4" />
+              <span>Lưu Cấu Hình AI</span>
+            </button>
+          </div>
+
+          {/* Token Consumption Banner */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800">
+              <div className="text-xs text-slate-400 mb-1">Mô Hình Đang Kích Hoạt</div>
+              <p className="text-lg font-bold text-cyan-300 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                Gemini 3.7 Flash Thinking
+              </p>
+              <p className="text-[10px] text-slate-500 mt-1">Độ trễ trung bình: 350ms</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800">
+              <div className="text-xs text-slate-400 mb-1">Token Tiêu Thụ Tháng Này</div>
+              <p className="text-lg font-bold text-indigo-300 font-mono">
+                {aiGovernance.tokenConsumptionThisMonth.toLocaleString('vi-VN')} <span className="text-xs text-slate-400 font-normal">/ {aiGovernance.maxMonthlyTokenBudget.toLocaleString('vi-VN')} Token</span>
+              </p>
+              <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                <div
+                  className="bg-indigo-500 h-full rounded-full"
+                  style={{ width: `${(aiGovernance.tokenConsumptionThisMonth / aiGovernance.maxMonthlyTokenBudget) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800">
+              <div className="text-xs text-slate-400 mb-1">Độ Sáng Tạo (Temperature)</div>
+              <div className="flex items-center justify-between mt-1">
+                <span className="font-bold text-white font-mono">{aiGovernance.temperature}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                  {aiGovernance.temperature <= 0.3 ? 'Chính xác & Kỷ luật' : 'Sáng tạo cao'}
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={aiGovernance.temperature}
+                onChange={(e) => setAiGovernance({ ...aiGovernance, temperature: parseFloat(e.target.value) })}
+                className="w-full mt-2 accent-indigo-500 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          {/* Prompt Editor Forms */}
+          <div className="space-y-4 text-xs">
+            <div className="p-4 rounded-3xl bg-slate-950/80 border border-slate-800 space-y-2">
+              <label className="block font-bold text-slate-200">
+                1. System Prompt Cốt Lõi (Định Vị Nhân Vật & Giọng Văn AI):
+              </label>
+              <textarea
+                rows={3}
+                value={aiGovernance.systemPromptCore}
+                onChange={(e) => setAiGovernance({ ...aiGovernance, systemPromptCore: e.target.value })}
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-200 font-sans focus:outline-none focus:border-indigo-500 leading-relaxed"
+              />
+            </div>
+
+            <div className="p-4 rounded-3xl bg-slate-950/80 border border-slate-800 space-y-2">
+              <label className="block font-bold text-slate-200">
+                2. Quy Tắc Tư Vấn Khách Hàng (Tư Vấn & Sales Copilot):
+              </label>
+              <textarea
+                rows={3}
+                value={aiGovernance.consultationRules}
+                onChange={(e) => setAiGovernance({ ...aiGovernance, consultationRules: e.target.value })}
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-200 font-mono focus:outline-none focus:border-indigo-500 leading-relaxed"
+              />
+            </div>
+
+            <div className="p-4 rounded-3xl bg-slate-950/80 border border-slate-800 space-y-2">
+              <label className="block font-bold text-slate-200">
+                3. Chính Sách Báo Giá & Ngăn Chặn Phá Giá (Pricing Governance):
+              </label>
+              <textarea
+                rows={3}
+                value={aiGovernance.pricingPolicy}
+                onChange={(e) => setAiGovernance({ ...aiGovernance, pricingPolicy: e.target.value })}
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-200 font-mono focus:outline-none focus:border-indigo-500 leading-relaxed"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 5: BACKUP & RESTORE CENTER (1-CLICK SNAPSHOT) */}
+      {/* ========================================================================= */}
+      {activeAdminSubTab === 'backup' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <RotateCcw className="w-4 h-4 text-teal-400" />
+                Trung Tâm Sao Lưu & Khôi Phục Hệ Thống (Backup & Restore Center)
+              </h3>
+              <p className="text-xs text-slate-400">
+                Xuất bản Snapshot dự phòng toàn bộ phân quyền tài khoản, 21 link đối thủ, ngưỡng cảnh báo và hạn mức chi nhánh.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Export Card */}
+            <div className="p-6 rounded-3xl bg-slate-950/80 border border-slate-800 space-y-4 flex flex-col justify-between shadow-xl">
+              <div className="space-y-2">
+                <div className="p-3 rounded-2xl bg-teal-500/20 text-teal-400 border border-teal-500/30 w-fit">
+                  <Download className="w-6 h-6" />
+                </div>
+                <h4 className="font-bold text-white text-sm">Xuất Bản Sao Lưu Hệ Thống (Export JSON Snapshot)</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Tải về máy file cấu hình đầy đủ bao gồm: Danh sách nhân viên & phân quyền, hạn mức 17 chi nhánh, bot quét đối thủ, ngưỡng CPA.
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={handleExportBackup}
+                  className="w-full py-3 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-teal-600/30 transition-all cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Tải Về File Snapshot (.json)</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Import Card */}
+            <div className="p-6 rounded-3xl bg-slate-950/80 border border-slate-800 space-y-4 flex flex-col justify-between shadow-xl">
+              <div className="space-y-2">
+                <div className="p-3 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 w-fit">
+                  <Upload className="w-6 h-6" />
+                </div>
+                <h4 className="font-bold text-white text-sm">Khôi Phục Cấu Hình Dự Phòng (Restore Snapshot)</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Tải lên file sao lưu `.json` đã xuất trước đó để khôi phục nhanh cấu hình chuẩn khi chuyển giao hoặc khắc phục sự cố.
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800">
+                <label className="w-full py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-all cursor-pointer">
+                  <Upload className="w-4 h-4 text-amber-400" />
+                  <span>Chọn File Backup (.json) Để Khôi Phục</span>
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportBackup}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 6: DATA CONNECTIONS & APIS */}
       {/* ========================================================================= */}
       {activeAdminSubTab === 'connections' && (
         <div className="space-y-6">
