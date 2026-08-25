@@ -143,13 +143,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: currentAiBadge.shortName,
       badgeColor: currentAiBadge.color,
     },
-    {
-      id: 'admin_hub',
-      label: 'Quản Trị Admin',
-      icon: ShieldCheck,
-      badge: 'Master',
-      badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
-    },
   ];
 
   return (
@@ -205,37 +198,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* User / Workspace Role Info */}
         {isOpen && (
-          <div className="px-3 py-2.5 mx-3 mt-3 rounded-xl bg-slate-900/70 border border-slate-800/80 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 shrink-0">
-                  {userRole === 'admin' ? (
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  ) : (
-                    <Users className="w-4 h-4 text-sky-400" />
-                  )}
-                </div>
-                <div className="truncate">
-                  <p className="text-xs font-semibold text-slate-200 truncate">
-                    {userRole === 'admin' ? 'Quản Trị Viên' : 'Nhân Viên'}
-                  </p>
-                </div>
+          <div className="px-3 py-2.5 mx-3 mt-3 rounded-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 shrink-0">
+                {userRole === 'admin' ? (
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                ) : (
+                  <Users className="w-4 h-4 text-sky-400" />
+                )}
               </div>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+              <div className="truncate">
+                <p className="text-xs font-semibold text-slate-200 truncate">
+                  {userRole === 'admin' ? 'Quản Trị Viên' : 'Nhân Viên'}
+                </p>
+              </div>
             </div>
-
-            {/* Admin Quick Action: Staff Tab Permissions */}
-            {userRole === 'admin' && onOpenTabPermissions && (
-              <button
-                type="button"
-                onClick={onOpenTabPermissions}
-                className="w-full py-1.5 px-2.5 rounded-lg bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-800/50 text-cyan-300 hover:text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
-                title="Cài đặt phân quyền các tab cho Nhân viên"
-              >
-                <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Phân Quyền Tab Nhân Viên</span>
-              </button>
-            )}
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
           </div>
         )}
 
@@ -304,6 +282,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
             );
           })}
         </div>
+
+        {/* Dedicated Admin Hub Section at Bottom */}
+        {userRole === 'admin' && (
+          <div className="px-3 py-2.5 border-t border-slate-800/90 bg-slate-950/70 shrink-0">
+            <button
+              onClick={() => onSelectTab('admin_hub')}
+              title={!isOpen ? 'Quản Trị Admin' : undefined}
+              className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer ${
+                activeTab === 'admin_hub'
+                  ? 'bg-emerald-950/60 text-white font-semibold shadow-lg shadow-emerald-950/50 border border-emerald-600/50 ring-1 ring-emerald-400/40'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-900/80 border border-slate-800/80 hover:border-slate-700'
+              }`}
+            >
+              {/* Active left indicator bar */}
+              {activeTab === 'admin_hub' && (
+                <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-emerald-400 to-teal-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+              )}
+
+              <ShieldCheck
+                className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
+                  activeTab === 'admin_hub'
+                    ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]'
+                    : 'text-emerald-400/80 group-hover:text-emerald-300'
+                }`}
+              />
+
+              {isOpen && (
+                <div className="flex-1 flex items-center justify-between min-w-0">
+                  <span className="truncate font-semibold">Quản Trị Admin</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/40">
+                    Master
+                  </span>
+                </div>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Footer info in sidebar */}
         {isOpen && (

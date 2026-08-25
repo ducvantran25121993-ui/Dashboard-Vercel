@@ -361,17 +361,6 @@ export default function App() {
 
                 {userRole === 'admin' && (
                   <button
-                    onClick={() => setIsTabPermissionsOpen(true)}
-                    className="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-cyan-950/60 text-cyan-300 border border-cyan-800/50 hover:bg-cyan-900/80 transition-all flex items-center gap-1.5 cursor-pointer"
-                    title="Phân quyền các tab cho Nhân viên"
-                  >
-                    <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-                    <span className="hidden md:inline">Phân Quyền Tab</span>
-                  </button>
-                )}
-
-                {userRole === 'admin' && (
-                  <button
                     onClick={() => setIsChangePasswordOpen(true)}
                     className="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 flex items-center gap-1 transition-all"
                     title="Đổi mật khẩu"
