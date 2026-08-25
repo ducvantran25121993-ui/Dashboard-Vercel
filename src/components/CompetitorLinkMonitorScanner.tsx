@@ -2566,16 +2566,13 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                               <Zap className="w-4 h-4 text-amber-400 animate-bounce" />
                               <span>KẾ HOẠCH PHẢN CÔNG GOOGLE ADS CHO HỆ THỐNG NHA KHOA TÂM ĐỨC SMILE:</span>
                             </div>
-                            <span className="px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">
-                              17 Chi Nhánh Miền Tây & TP.HCM
-                            </span>
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
                               <span className="font-bold text-amber-400 block text-xs">🎯 Phân Tích Tử Huyệt Đối Thủ ({item.name}):</span>
                               <p className="text-slate-300 leading-relaxed text-xs">
-                                Đối thủ vừa giảm giá sâu để kích cầu trên bài viết ({item.url}), nhưng quy mô phòng khám tập trung ở các thành phố lớn và thường có chi phí phát sinh phụ kiện ngoài gói. Tâm Đức Smile sở hữu lợi thế 17 chi nhánh phủ khắp các tỉnh Miền Tây (Cần Thơ, Tiền Giang, Cà Mau...), miễn phí xe đưa đón và cam kết bảo hành trọn gói không phát sinh.
+                                Đối thủ vừa giảm giá sâu để kích cầu trên bài viết ({item.url}), nhưng quy mô phòng khám tập trung ở các thành phố lớn và thường có chi phí phát sinh phụ kiện ngoài gói. Tâm Đức Smile sở hữu lợi thế mạng lưới phòng khám hiện đại, miễn phí xe đưa đón và cam kết bảo hành trọn gói không phát sinh.
                               </p>
                             </div>
 
@@ -2585,7 +2582,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    navigator.clipboard.writeText(`Tiêu đề: Trồng Răng Implant Tâm Đức Smile - Trọn Gói Giá Gốc - Bảo Hành Trọn Đời\nMô tả: 17 Chi Nhánh Miền Tây & TP.HCM. Tặng Chụp Phim 3D ConeBeam 1.5Tr & Miễn Phí Xe Đưa Đón. Trụ Chính Hãng Giá Gốc.`);
+                                    navigator.clipboard.writeText(`Tiêu đề: Trồng Răng Implant Tâm Đức Smile - Trọn Gói Giá Gốc - Bảo Hành Trọn Đời\nMô tả: Tặng Chụp Phim 3D ConeBeam 1.5Tr & Miễn Phí Xe Đưa Đón. Trụ Chính Hãng Giá Gốc.`);
                                     setCopiedSnippetId(item.id);
                                     setTimeout(() => setCopiedSnippetId(null), 3000);
                                   }}
@@ -2597,7 +2594,7 @@ export const CompetitorLinkMonitorScanner: React.FC = () => {
                               </div>
                               <div className="p-2 rounded bg-slate-950 font-mono text-[11px] text-slate-200 border border-slate-800 space-y-1">
                                 <p><strong className="text-cyan-400">Headline:</strong> Trồng Răng Implant Tâm Đức Smile - Trọn Gói Giá Gốc</p>
-                                <p><strong className="text-indigo-400">Description:</strong> 17 Chi Nhánh Miền Tây & TP.HCM. Tặng CT 3D 1.5Tr + Xe Đưa Đón Tận Nơi.</p>
+                                <p><strong className="text-indigo-400">Description:</strong> Tặng CT 3D 1.5Tr + Miễn Phí Xe Đưa Đón Tận Nơi. Bảo Hành Trọn Đời.</p>
                               </div>
                             </div>
                           </div>
