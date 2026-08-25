@@ -30,20 +30,44 @@ import {
   Search,
   ExternalLink,
   Cpu,
-  Power
+  Power,
+  CheckSquare,
+  Square,
+  Shield,
+  Layers
 } from 'lucide-react';
 import { SidebarTab } from '../types';
+import { ALL_WORKSPACE_TABS, TabConfig } from './TabPermissionsModal';
 
-interface AdminUser {
+export interface AdminUser {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'manager' | 'marketer' | 'sales' | 'accountant';
+  role: 'admin' | 'manager' | 'marketer' | 'sales' | 'accountant' | 'custom';
   roleLabel: string;
   status: 'active' | 'disabled';
   lastActive: string;
   department: string;
+  allowedTabs: SidebarTab[];
 }
+
+export const ROLE_PRESET_TABS: Record<string, SidebarTab[]> = {
+  admin: ['overview', 'google_ads', 'leads_funnel', 'campaigns', 'competitor', 'sales_copilot', 'consultation', 'decision_board', 'innovation', 'ai_agent', 'admin_hub'],
+  manager: ['overview', 'google_ads', 'leads_funnel', 'campaigns', 'competitor', 'decision_board', 'innovation', 'ai_agent'],
+  marketer: ['overview', 'campaigns', 'competitor', 'leads_funnel', 'innovation', 'ai_agent'],
+  sales: ['overview', 'leads_funnel', 'sales_copilot', 'consultation', 'ai_agent'],
+  accountant: ['overview', 'google_ads', 'decision_board'],
+  custom: ['overview', 'campaigns', 'leads_funnel'],
+};
+
+export const ROLE_LABEL_MAP: Record<string, string> = {
+  marketer: 'Google Ads Specialist (Quyền xem Ads, Đối Thủ)',
+  sales: 'Tư Vấn & Sales Online (Quyền xem Lead, Copilot)',
+  manager: 'Marketing Manager (Xem đa tab Marketing)',
+  accountant: 'Kế Toán (Xem Báo Cáo Doanh Thu & VAT)',
+  admin: 'Super Admin (Toàn Quyền Hệ Thống)',
+  custom: 'Tùy Chỉnh Phân Quyền Riêng (Custom Matrix)',
+};
 
 interface ThresholdConfig {
   implantMaxCpa: number;
@@ -90,7 +114,13 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
   const [users, setUsers] = useState<AdminUser[]>(() => {
     try {
       const saved = localStorage.getItem('dashboard_admin_users_list');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.map((u: any) => ({
+          ...u,
+          allowedTabs: u.allowedTabs || ROLE_PRESET_TABS[u.role] || ROLE_PRESET_TABS.marketer,
+        }));
+      }
     } catch {
       // ignore
     }
@@ -104,6 +134,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
         status: 'active',
         lastActive: 'Vừa xong',
         department: 'Ban Điều Hành',
+        allowedTabs: ROLE_PRESET_TABS.admin,
       },
       {
         id: 'u2',
@@ -114,6 +145,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
         status: 'active',
         lastActive: '15 phút trước',
         department: 'Phòng Marketing',
+        allowedTabs: ROLE_PRESET_TABS.marketer,
       },
       {
         id: 'u3',
@@ -124,6 +156,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
         status: 'active',
         lastActive: '1 giờ trước',
         department: 'Tư Vấn & Sales Online',
+        allowedTabs: ROLE_PRESET_TABS.sales,
       },
       {
         id: 'u4',
@@ -134,6 +167,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
         status: 'active',
         lastActive: 'Hôm qua, 17:30',
         department: 'Phòng Marketing',
+        allowedTabs: ROLE_PRESET_TABS.manager,
       },
       {
         id: 'u5',
@@ -144,6 +178,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
         status: 'active',
         lastActive: '3 ngày trước',
         department: 'Phòng Tài Chính - Kế Toán',
+        allowedTabs: ROLE_PRESET_TABS.accountant,
       },
     ];
   });
@@ -183,12 +218,66 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
   const [sheetPingStatus, setSheetPingStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
 
-  // New User Modal
+  // User Modal State (Add & Edit)
   const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
-  const [newUserRole, setNewUserRole] = useState<'admin' | 'manager' | 'marketer' | 'sales' | 'accountant'>('marketer');
+  const [newUserRole, setNewUserRole] = useState<'admin' | 'manager' | 'marketer' | 'sales' | 'accountant' | 'custom'>('marketer');
   const [newUserDept, setNewUserDept] = useState('Phòng Marketing');
+  const [selectedTabs, setSelectedTabs] = useState<SidebarTab[]>(ROLE_PRESET_TABS.marketer);
+
+  // Function to open add user modal
+  const handleOpenAddUserModal = () => {
+    setEditingUserId(null);
+    setNewUserName('');
+    setNewUserEmail('');
+    setNewUserRole('marketer');
+    setNewUserDept('Phòng Marketing');
+    setSelectedTabs(ROLE_PRESET_TABS.marketer);
+    setShowAddUserModal(true);
+  };
+
+  // Function to open edit user modal
+  const handleOpenEditUserModal = (u: AdminUser) => {
+    setEditingUserId(u.id);
+    setNewUserName(u.name);
+    setNewUserEmail(u.email);
+    setNewUserRole(u.role);
+    setNewUserDept(u.department);
+    setSelectedTabs(u.allowedTabs && u.allowedTabs.length > 0 ? u.allowedTabs : (ROLE_PRESET_TABS[u.role] || []));
+    setShowAddUserModal(true);
+  };
+
+  // When role is changed from dropdown
+  const handleRoleChange = (role: 'admin' | 'manager' | 'marketer' | 'sales' | 'accountant' | 'custom') => {
+    setNewUserRole(role);
+    if (ROLE_PRESET_TABS[role]) {
+      setSelectedTabs(ROLE_PRESET_TABS[role]);
+    }
+  };
+
+  // Toggle single tab checkbox
+  const handleToggleTab = (tabId: SidebarTab) => {
+    setSelectedTabs(prev => {
+      const exists = prev.includes(tabId);
+      if (exists) {
+        return prev.filter(t => t !== tabId);
+      } else {
+        return [...prev, tabId];
+      }
+    });
+  };
+
+  // Select all tabs
+  const handleSelectAllTabs = () => {
+    setSelectedTabs(ALL_WORKSPACE_TABS.map(t => t.id));
+  };
+
+  // Deselect all tabs
+  const handleDeselectAllTabs = () => {
+    setSelectedTabs([]);
+  };
 
   // Audit Logs State
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([
@@ -275,31 +364,44 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
     e.preventDefault();
     if (!newUserName.trim() || !newUserEmail.trim()) return;
 
-    const roleMap: Record<string, string> = {
-      admin: 'Super Admin (Ban Giám Đốc)',
-      manager: 'Marketing Manager',
-      marketer: 'Google Ads Specialist',
-      sales: 'Tư Vấn & Sales Online',
-      accountant: 'Kế Toán Trưởng',
-    };
+    if (editingUserId) {
+      // Updating existing user
+      const updated = users.map(u => {
+        if (u.id === editingUserId) {
+          return {
+            ...u,
+            name: newUserName.trim(),
+            email: newUserEmail.trim(),
+            role: newUserRole,
+            roleLabel: ROLE_LABEL_MAP[newUserRole] || 'Nhân Viên',
+            department: newUserDept,
+            allowedTabs: selectedTabs,
+          };
+        }
+        return u;
+      });
+      handleSaveUsers(updated);
+      setShowAddUserModal(false);
+      showNotification(`Đã cập nhật vai trò & quyền xem cho ${newUserName}!`);
+    } else {
+      // Creating new user
+      const newUser: AdminUser = {
+        id: `u-${Date.now()}`,
+        name: newUserName.trim(),
+        email: newUserEmail.trim(),
+        role: newUserRole,
+        roleLabel: ROLE_LABEL_MAP[newUserRole] || 'Nhân Viên',
+        status: 'active',
+        lastActive: 'Chưa đăng nhập',
+        department: newUserDept,
+        allowedTabs: selectedTabs,
+      };
 
-    const newUser: AdminUser = {
-      id: `u-${Date.now()}`,
-      name: newUserName.trim(),
-      email: newUserEmail.trim(),
-      role: newUserRole,
-      roleLabel: roleMap[newUserRole] || 'Nhân Viên',
-      status: 'active',
-      lastActive: 'Chưa đăng nhập',
-      department: newUserDept,
-    };
-
-    const updated = [...users, newUser];
-    handleSaveUsers(updated);
-    setShowAddUserModal(false);
-    setNewUserName('');
-    setNewUserEmail('');
-    showNotification(`Đã tạo thành công tài khoản cho ${newUser.name}!`);
+      const updated = [...users, newUser];
+      handleSaveUsers(updated);
+      setShowAddUserModal(false);
+      showNotification(`Đã tạo thành công tài khoản cho ${newUser.name}!`);
+    }
   };
 
   const handleSaveThresholds = () => {
@@ -527,7 +629,7 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
 
               <button
                 type="button"
-                onClick={() => setShowAddUserModal(true)}
+                onClick={handleOpenAddUserModal}
                 className="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-600/30 transition-all cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -544,85 +646,108 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
                   <th className="py-3 px-4 font-semibold">Nhân Sự</th>
                   <th className="py-3 px-4 font-semibold">Phòng Ban</th>
                   <th className="py-3 px-4 font-semibold">Vai Trò (Role)</th>
+                  <th className="py-3 px-4 font-semibold text-center">Quyền Xem Tab</th>
                   <th className="py-3 px-3 font-semibold text-center">Trạng Thái</th>
                   <th className="py-3 px-3 font-semibold text-center">Hoạt Động Gần Nhất</th>
                   <th className="py-3 px-4 font-semibold text-right">Thao Tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {users.map(u => (
-                  <tr key={u.id} className="hover:bg-slate-900/40 transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shrink-0">
-                          {u.name.charAt(0)}
+                {users.map(u => {
+                  const allowedCount = u.allowedTabs ? u.allowedTabs.length : (ROLE_PRESET_TABS[u.role]?.length || 0);
+                  return (
+                    <tr key={u.id} className="hover:bg-slate-900/40 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shrink-0">
+                            {u.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-bold text-white">{u.name}</p>
+                            <p className="text-[11px] text-slate-400 font-mono">{u.email}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-bold text-white">{u.name}</p>
-                          <p className="text-[11px] text-slate-400 font-mono">{u.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-slate-300 font-medium">{u.department}</td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border ${
-                        u.role === 'admin'
-                          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                          : u.role === 'marketer'
-                          ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
-                          : u.role === 'sales'
-                          ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
-                          : 'bg-slate-800 text-slate-300 border-slate-700'
-                      }`}>
-                        {u.roleLabel}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <button
-                        type="button"
-                        onClick={() => handleToggleUserStatus(u.id)}
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition-all ${
-                          u.status === 'active'
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
-                            : 'bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30'
-                        }`}
-                        title="Bấm để chuyển đổi trạng thái"
-                      >
-                        {u.status === 'active' ? '● Đang Hoạt Động' : '✕ Đã Tạm Khóa'}
-                      </button>
-                    </td>
-                    <td className="py-3 px-3 text-center text-slate-400 font-mono text-[11px]">
-                      {u.lastActive}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
+                      </td>
+                      <td className="py-3 px-4 text-slate-300 font-medium">{u.department}</td>
+                      <td className="py-3 px-4">
+                        <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border ${
+                          u.role === 'admin'
+                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                            : u.role === 'marketer'
+                            ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+                            : u.role === 'sales'
+                            ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
+                            : 'bg-slate-800 text-slate-300 border-slate-700'
+                        }`}>
+                          {u.roleLabel}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">
                         <button
                           type="button"
-                          onClick={() => {
-                            const newPass = prompt(`Nhập mật khẩu mới cho ${u.name}:`);
-                            if (newPass) {
-                              showNotification(`Đã cập nhật mật khẩu cho ${u.name}!`);
-                            }
-                          }}
-                          className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors"
-                          title="Đổi mật khẩu tài khoản này"
+                          onClick={() => handleOpenEditUserModal(u)}
+                          className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-950/60 text-cyan-300 border border-cyan-800/50 hover:bg-cyan-900/80 transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                          title="Bấm để xem và sửa dấu tick phân quyền các tab cho nhân sự này"
                         >
-                          <KeyRound className="w-3.5 h-3.5 text-purple-400" />
+                          <CheckSquare className="w-3.5 h-3.5 text-cyan-400" />
+                          <span>{allowedCount} / {ALL_WORKSPACE_TABS.length} Tab</span>
                         </button>
-                        {u.role !== 'admin' && (
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleUserStatus(u.id)}
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition-all ${
+                            u.status === 'active'
+                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
+                              : 'bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30'
+                          }`}
+                          title="Bấm để chuyển đổi trạng thái"
+                        >
+                          {u.status === 'active' ? '● Đang Hoạt Động' : '✕ Đã Tạm Khóa'}
+                        </button>
+                      </td>
+                      <td className="py-3 px-3 text-center text-slate-400 font-mono text-[11px]">
+                        {u.lastActive}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
-                            onClick={() => handleDeleteUser(u.id)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors"
-                            title="Xóa nhân sự này"
+                            onClick={() => handleOpenEditUserModal(u)}
+                            className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-800 hover:border-cyan-800/60 transition-colors"
+                            title="Chỉnh sửa vai trò & dấu tick quyền xem"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Sliders className="w-3.5 h-3.5" />
                           </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newPass = prompt(`Nhập mật khẩu mới cho ${u.name}:`);
+                              if (newPass) {
+                                showNotification(`Đã cập nhật mật khẩu cho ${u.name}!`);
+                              }
+                            }}
+                            className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors"
+                            title="Đổi mật khẩu tài khoản này"
+                          >
+                            <KeyRound className="w-3.5 h-3.5 text-purple-400" />
+                          </button>
+                          {u.role !== 'admin' && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteUser(u.id)}
+                              className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors"
+                              title="Xóa nhân sự này"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1135,89 +1260,186 @@ export const AdminHubView: React.FC<AdminHubViewProps> = ({
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL: THÊM NHÂN SỰ MỚI */}
+      {/* MODAL: THÊM & PHÂN QUYỀN NHÂN SỰ (VAI TRÒ + DẤU TÍC CHỌN QUYỀN XEM) */}
       {/* ========================================================================= */}
       {showAddUserModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Plus className="w-4 h-4 text-cyan-400" />
-                Thêm Nhân Sự Mới Vào Hệ Thống
-              </h3>
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-950 border border-slate-800 rounded-3xl p-5 sm:p-6 max-w-2xl w-full shadow-2xl space-y-4 max-h-[92vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                  {editingUserId ? <Sliders className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">
+                    {editingUserId ? 'Chỉnh Sửa Phân Quyền Nhân Sự' : 'Thêm Nhân Sự Mới Vào Hệ Thống'}
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Cấu hình vai trò nhân viên và tích chọn các quyền xem tab tương ứng.
+                  </p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowAddUserModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateUser} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Họ và Tên Nhân Sự:</label>
-                <input
-                  type="text"
-                  required
-                  value={newUserName}
-                  onChange={(e) => setNewUserName(e.target.value)}
-                  placeholder="VD: Nguyễn Thị Thảo"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-cyan-500"
-                />
+            {/* Form & Tab Checkboxes (Scrollable) */}
+            <form onSubmit={handleCreateUser} className="space-y-4 text-xs overflow-y-auto pr-1 flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Họ và Tên Nhân Sự:</label>
+                  <input
+                    type="text"
+                    required
+                    value={newUserName}
+                    onChange={(e) => setNewUserName(e.target.value)}
+                    placeholder="VD: Nguyễn Thị Thảo"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Email Công Ty / Đăng Nhập:</label>
+                  <input
+                    type="email"
+                    required
+                    value={newUserEmail}
+                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    placeholder="thao.nguyen@tamducsmile.vn"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Email Công Ty / Đăng Nhập:</label>
-                <input
-                  type="email"
-                  required
-                  value={newUserEmail}
-                  onChange={(e) => setNewUserEmail(e.target.value)}
-                  placeholder="thao.nguyen@tamducsmile.vn"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-cyan-500"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Phòng Ban:</label>
+                  <input
+                    type="text"
+                    value={newUserDept}
+                    onChange={(e) => setNewUserDept(e.target.value)}
+                    placeholder="Phòng Marketing / Tư Vấn / Kế Toán"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">
+                    Vai Trò Nhân Viên (Role Preset):
+                  </label>
+                  <select
+                    value={newUserRole}
+                    onChange={(e) => handleRoleChange(e.target.value as any)}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-cyan-300 font-bold focus:outline-none focus:border-cyan-500 cursor-pointer"
+                  >
+                    <option value="marketer">Google Ads Specialist (Quyền xem Ads, Đối Thủ)</option>
+                    <option value="sales">Tư Vấn & Sales Online (Quyền xem Lead, Copilot)</option>
+                    <option value="manager">Marketing Manager (Xem đa tab Marketing)</option>
+                    <option value="accountant">Kế Toán (Xem Báo Cáo Doanh Thu & VAT)</option>
+                    <option value="admin">Super Admin (Toàn Quyền Hệ Thống)</option>
+                    <option value="custom">Tùy Chỉnh Phân Quyền Riêng (Custom Matrix)</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Phòng Ban:</label>
-                <input
-                  type="text"
-                  value={newUserDept}
-                  onChange={(e) => setNewUserDept(e.target.value)}
-                  placeholder="Phòng Marketing / Tư Vấn / Kế Toán"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-cyan-500"
-                />
+              {/* DẤU TÍC CHỌN QUYỀN XEM SECTION */}
+              <div className="pt-2 border-t border-slate-800/80 space-y-2.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="w-4 h-4 text-cyan-400" />
+                    <span className="font-bold text-slate-200">Dấu Tíc Chọn Quyền Xem Tab & Tính Năng:</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                      Đã chọn {selectedTabs.length} / {ALL_WORKSPACE_TABS.length} Tab
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-end sm:self-center">
+                    <button
+                      type="button"
+                      onClick={handleSelectAllTabs}
+                      className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 transition-colors cursor-pointer"
+                    >
+                      ✓ Chọn Tất Cả
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDeselectAllTabs}
+                      className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-rose-300 transition-colors cursor-pointer"
+                    >
+                      ✕ Bỏ Chọn
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tab Checkboxes Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {ALL_WORKSPACE_TABS.map((tab) => {
+                    const isChecked = selectedTabs.includes(tab.id);
+                    const TabIcon = tab.icon;
+
+                    return (
+                      <div
+                        key={tab.id}
+                        onClick={() => handleToggleTab(tab.id)}
+                        className={`p-3 rounded-2xl border transition-all cursor-pointer select-none flex items-start gap-3 ${
+                          isChecked
+                            ? 'bg-cyan-950/40 border-cyan-500/60 shadow-sm shadow-cyan-500/10'
+                            : 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700 opacity-75'
+                        }`}
+                      >
+                        {/* Custom Checkbox */}
+                        <div className={`mt-0.5 w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                          isChecked
+                            ? 'bg-cyan-500 border-cyan-400 text-slate-950'
+                            : 'border-slate-600 bg-slate-950'
+                        }`}>
+                          {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                        </div>
+
+                        {/* Tab Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <TabIcon className={`w-3.5 h-3.5 ${isChecked ? 'text-cyan-400' : 'text-slate-500'}`} />
+                            <span className={`font-bold ${isChecked ? 'text-white' : 'text-slate-400'}`}>
+                              {tab.label}
+                            </span>
+                            {tab.badge && (
+                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                                {tab.badge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">
+                            {tab.description}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Vai Trò & Quyền Hạn (Role):</label>
-                <select
-                  value={newUserRole}
-                  onChange={(e) => setNewUserRole(e.target.value as any)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-cyan-300 font-bold focus:outline-none focus:border-cyan-500 cursor-pointer"
-                >
-                  <option value="marketer">Google Ads Specialist (Quyền xem Ads, Đối Thủ)</option>
-                  <option value="sales">Tư Vấn & Sales Online (Quyền xem Lead, Copilot)</option>
-                  <option value="manager">Marketing Manager (Xem đa tab Marketing)</option>
-                  <option value="accountant">Kế Toán (Xem Báo Cáo Doanh Thu & VAT)</option>
-                  <option value="admin">Super Admin (Toàn Quyền Hệ Thống)</option>
-                </select>
-              </div>
-
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-800">
+              {/* Submit Buttons */}
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowAddUserModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white font-bold cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white font-bold cursor-pointer transition-colors"
                 >
                   Hủy Bỏ
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold shadow-lg shadow-cyan-600/30 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold shadow-lg shadow-cyan-600/30 cursor-pointer transition-all flex items-center gap-1.5"
                 >
-                  Tạo Tài Khoản
+                  <Check className="w-4 h-4" />
+                  <span>{editingUserId ? 'Lưu Phân Quyền' : 'Tạo Tài Khoản & Cấp Quyền'}</span>
                 </button>
               </div>
             </form>
